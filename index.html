@@ -3,37 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>ASCEND — Дисциплина каждый день</title>
+    <title>ASCEND — Discipline System</title>
 
     <style>
-        :root {
-            --bg: #080808;
-            --surface: #0f0f0f;
-            --surface-2: #141414;
-            --surface-3: #1b1b1b;
-            --border: #242424;
-            --border-light: #303030;
-
-            --white: #ffffff;
-            --text: #eeeeee;
-            --text-soft: #b7b7b7;
-            --text-muted: #777777;
-            --text-dark: #555555;
-
-            --sidebar-width: 250px;
-            --topbar-height: 72px;
-
-            --radius: 18px;
-            --small-radius: 12px;
-
-            --transition: 0.25s ease;
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        :root {
+            --bg: #080808;
+            --panel: #101010;
+            --panel-2: #151515;
+            --panel-3: #1b1b1b;
+            --border: #292929;
+            --border-light: #353535;
+            --text: #f5f5f5;
+            --muted: #858585;
+            --muted-2: #5d5d5d;
+            --white: #ffffff;
+
+            --sidebar-width: 230px;
+            --character-width: 300px;
+            --topbar-height: 70px;
         }
 
         html {
@@ -41,16 +34,10 @@
         }
 
         body {
-            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
             background: var(--bg);
             color: var(--text);
-            font-family:
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Arial,
-                sans-serif;
+            min-height: 100vh;
             overflow-x: hidden;
         }
 
@@ -64,931 +51,600 @@
             cursor: pointer;
         }
 
-        /* ================================
-           APP
-        ================================ */
+        /* =========================
+           APP LAYOUT
+        ========================= */
 
         .app {
             min-height: 100vh;
         }
-
-        /* ================================
-           SIDEBAR
-        ================================ */
 
         .sidebar {
             position: fixed;
             left: 0;
             top: 0;
             bottom: 0;
-
             width: var(--sidebar-width);
-
-            background: #0a0a0a;
+            background: #0b0b0b;
             border-right: 1px solid var(--border);
-
+            z-index: 100;
             display: flex;
             flex-direction: column;
-
-            padding: 26px 18px;
-
-            z-index: 100;
         }
 
         .logo {
+            height: var(--topbar-height);
             display: flex;
             align-items: center;
-            gap: 12px;
-
-            padding: 0 10px;
-            margin-bottom: 38px;
-        }
-
-        .logo-mark {
-            width: 34px;
-            height: 34px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border: 1px solid #555;
-            border-radius: 10px;
-
-            color: white;
-            font-size: 18px;
-            font-weight: 800;
+            padding: 0 25px;
+            border-bottom: 1px solid var(--border);
         }
 
         .logo-text {
-            font-size: 18px;
-            font-weight: 800;
+            font-size: 23px;
+            font-weight: 900;
+            letter-spacing: 4px;
+        }
+
+        .logo-sub {
+            color: var(--muted);
+            font-size: 9px;
             letter-spacing: 2px;
+            margin-left: 9px;
+            margin-top: 5px;
         }
 
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .nav-group {
-            margin-bottom: 20px;
+        .navigation {
+            padding: 25px 14px;
+            flex: 1;
         }
 
         .nav-title {
-            padding: 0 12px;
-            margin-bottom: 8px;
-
-            color: var(--text-dark);
-
+            color: var(--muted-2);
             font-size: 10px;
-            font-weight: 700;
-
+            letter-spacing: 2px;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            padding: 0 12px 12px;
         }
 
         .nav-link {
             width: 100%;
-
+            border: 0;
+            background: transparent;
+            color: #888;
             display: flex;
             align-items: center;
-            gap: 12px;
-
-            padding: 12px;
-
-            border: 0;
-            border-radius: 10px;
-
-            background: transparent;
-            color: var(--text-muted);
-
+            gap: 13px;
+            padding: 13px 14px;
+            margin-bottom: 5px;
+            border-radius: 8px;
             text-align: left;
-
-            transition: var(--transition);
+            transition: .2s;
         }
 
         .nav-link:hover {
-            background: var(--surface-2);
-            color: var(--text);
+            background: #151515;
+            color: #fff;
         }
 
         .nav-link.active {
-            background: #181818;
-            color: var(--white);
+            background: #1b1b1b;
+            color: #fff;
+            box-shadow: inset 2px 0 0 #fff;
         }
 
-        .nav-link-icon {
+        .nav-icon {
             width: 20px;
-
-            display: flex;
-            justify-content: center;
-
+            text-align: center;
             font-size: 15px;
         }
 
         .sidebar-bottom {
-            margin-top: auto;
+            padding: 18px;
+            border-top: 1px solid var(--border);
         }
 
-        .sidebar-progress {
-            padding: 15px;
-
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--small-radius);
-
-            margin-bottom: 15px;
-        }
-
-        .sidebar-progress-header {
+        .sidebar-progress-title {
             display: flex;
             justify-content: space-between;
-
-            margin-bottom: 10px;
-
-            font-size: 12px;
+            color: var(--muted);
+            font-size: 11px;
+            margin-bottom: 8px;
         }
 
-        .sidebar-progress-header span:first-child {
-            color: var(--text-muted);
-        }
-
-        .sidebar-progress-header span:last-child {
-            color: var(--white);
-            font-weight: 700;
-        }
-
-        .sidebar-progress-track {
-            height: 4px;
-
-            background: #252525;
-            border-radius: 20px;
-
+        .progress-bar {
+            height: 5px;
+            background: #222;
+            border-radius: 10px;
             overflow: hidden;
         }
 
-        .sidebar-progress-fill {
-            width: 0%;
+        .progress-fill {
             height: 100%;
-
-            background: white;
-
-            transition: width 0.4s ease;
+            width: 0;
+            background: #fff;
+            transition: width .3s;
         }
 
-        .sidebar-user {
+        .sidebar-score {
+            margin-top: 14px;
             display: flex;
-            align-items: center;
-            gap: 10px;
-
-            padding: 10px;
+            justify-content: space-between;
+            font-size: 12px;
         }
 
-        .user-avatar,
-        .avatar-small {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            background: #202020;
-            border: 1px solid #333;
-            color: white;
-
-            font-weight: 700;
+        .sidebar-score span:last-child {
+            font-weight: 800;
         }
 
-        .user-avatar {
-            width: 38px;
-            height: 38px;
-
-            border-radius: 50%;
-            font-size: 13px;
-        }
-
-        .user-info {
-            min-width: 0;
-        }
-
-        .user-info strong {
-            display: block;
-
-            color: var(--text);
-            font-size: 13px;
-        }
-
-        .user-info span {
-            display: block;
-
-            margin-top: 3px;
-
-            color: var(--text-muted);
-            font-size: 11px;
-        }
-
-        /* ================================
+        /* =========================
            MAIN
-        ================================ */
+        ========================= */
 
-        .main {
-            min-height: 100vh;
+        .main-wrapper {
             margin-left: var(--sidebar-width);
+            margin-right: var(--character-width);
+            min-height: 100vh;
+            transition: .25s;
         }
 
         .topbar {
-            position: sticky;
-            top: 0;
-
             height: var(--topbar-height);
-
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-
-            padding: 0 34px;
-
-            background: rgba(8, 8, 8, 0.92);
-            border-bottom: 1px solid var(--border);
-
-            backdrop-filter: blur(16px);
-
+            padding: 0 28px;
+            background: rgba(8, 8, 8, .96);
+            position: sticky;
+            top: 0;
             z-index: 50;
         }
 
-        .topbar-left,
-        .topbar-right {
+        .topbar-left {
             display: flex;
             align-items: center;
-        }
-
-        .current-date {
-            color: var(--text-soft);
-            font-size: 13px;
-            text-transform: capitalize;
-        }
-
-        .topbar-right {
             gap: 14px;
-        }
-
-        .notification-button {
-            width: 38px;
-            height: 38px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border: 1px solid var(--border);
-            border-radius: 10px;
-
-            background: var(--surface);
-            color: var(--text-soft);
-
-            transition: var(--transition);
-        }
-
-        .notification-button:hover {
-            border-color: var(--border-light);
-            color: white;
-        }
-
-        .topbar-user {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-        }
-
-        .avatar-small {
-            width: 34px;
-            height: 34px;
-
-            border-radius: 50%;
-
-            font-size: 11px;
-        }
-
-        #topbarUsername {
-            font-size: 13px;
-            color: var(--text-soft);
         }
 
         .mobile-menu {
             display: none;
-
+            border: 1px solid var(--border);
+            background: #111;
+            color: #fff;
             width: 38px;
             height: 38px;
+            border-radius: 7px;
+        }
 
+        .date-display {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .notification-button {
             border: 1px solid var(--border);
-            border-radius: 10px;
-
-            background: var(--surface);
-            color: white;
+            background: #111;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
         }
 
-        /* ================================
-           CONTENT
-        ================================ */
-
-        .page-content {
-            max-width: 1450px;
-
-            margin: 0 auto;
-            padding: 34px;
+        .content {
+            padding: 32px;
+            max-width: 1500px;
+            margin: auto;
         }
+
+        /* =========================
+           RIGHT CHARACTER PANEL
+        ========================= */
+
+        .character-panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--character-width);
+            background: #0c0c0c;
+            border-left: 1px solid var(--border);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .character-header {
+            height: var(--topbar-height);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 22px;
+        }
+
+        .character-header-title {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #aaa;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 10px;
+            color: #777;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+        .character-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .character-glow {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #242424 0%, transparent 70%);
+            filter: blur(10px);
+        }
+
+        .character {
+            position: relative;
+            width: 150px;
+            height: 330px;
+            z-index: 2;
+        }
+
+        /* Человекоподобный силуэт */
+
+        .character-head {
+            position: absolute;
+            width: 72px;
+            height: 82px;
+            background: #d5d5d5;
+            border-radius: 45% 45% 42% 42%;
+            top: 10px;
+            left: 39px;
+            box-shadow: 0 0 30px rgba(255,255,255,.08);
+        }
+
+        .character-hair {
+            position: absolute;
+            width: 76px;
+            height: 37px;
+            top: 5px;
+            left: 37px;
+            background: #171717;
+            border-radius: 50px 50px 15px 15px;
+            z-index: 2;
+        }
+
+        .character-neck {
+            position: absolute;
+            width: 27px;
+            height: 35px;
+            top: 79px;
+            left: 61px;
+            background: #c7c7c7;
+        }
+
+        .character-body {
+            position: absolute;
+            width: 116px;
+            height: 145px;
+            top: 103px;
+            left: 17px;
+            background: #191919;
+            border-radius: 40px 40px 12px 12px;
+            border: 1px solid #333;
+        }
+
+        .character-shirt-line {
+            position: absolute;
+            left: 55px;
+            top: 10px;
+            width: 1px;
+            height: 115px;
+            background: #343434;
+        }
+
+        .character-arm-left,
+        .character-arm-right {
+            position: absolute;
+            width: 32px;
+            height: 125px;
+            top: 110px;
+            background: #1c1c1c;
+            border: 1px solid #333;
+            border-radius: 20px;
+        }
+
+        .character-arm-left {
+            left: 1px;
+            transform: rotate(7deg);
+        }
+
+        .character-arm-right {
+            right: 1px;
+            transform: rotate(-7deg);
+        }
+
+        .character-leg-left,
+        .character-leg-right {
+            position: absolute;
+            width: 42px;
+            height: 112px;
+            top: 237px;
+            background: #151515;
+            border: 1px solid #292929;
+            border-radius: 10px 10px 18px 18px;
+        }
+
+        .character-leg-left {
+            left: 30px;
+        }
+
+        .character-leg-right {
+            right: 30px;
+        }
+
+        .character-eye {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #111;
+            top: 46px;
+            z-index: 3;
+        }
+
+        .character-eye.left {
+            left: 56px;
+        }
+
+        .character-eye.right {
+            right: 56px;
+        }
+
+        .character-info {
+            border-top: 1px solid var(--border);
+            padding: 20px;
+        }
+
+        .character-name {
+            font-size: 17px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .character-role {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .character-message {
+            margin-top: 15px;
+            padding: 13px;
+            background: #141414;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #bcbcbc;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           PAGE
+        ========================= */
 
         .page {
             display: none;
+            animation: fadeIn .25s ease;
         }
 
         .page.active {
             display: block;
         }
 
-        /* ================================
-           HERO
-        ================================ */
-
-        .hero {
-            position: relative;
-
-            min-height: 300px;
-
-            display: flex;
-            align-items: center;
-
-            padding: 38px;
-
-            overflow: hidden;
-
-            background:
-                radial-gradient(
-                    circle at 80% 50%,
-                    rgba(255,255,255,0.055),
-                    transparent 35%
-                ),
-                linear-gradient(
-                    135deg,
-                    #111111,
-                    #0b0b0b
-                );
-
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-
-            margin-bottom: 30px;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .hero-content {
-            position: relative;
-            z-index: 2;
-
-            max-width: 580px;
+        .page-heading {
+            margin-bottom: 28px;
         }
 
-        .hero-eyebrow {
-            margin-bottom: 12px;
-
-            color: var(--text-muted);
-
-            font-size: 11px;
-            font-weight: 700;
-
-            letter-spacing: 2px;
-            text-transform: uppercase;
+        .page-heading h1 {
+            font-size: 30px;
+            font-weight: 900;
+            letter-spacing: -1px;
         }
 
-        .hero h1 {
-            margin-bottom: 15px;
-
-            color: white;
-
-            font-size: clamp(32px, 4vw, 58px);
-            line-height: 0.98;
-
-            letter-spacing: -2px;
-        }
-
-        .hero p {
-            max-width: 450px;
-
-            color: var(--text-soft);
-
-            font-size: 14px;
-            line-height: 1.7;
-        }
-
-        /* ================================
-           CHARACTER
-        ================================ */
-
-        .character {
-            position: absolute;
-
-            right: 5%;
-            top: 50%;
-
-            width: 190px;
-            height: 260px;
-
-            transform: translateY(-50%);
-
-            z-index: 1;
-        }
-
-        .character-glow {
-            position: absolute;
-
-            left: 50%;
-            top: 50%;
-
-            width: 180px;
-            height: 180px;
-
-            transform: translate(-50%, -50%);
-
-            background: rgba(255,255,255,0.06);
-            filter: blur(35px);
-
-            border-radius: 50%;
-        }
-
-        .character-head {
-            position: absolute;
-
-            left: 50%;
-            top: 18px;
-
-            width: 62px;
-            height: 62px;
-
-            transform: translateX(-50%);
-
-            background: #b8b8b8;
-
-            border-radius: 50%;
-
-            box-shadow:
-                inset -7px -8px 0 rgba(0,0,0,0.15);
-        }
-
-        .character-head::before {
-            content: "";
-
-            position: absolute;
-
-            left: 14px;
-            top: 23px;
-
-            width: 8px;
-            height: 5px;
-
-            border-radius: 50%;
-
-            background: #111;
-
-            box-shadow:
-                25px 0 0 #111;
-        }
-
-        .character-head::after {
-            content: "";
-
-            position: absolute;
-
-            left: 22px;
-            top: 38px;
-
-            width: 18px;
-            height: 5px;
-
-            border-bottom: 2px solid #333;
-
-            border-radius: 50%;
-        }
-
-        .character-torso {
-            position: absolute;
-
-            left: 50%;
-            top: 82px;
-
-            width: 84px;
-            height: 105px;
-
-            transform: translateX(-50%);
-
-            background: #202020;
-
-            border-radius: 25px 25px 16px 16px;
-
-            border: 1px solid #3a3a3a;
-        }
-
-        .character-line {
-            position: absolute;
-
-            left: 50%;
-            top: 22px;
-
-            width: 30px;
-            height: 2px;
-
-            transform: translateX(-50%);
-
-            background: #aaa;
-        }
-
-        .character-body {
-            position: absolute;
-            inset: 0;
-        }
-
-        .character-legs {
-            position: absolute;
-
-            left: 50%;
-            top: 184px;
-
-            width: 70px;
-            height: 70px;
-
-            transform: translateX(-50%);
-        }
-
-        .character-leg {
-            position: absolute;
-
-            top: 0;
-
-            width: 25px;
-            height: 72px;
-
-            background: #191919;
-
-            border: 1px solid #303030;
-
-            border-radius: 0 0 14px 14px;
-        }
-
-        .character-leg:first-child {
-            left: 7px;
-        }
-
-        .character-leg:last-child {
-            right: 7px;
-        }
-
-        /* ================================
-           SECTION
-        ================================ */
-
-        .section {
-            margin-bottom: 30px;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            margin-bottom: 15px;
-        }
-
-        .section-label {
-            color: var(--text-muted);
-
-            font-size: 11px;
-            font-weight: 700;
-
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        .section-header h2 {
-            font-size: 22px;
-        }
-
-        .section-date {
-            color: var(--text-muted);
-            font-size: 12px;
-        }
-
-        .text-button {
-            border: 0;
-            background: transparent;
-            color: var(--text-soft);
-            font-size: 12px;
-        }
-
-        .text-button:hover {
-            color: white;
-        }
-
-        /* ================================
-           BUTTONS
-        ================================ */
-
-        .primary-button,
-        .secondary-button {
-            min-height: 42px;
-
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-
-            padding: 0 18px;
-
-            border-radius: 10px;
-
+        .page-heading p {
+            color: var(--muted);
+            margin-top: 8px;
             font-size: 13px;
-            font-weight: 700;
-
-            transition: var(--transition);
         }
 
-        .primary-button {
-            border: 1px solid white;
-
-            background: white;
-            color: black;
-        }
-
-        .primary-button:hover {
-            background: #dddddd;
-        }
-
-        .secondary-button {
-            border: 1px solid var(--border-light);
-
-            background: var(--surface-2);
-            color: var(--text);
-        }
-
-        .secondary-button:hover {
-            border-color: #555;
-        }
-
-        /* ================================
+        /* =========================
            CARDS
-        ================================ */
+        ========================= */
 
         .stats-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 15px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
         }
 
-        .card {
-            background: var(--surface);
-
+        .stat-card {
+            background: var(--panel);
             border: 1px solid var(--border);
-            border-radius: var(--radius);
+            border-radius: 12px;
+            padding: 20px;
         }
 
-        .daily-progress-card {
-            padding: 25px;
-        }
-
-        .card-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            margin-bottom: 25px;
-        }
-
-        .card-label {
-            color: var(--text-soft);
-            font-size: 12px;
-            font-weight: 700;
+        .stat-label {
+            color: var(--muted);
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .card-badge {
-            padding: 5px 9px;
-
-            border: 1px solid var(--border);
-            border-radius: 20px;
-
-            color: var(--text-muted);
-
-            font-size: 10px;
-        }
-
-        .daily-progress-content {
-            display: flex;
-            align-items: center;
-            gap: 28px;
-        }
-
-        .progress-ring {
-            position: relative;
-
-            width: 150px;
-            height: 150px;
-
-            flex-shrink: 0;
-        }
-
-        .progress-ring svg {
-            width: 150px;
-            height: 150px;
-
-            transform: rotate(-90deg);
-        }
-
-        .progress-ring-track,
-        .progress-ring-value {
-            fill: none;
-            stroke-width: 8;
-        }
-
-        .progress-ring-track {
-            stroke: #242424;
-        }
-
-        .progress-ring-value {
-            stroke: white;
-
-            stroke-linecap: round;
-
-            transition:
-                stroke-dashoffset 0.5s ease;
-        }
-
-        .progress-ring-center {
-            position: absolute;
-
-            inset: 0;
-
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .progress-number {
-            font-size: 28px;
-            font-weight: 800;
-        }
-
-        .progress-ring-center span:last-child {
-            margin-top: 3px;
-
-            color: var(--text-muted);
-            font-size: 10px;
-        }
-
-        .progress-info {
-            flex: 1;
-        }
-
-        .progress-info-label {
-            margin-bottom: 5px;
-
-            color: var(--text-muted);
-            font-size: 11px;
-        }
-
-        .progress-message {
-            color: var(--text-soft);
-
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .stat-card {
-            min-height: 190px;
-
-            padding: 25px;
-
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .stat-icon {
-            width: 40px;
-            height: 40px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border: 1px solid var(--border);
-            border-radius: 11px;
-
-            color: white;
-        }
-
         .stat-value {
-            font-size: 34px;
-            font-weight: 800;
+            font-size: 29px;
+            font-weight: 900;
+            margin-top: 13px;
         }
 
-        .stat-card p {
-            color: var(--text-muted);
-            font-size: 12px;
+        .stat-small {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 5px;
         }
 
-        /* ================================
-           TASKS
-        ================================ */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.4fr .8fr;
+            gap: 20px;
+        }
 
-        .tasks-card {
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             padding: 22px;
         }
 
-        .empty-state {
-            padding: 45px 20px;
-
-            text-align: center;
-
-            border: 1px dashed #2b2b2b;
-            border-radius: 14px;
-        }
-
-        .empty-icon {
-            width: 48px;
-            height: 48px;
-
+        .card-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-
-            margin: 0 auto 15px;
-
-            border: 1px solid #333;
-            border-radius: 14px;
-
-            color: #888;
-
-            font-size: 22px;
+            margin-bottom: 20px;
         }
 
-        .empty-state h3 {
-            margin-bottom: 7px;
-
+        .card-title {
             font-size: 15px;
+            font-weight: 800;
         }
 
-        .empty-state p {
-            margin-bottom: 18px;
+        .card-subtitle {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 4px;
+        }
 
-            color: var(--text-muted);
-            font-size: 12px;
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .button {
+            border: 1px solid var(--border-light);
+            background: #171717;
+            color: #fff;
+            border-radius: 7px;
+            padding: 10px 14px;
+            transition: .2s;
+        }
+
+        .button:hover {
+            background: #222;
+            border-color: #444;
+        }
+
+        .button.primary {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            font-weight: 800;
+        }
+
+        .button.primary:hover {
+            background: #ddd;
+        }
+
+        .button.danger {
+            color: #ddd;
+        }
+
+        .button.small {
+            padding: 7px 10px;
+            font-size: 11px;
+        }
+
+        /* =========================
+           TASKS
+        ========================= */
+
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
         }
 
         .task-item {
             display: flex;
             align-items: center;
-            gap: 14px;
-
-            padding: 15px;
-
-            margin-bottom: 8px;
-
-            background: #121212;
+            gap: 13px;
+            background: #141414;
             border: 1px solid var(--border);
-            border-radius: 12px;
-
-            transition: var(--transition);
+            border-radius: 9px;
+            padding: 13px;
+            transition: .2s;
         }
 
         .task-item:hover {
-            border-color: #373737;
+            border-color: #3a3a3a;
         }
 
         .task-item.completed {
-            opacity: 0.55;
+            opacity: .55;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
         }
 
         .task-checkbox {
-            width: 25px;
-            height: 25px;
-
-            flex-shrink: 0;
-
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            border: 1px solid #555;
+            background: transparent;
+            border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
-
-            border: 1px solid #444;
-            border-radius: 8px;
-
-            background: transparent;
-            color: white;
-
-            font-size: 14px;
+            color: #000;
+            padding: 0;
         }
 
         .task-item.completed .task-checkbox {
-            background: white;
-            color: black;
-            border-color: white;
+            background: #fff;
+            border-color: #fff;
         }
 
         .task-content {
@@ -997,590 +653,570 @@
         }
 
         .task-title {
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-
+            font-size: 13px;
+            font-weight: 700;
             word-break: break-word;
         }
 
-        .task-item.completed .task-title {
-            text-decoration: line-through;
+        .task-meta {
+            display: flex;
+            gap: 8px;
+            margin-top: 5px;
+            flex-wrap: wrap;
         }
 
-        .task-category {
-            margin-top: 4px;
-
-            color: var(--text-muted);
-            font-size: 11px;
-        }
-
-        .task-status {
-            color: var(--text-muted);
+        .badge {
             font-size: 9px;
-            font-weight: 800;
-            letter-spacing: 1px;
+            color: #888;
+            background: #202020;
+            padding: 4px 7px;
+            border-radius: 4px;
         }
 
-        /* ================================
-           WEEK
-        ================================ */
-
-        .weekly-card {
-            padding: 22px;
+        .task-actions {
+            display: flex;
+            gap: 5px;
         }
 
-        .week-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
+        .delete-task {
+            border: 0;
+            background: transparent;
+            color: #666;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
         }
 
-        .week-day {
-            padding: 15px 10px;
+        .delete-task:hover {
+            color: #fff;
+            background: #242424;
+        }
 
-            border: 1px solid var(--border);
-            border-radius: 12px;
-
-            background: #111;
-
+        .empty-state {
             text-align: center;
+            padding: 40px 15px;
+            color: var(--muted);
+            font-size: 13px;
         }
 
-        .week-day.active {
-            border-color: #666;
+        /* =========================
+           PROGRESS
+        ========================= */
+
+        .progress-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
         }
 
-        .week-day-name {
-            color: var(--text-muted);
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .week-day-progress {
-            margin: 10px 0;
-
-            color: white;
-            font-size: 17px;
-            font-weight: 800;
-        }
-
-        .week-day-bar {
-            height: 4px;
-
-            overflow: hidden;
-
-            background: #252525;
-            border-radius: 10px;
-        }
-
-        .week-day-fill {
-            width: 0%;
-            height: 100%;
-
-            background: white;
-
-            transition: width 0.4s ease;
-        }
-
-        /* ================================
-           OTHER PAGES
-        ================================ */
-
-        .inner-page {
+        .progress-circle {
             position: relative;
-
-            min-height: calc(100vh - var(--topbar-height) - 68px);
-
-            padding: 35px;
-
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-
-            overflow: hidden;
+            width: 190px;
+            height: 190px;
         }
 
-        .inner-page h1 {
-            margin-bottom: 10px;
-
-            font-size: 34px;
+        .progress-circle svg {
+            transform: rotate(-90deg);
+            width: 190px;
+            height: 190px;
         }
 
-        .inner-page > p {
-            max-width: 600px;
-
-            color: var(--text-muted);
-            line-height: 1.7;
+        .progress-track {
+            fill: none;
+            stroke: #242424;
+            stroke-width: 10;
         }
 
-        .inner-character {
+        .progress-value-circle {
+            fill: none;
+            stroke: #fff;
+            stroke-width: 10;
+            stroke-linecap: round;
+            transition: stroke-dashoffset .5s;
+        }
+
+        .progress-number {
             position: absolute;
-
-            right: 7%;
-            top: 50%;
-
-            transform: translateY(-50%) scale(1.15);
-
-            opacity: 0.85;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            font-weight: 900;
         }
 
-        .analytics-grid {
-            display: grid;
-
-            grid-template-columns: repeat(3, 1fr);
-
-            gap: 15px;
-
-            margin-top: 30px;
+        .progress-caption {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 14px;
         }
 
-        .analytics-card {
-            padding: 22px;
+        /* =========================
+           CALENDAR
+        ========================= */
 
-            background: #111;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-        }
-
-        .analytics-card span {
-            color: var(--text-muted);
-            font-size: 11px;
-        }
-
-        .analytics-card strong {
-            display: block;
-
-            margin-top: 8px;
-
-            font-size: 28px;
-        }
-
-        .calendar-wrap {
-            margin-top: 28px;
-        }
-
-        .calendar-grid {
-            display: grid;
-
-            grid-template-columns: repeat(7, 1fr);
-
+        .calendar-controls {
+            display: flex;
+            align-items: center;
             gap: 8px;
         }
 
-        .calendar-weekday {
-            padding: 10px;
-
-            color: var(--text-muted);
-
-            font-size: 10px;
-            font-weight: 700;
-
+        .month-title {
+            min-width: 160px;
             text-align: center;
+            font-weight: 800;
+        }
+
+        .calendar-weekdays,
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 7px;
+        }
+
+        .calendar-weekdays {
+            margin-bottom: 7px;
+        }
+
+        .weekday {
+            text-align: center;
+            color: var(--muted);
+            font-size: 10px;
+            padding: 8px 0;
         }
 
         .calendar-day {
-            min-height: 80px;
-
-            padding: 10px;
-
+            min-height: 110px;
             background: #111;
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
+            padding: 9px;
+            cursor: pointer;
+            transition: .2s;
+            position: relative;
+        }
 
-            cursor: default;
+        .calendar-day:hover {
+            border-color: #555;
+            background: #151515;
         }
 
         .calendar-day.today {
-            border-color: #777;
+            border-color: #fff;
         }
 
-        .calendar-day.empty {
-            background: transparent;
-            border-color: transparent;
+        .calendar-day.other-month {
+            opacity: .3;
         }
 
-        .calendar-day-number {
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .calendar-day-progress {
-            margin-top: 12px;
-
-            color: white;
+        .day-number {
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 800;
         }
 
-        .profile-box,
-        .settings-box {
-            max-width: 650px;
+        .day-progress {
+            position: absolute;
+            left: 9px;
+            right: 9px;
+            bottom: 9px;
+        }
 
-            margin-top: 30px;
+        .day-progress-text {
+            color: #aaa;
+            font-size: 10px;
+            margin-bottom: 5px;
+        }
 
-            padding: 24px;
+        .day-progress-bar {
+            height: 4px;
+            background: #252525;
+            border-radius: 5px;
+            overflow: hidden;
+        }
 
-            background: #111;
+        .day-progress-fill {
+            height: 100%;
+            background: #fff;
+        }
+
+        /* =========================
+           ANALYTICS
+        ========================= */
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .analytics-card {
+            background: var(--panel);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 10px;
+            padding: 20px;
         }
 
-        .profile-row,
-        .settings-row {
+        .analytics-card h3 {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .analytics-big {
+            font-size: 35px;
+            font-weight: 900;
+            margin-top: 13px;
+        }
+
+        .week-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            height: 180px;
+            padding-top: 20px;
+        }
+
+        .chart-column {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-bar {
+            width: 100%;
+            max-width: 45px;
+            min-height: 3px;
+            background: #fff;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .chart-label {
+            color: #777;
+            font-size: 10px;
+        }
+
+        /* =========================
+           PROFILE / SETTINGS
+        ========================= */
+
+        .profile-card {
+            max-width: 700px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #444;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-bottom: 18px;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .setting-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-
-            padding: 15px 0;
-
+            padding: 17px 0;
             border-bottom: 1px solid var(--border);
         }
 
-        .profile-row:last-child,
-        .settings-row:last-child {
-            border-bottom: 0;
-        }
-
-        .profile-row span:first-child,
-        .settings-row span:first-child {
-            color: var(--text-muted);
-            font-size: 12px;
-        }
-
-        .profile-row strong {
+        .setting-title {
             font-size: 13px;
+            font-weight: 700;
         }
 
-        /* ================================
-           MODAL
-        ================================ */
+        .setting-description {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 5px;
+        }
 
-        .add-task-panel {
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal-overlay {
             position: fixed;
             inset: 0;
-
+            background: rgba(0,0,0,.75);
+            z-index: 500;
             display: none;
             align-items: center;
             justify-content: center;
-
             padding: 20px;
-
-            background: rgba(0,0,0,0.78);
-
-            z-index: 300;
         }
 
-        .add-task-panel.active {
+        .modal-overlay.active {
             display: flex;
         }
 
-        .panel {
-            width: min(500px, 100%);
-
+        .modal {
+            width: 100%;
+            max-width: 500px;
             background: #111;
-
             border: 1px solid #333;
-            border-radius: 18px;
-
-            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 20px 70px rgba(0,0,0,.6);
         }
 
-        .panel-header {
+        .modal-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-
-            padding: 22px;
-
-            border-bottom: 1px solid var(--border);
+            align-items: center;
+            margin-bottom: 23px;
         }
 
-        .panel-header h2 {
+        .modal-title {
             font-size: 18px;
+            font-weight: 900;
         }
 
-        .close-button {
-            width: 34px;
-            height: 34px;
-
-            border: 1px solid var(--border);
-            border-radius: 9px;
-
+        .close-modal {
+            border: 0;
             background: transparent;
-            color: #aaa;
-
-            font-size: 20px;
+            color: #777;
+            font-size: 25px;
+            width: 35px;
+            height: 35px;
         }
 
-        .close-button:hover {
-            color: white;
-            border-color: #555;
-        }
-
-        #taskForm {
-            padding: 22px;
-        }
-
-        .form-row {
-            display: grid;
-
-            grid-template-columns: 1fr 1fr;
-
-            gap: 12px;
+        .close-modal:hover {
+            color: #fff;
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 17px;
         }
 
-        .form-group label {
+        .form-label {
             display: block;
-
-            margin-bottom: 7px;
-
-            color: var(--text-muted);
-
+            color: #aaa;
             font-size: 11px;
-            font-weight: 700;
+            margin-bottom: 8px;
         }
 
-        .form-group input,
-        .form-group select {
+        .form-input,
+        .form-select {
             width: 100%;
-
-            height: 44px;
-
-            padding: 0 13px;
-
-            background: #0b0b0b;
-            border: 1px solid #2b2b2b;
-            border-radius: 10px;
-
+            border: 1px solid var(--border-light);
+            background: #181818;
+            color: #fff;
+            padding: 12px;
+            border-radius: 7px;
             outline: none;
-
-            color: white;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
+        .form-input:focus,
+        .form-select:focus {
             border-color: #666;
         }
 
-        .form-actions {
+        .repeat-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .repeat-option {
+            position: relative;
+        }
+
+        .repeat-option input {
+            display: none;
+        }
+
+        .repeat-option label {
+            display: block;
+            text-align: center;
+            padding: 11px 8px;
+            background: #181818;
+            border: 1px solid var(--border);
+            color: #888;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .repeat-option input:checked + label {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            font-weight: 800;
+        }
+
+        .days-options {
+            display: none;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .days-options.visible {
+            display: grid;
+        }
+
+        .day-option {
+            position: relative;
+        }
+
+        .day-option input {
+            display: none;
+        }
+
+        .day-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 35px;
+            background: #181818;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            color: #777;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .day-option input:checked + label {
+            background: #fff;
+            color: #000;
+        }
+
+        .modal-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 25px;
         }
 
-        /* ================================
+        /* =========================
            TOAST
-        ================================ */
+        ========================= */
 
-        .ascend-toast {
+        .toast {
             position: fixed;
-
-            left: 50%;
-            bottom: 30px;
-
-            transform: translateX(-50%);
-
-            padding: 12px 18px;
-
-            background: #f5f5f5;
-            color: #090909;
-
-            border-radius: 10px;
-
+            right: calc(var(--character-width) + 25px);
+            bottom: 25px;
+            background: #fff;
+            color: #000;
+            padding: 13px 17px;
+            border-radius: 7px;
             font-size: 12px;
             font-weight: 700;
-
-            box-shadow: 0 15px 40px rgba(0,0,0,0.45);
-
-            z-index: 500;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: .25s;
+            pointer-events: none;
         }
 
-        /* ================================
-           MOBILE OVERLAY
-        ================================ */
-
-        .mobile-overlay {
-            position: fixed;
-            inset: 0;
-
-            display: none;
-
-            background: rgba(0,0,0,0.65);
-
-            z-index: 90;
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
         }
 
-        .mobile-overlay.active {
-            display: block;
-        }
-
-        /* ================================
-           FOOTER
-        ================================ */
-
-        .footer {
-            padding: 20px 0;
-
-            color: #444;
-
-            font-size: 10px;
-
-            text-align: center;
-        }
-
-        /* ================================
+        /* =========================
            RESPONSIVE
-        ================================ */
+        ========================= */
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1200px) {
+            :root {
+                --character-width: 250px;
+            }
+
             .stats-grid {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .daily-progress-card {
-                grid-column: 1 / -1;
-            }
-
-            .character {
-                right: 2%;
-                transform: translateY(-50%) scale(0.85);
+            .dashboard-grid {
+                grid-template-columns: 1fr;
             }
         }
 
-        @media (max-width: 800px) {
+        @media (max-width: 900px) {
+            :root {
+                --character-width: 0px;
+            }
+
+            .character-panel {
+                display: none;
+            }
+
+            .main-wrapper {
+                margin-right: 0;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
             .sidebar {
                 transform: translateX(-100%);
-                transition: transform 0.3s ease;
+                transition: .25s;
+                z-index: 400;
             }
 
             .sidebar.open {
                 transform: translateX(0);
             }
 
-            .main {
-                margin-left: 0;
-            }
-
-            .mobile-menu {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .topbar {
-                padding: 0 18px;
-            }
-
-            .topbar-left {
-                gap: 10px;
-            }
-
-            .page-content {
-                padding: 20px;
-            }
-
-            .hero {
-                min-height: 330px;
-                padding: 25px;
-            }
-
-            .character {
-                right: -25px;
-                top: auto;
-                bottom: -45px;
-
-                transform: scale(0.75);
-                transform-origin: bottom right;
-            }
-
-            .hero-content {
-                max-width: 70%;
-            }
-
             .analytics-grid {
                 grid-template-columns: 1fr;
             }
+
+            .content {
+                padding: 22px;
+            }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 650px) {
             .stats-grid {
                 grid-template-columns: 1fr;
             }
 
-            .daily-progress-card {
-                grid-column: auto;
-            }
-
-            .daily-progress-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .week-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-
-            .calendar-grid {
-                gap: 4px;
-            }
-
             .calendar-day {
-                min-height: 60px;
-                padding: 7px;
+                min-height: 70px;
             }
 
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-
-            .hero h1 {
-                font-size: 38px;
-            }
-
-            .hero-content {
-                max-width: 100%;
-            }
-
-            .hero p {
-                max-width: 75%;
-            }
-
-            #topbarUsername {
+            .day-progress {
                 display: none;
             }
 
-            .inner-page {
-                padding: 22px;
+            .calendar-weekdays,
+            .calendar-grid {
+                gap: 3px;
             }
 
-            .inner-character {
-                display: none;
-            }
-        }
-
-        @media (max-width: 420px) {
-            .week-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .page-heading h1 {
+                font-size: 25px;
             }
 
             .topbar {
-                height: 62px;
+                padding: 0 16px;
             }
 
-            .page-content {
-                padding: 14px;
-            }
-
-            .hero {
-                padding: 20px;
+            .content {
+                padding: 16px;
             }
         }
     </style>
@@ -1590,894 +1226,381 @@
 
 <div class="app">
 
-    <!-- ============================
+    <!-- =========================
          SIDEBAR
-    ============================= -->
+    ========================== -->
 
     <aside class="sidebar" id="sidebar">
 
         <div class="logo">
-            <div class="logo-mark">A</div>
             <div class="logo-text">ASCEND</div>
+            <div class="logo-sub">DISCIPLINE</div>
         </div>
 
-        <nav class="sidebar-nav">
+        <nav class="navigation">
 
-            <div class="nav-group">
+            <div class="nav-title">SYSTEM</div>
 
-                <div class="nav-title">
-                    Основное
-                </div>
+            <button class="nav-link active" data-page="dashboard">
+                <span class="nav-icon">⌂</span>
+                <span>Главная</span>
+            </button>
 
-                <button
-                    class="nav-link active"
-                    type="button"
-                    data-page="dashboard"
-                >
-                    <span class="nav-link-icon">⌂</span>
-                    <span>Главная</span>
-                </button>
+            <button class="nav-link" data-page="calendar">
+                <span class="nav-icon">▦</span>
+                <span>Календарь</span>
+            </button>
 
-                <button
-                    class="nav-link"
-                    type="button"
-                    data-page="calendar"
-                >
-                    <span class="nav-link-icon">□</span>
-                    <span>Календарь</span>
-                </button>
+            <button class="nav-link" data-page="tasks">
+                <span class="nav-icon">✓</span>
+                <span>Задачи</span>
+            </button>
 
-                <button
-                    class="nav-link"
-                    type="button"
-                    data-page="tasks"
-                >
-                    <span class="nav-link-icon">✓</span>
-                    <span>Задачи</span>
-                </button>
+            <button class="nav-link" data-page="analytics">
+                <span class="nav-icon">◫</span>
+                <span>Аналитика</span>
+            </button>
 
-                <button
-                    class="nav-link"
-                    type="button"
-                    data-page="analytics"
-                >
-                    <span class="nav-link-icon">↗</span>
-                    <span>Аналитика</span>
-                </button>
+            <div class="nav-title" style="margin-top:25px;">ACCOUNT</div>
 
-            </div>
+            <button class="nav-link" data-page="profile">
+                <span class="nav-icon">◯</span>
+                <span>Профиль</span>
+            </button>
 
-            <div class="nav-group">
-
-                <div class="nav-title">
-                    Система
-                </div>
-
-                <button
-                    class="nav-link"
-                    type="button"
-                    data-page="profile"
-                >
-                    <span class="nav-link-icon">●</span>
-                    <span>Профиль</span>
-                </button>
-
-                <button
-                    class="nav-link"
-                    type="button"
-                    data-page="settings"
-                >
-                    <span class="nav-link-icon">⚙</span>
-                    <span>Настройки</span>
-                </button>
-
-            </div>
+            <button class="nav-link" data-page="settings">
+                <span class="nav-icon">⚙</span>
+                <span>Настройки</span>
+            </button>
 
         </nav>
 
         <div class="sidebar-bottom">
 
-            <div class="sidebar-progress">
-
-                <div class="sidebar-progress-header">
-                    <span>Сегодня</span>
-                    <span id="sidebarProgress">0%</span>
-                </div>
-
-                <div class="sidebar-progress-track">
-                    <div
-                        class="sidebar-progress-fill"
-                        id="sidebarProgressFill"
-                    ></div>
-                </div>
-
+            <div class="sidebar-progress-title">
+                <span>СЕГОДНЯ</span>
+                <span id="sidebarProgress">0%</span>
             </div>
 
-            <div class="sidebar-user">
+            <div class="progress-bar">
+                <div class="progress-fill" id="sidebarProgressFill"></div>
+            </div>
 
-                <div
-                    class="user-avatar"
-                    id="sidebarAvatar"
-                >
-                    A
-                </div>
-
-                <div class="user-info">
-                    <strong id="sidebarUserName">
-                        ASCENDER
-                    </strong>
-
-                    <span>
-                        Дисциплина
-                    </span>
-                </div>
-
+            <div class="sidebar-score">
+                <span>ASCEND SCORE</span>
+                <span id="ascendScore">0</span>
             </div>
 
         </div>
 
     </aside>
 
-
-    <!-- ============================
+    <!-- =========================
          MAIN
-    ============================= -->
+    ========================== -->
 
-    <main class="main">
+    <main class="main-wrapper">
 
         <header class="topbar">
 
             <div class="topbar-left">
 
-                <button
-                    class="mobile-menu"
-                    id="mobileMenuButton"
-                    type="button"
-                    aria-label="Открыть меню"
-                >
-                    ☰
-                </button>
+                <button class="mobile-menu" id="mobileMenuButton">☰</button>
 
-                <div
-                    class="current-date"
-                    id="currentDate"
-                >
-                    Загрузка...
-                </div>
+                <div class="date-display" id="currentDate"></div>
 
             </div>
 
-            <div class="topbar-right">
-
-                <button
-                    class="notification-button"
-                    id="notificationButton"
-                    type="button"
-                    aria-label="Уведомления"
-                >
-                    ♢
-                </button>
-
-                <div class="topbar-user">
-
-                    <div
-                        class="avatar-small"
-                        id="topbarAvatar"
-                    >
-                        A
-                    </div>
-
-                    <span id="topbarUsername">
-                        ASCENDER
-                    </span>
-
-                </div>
-
-            </div>
+            <button class="notification-button" id="notificationButton">
+                ♢
+            </button>
 
         </header>
 
+        <div class="content">
 
-        <div class="page-content">
-
-
-            <!-- ============================
+            <!-- =========================
                  DASHBOARD
-            ============================= -->
+            ========================== -->
 
-            <section
-                class="page active"
-                id="page-dashboard"
-            >
+            <section class="page active" id="page-dashboard">
 
-                <div class="hero">
+                <div class="page-heading">
+                    <h1>Добро пожаловать в ASCEND.</h1>
+                    <p>Сегодняшняя дисциплина определяет твой результат.</p>
+                </div>
 
-                    <div class="hero-content">
+                <div class="stats-grid">
 
-                        <div class="hero-eyebrow">
-                            ASCEND / TODAY
-                        </div>
-
-                        <h1>
-                            Стань лучше.<br>
-                            Каждый день.
-                        </h1>
-
-                        <p>
-                            Не жди мотивации.
-                            Создавай дисциплину.
-                            Маленькие действия каждый день
-                            превращаются в большую жизнь.
-                        </p>
-
+                    <div class="stat-card">
+                        <div class="stat-label">Сегодня</div>
+                        <div class="stat-value" id="dailyProgress">0%</div>
+                        <div class="stat-small">Выполнено задач</div>
                     </div>
 
+                    <div class="stat-card">
+                        <div class="stat-label">Задачи</div>
+                        <div class="stat-value" id="completedTasks">0/0</div>
+                        <div class="stat-small">На сегодня</div>
+                    </div>
 
-                    <div class="character">
+                    <div class="stat-card">
+                        <div class="stat-label">Серия</div>
+                        <div class="stat-value" id="streakValue">0</div>
+                        <div class="stat-small">Дней подряд</div>
+                    </div>
 
-                        <div class="character-glow"></div>
-
-                        <div class="character-body">
-
-                            <div class="character-head"></div>
-
-                            <div class="character-torso">
-                                <div class="character-line"></div>
-                            </div>
-
-                            <div class="character-legs">
-
-                                <div class="character-leg"></div>
-                                <div class="character-leg"></div>
-
-                            </div>
-
-                        </div>
-
+                    <div class="stat-card">
+                        <div class="stat-label">Score</div>
+                        <div class="stat-value" id="dashboardScore">0</div>
+                        <div class="stat-small">Общий показатель</div>
                     </div>
 
                 </div>
 
+                <div class="dashboard-grid">
 
-                <!-- DAILY PROGRESS -->
+                    <div class="card">
 
-                <div class="section">
-
-                    <div class="section-header">
-
-                        <div>
-                            <div class="section-label">
-                                Сегодня
-                            </div>
-
-                            <h2>
-                                Прогресс дня
-                            </h2>
-                        </div>
-
-                        <div
-                            class="section-date"
-                            id="todayDate"
-                        >
-                            --
-                        </div>
-
-                    </div>
-
-
-                    <div class="stats-grid">
-
-
-                        <div class="card daily-progress-card">
-
-                            <div class="card-top">
-
-                                <div class="card-label">
-                                    Выполнение
-                                </div>
-
-                                <div class="card-badge">
-                                    ДЕНЬ
-                                </div>
-
-                            </div>
-
-
-                            <div class="daily-progress-content">
-
-                                <div class="progress-ring">
-
-                                    <svg viewBox="0 0 140 140">
-
-                                        <circle
-                                            class="progress-ring-track"
-                                            cx="70"
-                                            cy="70"
-                                            r="58"
-                                        ></circle>
-
-                                        <circle
-                                            class="progress-ring-value"
-                                            id="dailyProgressCircle"
-                                            cx="70"
-                                            cy="70"
-                                            r="58"
-                                        ></circle>
-
-                                    </svg>
-
-                                    <div class="progress-ring-center">
-
-                                        <div
-                                            class="progress-number"
-                                            id="dailyProgress"
-                                        >
-                                            0%
-                                        </div>
-
-                                        <span>
-                                            выполнено
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div class="progress-info">
-
-                                    <div class="progress-info-label">
-                                        Состояние дня
-                                    </div>
-
-                                    <div
-                                        class="progress-message"
-                                        id="progressMessage"
-                                    >
-                                        Создай первую задачу.
-                                    </div>
-
-                                    <div style="margin-top:18px;color:#777;font-size:12px;">
-                                        Выполнено:
-                                        <strong
-                                            id="completedTasks"
-                                            style="color:white;"
-                                        >
-                                            0
-                                        </strong>
-                                        /
-                                        <strong
-                                            id="totalTasks"
-                                            style="color:white;"
-                                        >
-                                            0
-                                        </strong>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- STREAK -->
-
-                        <div class="card stat-card">
-
-                            <div class="stat-icon">
-                                ↑
-                            </div>
-
+                        <div class="card-header">
                             <div>
-                                <div
-                                    class="stat-value"
-                                    id="streakValue"
-                                >
-                                    0
+                                <div class="card-title">Задачи на сегодня</div>
+                                <div class="card-subtitle" id="progressMessage">
+                                    Начни выполнять задачи.
                                 </div>
-
-                                <p>
-                                    дней подряд
-                                </p>
                             </div>
 
+                            <button class="button primary" id="addTaskButton">
+                                + Добавить
+                            </button>
                         </div>
 
+                        <div class="tasks-list" id="tasksContainer"></div>
 
-                        <!-- SCORE -->
+                    </div>
 
-                        <div class="card stat-card">
+                    <div class="card">
 
-                            <div class="stat-icon">
-                                A
-                            </div>
-
+                        <div class="card-header">
                             <div>
-                                <div
-                                    class="stat-value"
-                                    id="ascendScore"
-                                >
-                                    0
+                                <div class="card-title">Прогресс дня</div>
+                                <div class="card-subtitle">Твой сегодняшний результат</div>
+                            </div>
+                        </div>
+
+                        <div class="progress-center">
+
+                            <div class="progress-circle">
+
+                                <svg viewBox="0 0 190 190">
+
+                                    <circle
+                                        class="progress-track"
+                                        cx="95"
+                                        cy="95"
+                                        r="80"
+                                    ></circle>
+
+                                    <circle
+                                        class="progress-value-circle"
+                                        id="dailyProgressCircle"
+                                        cx="95"
+                                        cy="95"
+                                        r="80"
+                                    ></circle>
+
+                                </svg>
+
+                                <div class="progress-number">
+                                    <span id="progressCircleNumber">0%</span>
                                 </div>
 
-                                <p>
-                                    ASCEND Score
-                                </p>
+                            </div>
+
+                            <div class="progress-caption">
+                                Дисциплина за сегодня
                             </div>
 
                         </div>
 
                     </div>
 
-                </div>
-
-
-                <!-- TASKS -->
-
-                <div class="section">
-
-                    <div class="section-header">
-
-                        <div>
-                            <div class="section-label">
-                                Фокус
-                            </div>
-
-                            <h2>
-                                Задачи на сегодня
-                            </h2>
-                        </div>
-
-                        <button
-                            class="primary-button"
-                            id="addTaskButton"
-                            type="button"
-                        >
-                            + Добавить задачу
-                        </button>
-
-                    </div>
-
-
-                    <div class="card tasks-card">
-
-                        <div id="tasksContainer">
-
-                            <div
-                                class="empty-state"
-                                id="emptyState"
-                            >
-
-                                <div class="empty-icon">
-                                    +
-                                </div>
-
-                                <h3>
-                                    Пока нет задач
-                                </h3>
-
-                                <p>
-                                    Создай первую задачу
-                                    и начни сегодняшний день.
-                                </p>
-
-                                <button
-                                    class="primary-button"
-                                    id="createTaskButton"
-                                    type="button"
-                                >
-                                    Создать задачу
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- WEEK -->
-
-                <div class="section">
-
-                    <div class="section-header">
-
-                        <div>
-                            <div class="section-label">
-                                Неделя
-                            </div>
-
-                            <h2>
-                                Твой ритм
-                            </h2>
-                        </div>
-
-                    </div>
-
-
-                    <div class="card weekly-card">
-
-                        <div class="week-grid">
-
-                            <div class="week-day" data-day="monday">
-                                <div class="week-day-name">ПН</div>
-                                <div class="week-day-progress">0%</div>
-                                <div class="week-day-bar">
-                                    <div class="week-day-fill"></div>
-                                </div>
-                            </div>
-
-                            <div class="week-day" data-day="tuesday">
-                                <div class="week-day-name">ВТ</div>
-                                <div class="week-day-progress">0%</div>
-                                <div class="week-day-bar">
-                                    <div class="week-day-fill"></div>
-                                </div>
-                            </div>
-
-                            <div class="week-day" data-day="wednesday">
-                                <div class="week-day-name">СР</div>
-                                <div class="week-day-progress">0%</div>
-                                <div class="week-day-bar">
-                                    <div class="week-day-fill"></div>
-                                </div>
-                            </div>
-
-                            <div class="week-day" data-day="thursday">
-                                <div class="week-day-name">ЧТ</div>
-                                <div class="week-day-progress">0%</div>
-                                <div class="week-day-bar">
-                                    <div class="week-day-fill"></div>
-                                </div>
-                            </div>
-
-                            <div class="week-day" data-day="friday">
-                                <div class="week-day-name">ПТ</div>
-                                <div class="week-day-progress">0%</div>
-                                <div class="week-day-bar">
-                                    <div class="week-day-fill"></div>
-                                </div>
-                            </div>
-
-                            <div class="week-day" data-day="saturday">
-                                <div class="week-day-name">СБ</div>
-                                <div class="week-day-progress">0%</div>
-                                <div class="week-day-bar">
-                                    <div class="week-day-fill"></div>
-                                </div>
-                            </div>
-
-                            <div class="week-day" data-day="sunday">
-                                <div class="week-day-name">ВС</div>
-                                <div class="week-day-progress">0%</div>
-                                <div class="week-day-bar">
-                                    <div class="week-day-fill"></div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="footer">
-                    ASCEND — дисциплина каждый день.
                 </div>
 
             </section>
 
-
-            <!-- ============================
+            <!-- =========================
                  CALENDAR
-            ============================= -->
+            ========================== -->
 
-            <section
-                class="page"
-                id="page-calendar"
-            >
+            <section class="page" id="page-calendar">
 
-                <div class="inner-page">
+                <div class="page-heading">
+                    <h1>Календарь</h1>
+                    <p>Следи за своей дисциплиной каждый день.</p>
+                </div>
 
-                    <div class="section-label">
-                        ASCEND / CALENDAR
-                    </div>
+                <div class="card">
 
-                    <h1>
-                        Календарь
-                    </h1>
+                    <div class="card-header">
 
-                    <p>
-                        Каждый день имеет значение.
-                        Здесь отображается твой прогресс
-                        по каждому дню месяца.
-                    </p>
+                        <div class="calendar-controls">
 
+                            <button class="button small" id="previousMonth">
+                                ←
+                            </button>
 
-                    <div class="calendar-wrap">
+                            <div class="month-title" id="calendarMonth"></div>
 
-                        <div
-                            class="section-header"
-                            style="margin-bottom:18px;"
-                        >
-
-                            <h2 id="calendarMonth">
-                                Месяц
-                            </h2>
+                            <button class="button small" id="nextMonth">
+                                →
+                            </button>
 
                         </div>
 
-                        <div
-                            class="calendar-grid"
-                            id="calendarGrid"
-                        ></div>
-
-                    </div>
-
-
-                    <div class="character inner-character">
-
-                        <div class="character-glow"></div>
-
-                        <div class="character-body">
-
-                            <div class="character-head"></div>
-
-                            <div class="character-torso">
-                                <div class="character-line"></div>
-                            </div>
-
-                            <div class="character-legs">
-                                <div class="character-leg"></div>
-                                <div class="character-leg"></div>
-                            </div>
-
+                        <div class="card-subtitle">
+                            Нажми на день
                         </div>
 
                     </div>
+
+                    <div class="calendar-weekdays">
+                        <div class="weekday">ПН</div>
+                        <div class="weekday">ВТ</div>
+                        <div class="weekday">СР</div>
+                        <div class="weekday">ЧТ</div>
+                        <div class="weekday">ПТ</div>
+                        <div class="weekday">СБ</div>
+                        <div class="weekday">ВС</div>
+                    </div>
+
+                    <div class="calendar-grid" id="calendarGrid"></div>
 
                 </div>
 
             </section>
 
+            <!-- =========================
+                 TASKS
+            ========================== -->
 
-            <!-- ============================
-                 TASKS PAGE
-            ============================= -->
+            <section class="page" id="page-tasks">
 
-            <section
-                class="page"
-                id="page-tasks"
-            >
+                <div class="page-heading">
 
-                <div class="inner-page">
-
-                    <div class="section-label">
-                        ASCEND / TASKS
-                    </div>
-
-                    <h1>
-                        Задачи
-                    </h1>
+                    <h1>Задачи</h1>
 
                     <p>
-                        Управляй своим днём.
-                        Добавляй задачи и выполняй их
-                        одну за другой.
+                        Создай задачу один раз — ASCEND автоматически добавит её в нужные дни.
                     </p>
 
-                    <div style="margin-top:25px;">
-                        <button
-                            class="primary-button"
-                            id="tasksPageAddButton"
-                            type="button"
-                        >
-                            + Добавить задачу
+                </div>
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <div class="card-title">Мои задачи</div>
+                            <div class="card-subtitle">
+                                Управляй своей системой дисциплины
+                            </div>
+                        </div>
+
+                        <button class="button primary" id="createTaskButton">
+                            + Новая задача
                         </button>
-                    </div>
-
-                    <div
-                        class="card tasks-card"
-                        style="margin-top:25px;"
-                    >
-                        <div id="tasksPageContainer"></div>
-                    </div>
-
-                    <div class="character inner-character">
-
-                        <div class="character-glow"></div>
-
-                        <div class="character-body">
-                            <div class="character-head"></div>
-                            <div class="character-torso">
-                                <div class="character-line"></div>
-                            </div>
-                            <div class="character-legs">
-                                <div class="character-leg"></div>
-                                <div class="character-leg"></div>
-                            </div>
-                        </div>
 
                     </div>
+
+                    <div class="tasks-list" id="allTasksContainer"></div>
 
                 </div>
 
             </section>
 
-
-            <!-- ============================
+            <!-- =========================
                  ANALYTICS
-            ============================= -->
+            ========================== -->
 
-            <section
-                class="page"
-                id="page-analytics"
-            >
+            <section class="page" id="page-analytics">
 
-                <div class="inner-page">
+                <div class="page-heading">
+                    <h1>Аналитика</h1>
+                    <p>Смотри на дисциплину без эмоций.</p>
+                </div>
 
-                    <div class="section-label">
-                        ASCEND / ANALYTICS
+                <div class="analytics-grid">
+
+                    <div class="analytics-card">
+                        <h3>Средний процент</h3>
+                        <div class="analytics-big" id="averageProgress">0%</div>
                     </div>
 
-                    <h1>
-                        Аналитика
-                    </h1>
-
-                    <p>
-                        Смотри на свои результаты
-                        и контролируй движение вперёд.
-                    </p>
-
-
-                    <div class="analytics-grid">
-
-                        <div class="analytics-card">
-                            <span>
-                                Всего задач
-                            </span>
-
-                            <strong id="analyticsTotal">
-                                0
-                            </strong>
-                        </div>
-
-                        <div class="analytics-card">
-                            <span>
-                                Выполнено
-                            </span>
-
-                            <strong id="analyticsCompleted">
-                                0
-                            </strong>
-                        </div>
-
-                        <div class="analytics-card">
-                            <span>
-                                Общий процент
-                            </span>
-
-                            <strong id="analyticsPercent">
-                                0%
-                            </strong>
-                        </div>
-
+                    <div class="analytics-card">
+                        <h3>Лучший день</h3>
+                        <div class="analytics-big" id="bestDay">—</div>
                     </div>
 
+                    <div class="analytics-card">
+                        <h3>Выполнено всего</h3>
+                        <div class="analytics-big" id="totalCompleted">0</div>
+                    </div>
 
-                    <div class="character inner-character">
+                </div>
 
-                        <div class="character-glow"></div>
+                <div class="card" style="margin-top:20px;">
 
-                        <div class="character-body">
-                            <div class="character-head"></div>
+                    <div class="card-header">
 
-                            <div class="character-torso">
-                                <div class="character-line"></div>
-                            </div>
-
-                            <div class="character-legs">
-                                <div class="character-leg"></div>
-                                <div class="character-leg"></div>
+                        <div>
+                            <div class="card-title">Последние 7 дней</div>
+                            <div class="card-subtitle">
+                                Процент выполнения задач
                             </div>
                         </div>
 
                     </div>
+
+                    <div class="week-chart" id="weekChart"></div>
 
                 </div>
 
             </section>
 
-
-            <!-- ============================
+            <!-- =========================
                  PROFILE
-            ============================= -->
+            ========================== -->
 
-            <section
-                class="page"
-                id="page-profile"
-            >
+            <section class="page" id="page-profile">
 
-                <div class="inner-page">
+                <div class="page-heading">
+                    <h1>Профиль</h1>
+                    <p>Твоя статистика и путь.</p>
+                </div>
 
-                    <div class="section-label">
-                        ASCEND / PROFILE
+                <div class="card profile-card">
+
+                    <div class="profile-avatar">A</div>
+
+                    <div class="profile-name">
+                        ASCENDER
                     </div>
 
-                    <h1>
-                        Профиль
-                    </h1>
-
-                    <p>
-                        Здесь находится твоя статистика
-                        и текущий уровень дисциплины.
-                    </p>
-
-
-                    <div class="profile-box">
-
-                        <div class="profile-row">
-                            <span>
-                                Имя
-                            </span>
-
-                            <strong id="profileName">
-                                ASCENDER
-                            </strong>
-                        </div>
-
-                        <div class="profile-row">
-                            <span>
-                                ASCEND Score
-                            </span>
-
-                            <strong id="profileScore">
-                                0
-                            </strong>
-                        </div>
-
-                        <div class="profile-row">
-                            <span>
-                                Серия дней
-                            </span>
-
-                            <strong id="profileStreak">
-                                0
-                            </strong>
-                        </div>
-
-                        <div class="profile-row">
-                            <span>
-                                Выполнено задач
-                            </span>
-
-                            <strong id="profileCompleted">
-                                0
-                            </strong>
-                        </div>
-
+                    <div class="card-subtitle" style="margin-top:7px;">
+                        Discipline is a lifestyle.
                     </div>
 
+                    <div class="stats-grid" style="margin-top:25px; grid-template-columns:repeat(2,1fr);">
 
-                    <div class="character inner-character">
+                        <div class="stat-card">
+                            <div class="stat-label">Score</div>
+                            <div class="stat-value" id="profileScore">0</div>
+                        </div>
 
-                        <div class="character-glow"></div>
-
-                        <div class="character-body">
-                            <div class="character-head"></div>
-
-                            <div class="character-torso">
-                                <div class="character-line"></div>
-                            </div>
-
-                            <div class="character-legs">
-                                <div class="character-leg"></div>
-                                <div class="character-leg"></div>
-                            </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Серия</div>
+                            <div class="stat-value" id="profileStreak">0</div>
                         </div>
 
                     </div>
@@ -2486,81 +1609,69 @@
 
             </section>
 
-
-            <!-- ============================
+            <!-- =========================
                  SETTINGS
-            ============================= -->
+            ========================== -->
 
-            <section
-                class="page"
-                id="page-settings"
-            >
+            <section class="page" id="page-settings">
 
-                <div class="inner-page">
+                <div class="page-heading">
+                    <h1>Настройки</h1>
+                    <p>Управление системой ASCEND.</p>
+                </div>
 
-                    <div class="section-label">
-                        ASCEND / SETTINGS
-                    </div>
+                <div class="card">
 
-                    <h1>
-                        Настройки
-                    </h1>
+                    <div class="settings-list">
 
-                    <p>
-                        Основные настройки приложения.
-                    </p>
+                        <div class="setting-row">
 
+                            <div>
+                                <div class="setting-title">
+                                    Система задач
+                                </div>
 
-                    <div class="settings-box">
-
-                        <div class="settings-row">
-                            <span>
-                                Тема
-                            </span>
-
-                            <strong>
-                                Тёмная
-                            </strong>
-                        </div>
-
-                        <div class="settings-row">
-                            <span>
-                                Хранение данных
-                            </span>
-
-                            <strong>
-                                Локально
-                            </strong>
-                        </div>
-
-                        <div class="settings-row">
-                            <span>
-                                Версия
-                            </span>
-
-                            <strong>
-                                ASCEND 1.0
-                            </strong>
-                        </div>
-
-                    </div>
-
-
-                    <div class="character inner-character">
-
-                        <div class="character-glow"></div>
-
-                        <div class="character-body">
-                            <div class="character-head"></div>
-
-                            <div class="character-torso">
-                                <div class="character-line"></div>
+                                <div class="setting-description">
+                                    Повторяющиеся задачи сохраняются автоматически.
+                                </div>
                             </div>
 
-                            <div class="character-legs">
-                                <div class="character-leg"></div>
-                                <div class="character-leg"></div>
+                            <span class="badge">ACTIVE</span>
+
+                        </div>
+
+                        <div class="setting-row">
+
+                            <div>
+                                <div class="setting-title">
+                                    Локальное хранение
+                                </div>
+
+                                <div class="setting-description">
+                                    Данные сохраняются в браузере.
+                                </div>
                             </div>
+
+                            <span class="badge">LOCAL</span>
+
+                        </div>
+
+                        <div class="setting-row">
+
+                            <div>
+                                <div class="setting-title">
+                                    Сбросить все данные
+                                </div>
+
+                                <div class="setting-description">
+                                    Удалить все задачи и историю выполнения.
+                                </div>
+                            </div>
+
+                            <button class="button danger" id="resetDataButton">
+                                Сбросить
+                            </button>
+
                         </div>
 
                     </div>
@@ -2573,149 +1684,256 @@
 
     </main>
 
+    <!-- =========================
+         CHARACTER
+    ========================== -->
+
+    <aside class="character-panel">
+
+        <div class="character-header">
+
+            <div class="character-header-title">
+                ASCEND ASSISTANT
+            </div>
+
+            <div class="status">
+                <span class="status-dot"></span>
+                ONLINE
+            </div>
+
+        </div>
+
+        <div class="character-area">
+
+            <div class="character-glow"></div>
+
+            <div class="character">
+
+                <div class="character-hair"></div>
+
+                <div class="character-head">
+
+                    <div class="character-eye left"></div>
+                    <div class="character-eye right"></div>
+
+                </div>
+
+                <div class="character-neck"></div>
+
+                <div class="character-body">
+                    <div class="character-shirt-line"></div>
+                </div>
+
+                <div class="character-arm-left"></div>
+                <div class="character-arm-right"></div>
+
+                <div class="character-leg-left"></div>
+                <div class="character-leg-right"></div>
+
+            </div>
+
+        </div>
+
+        <div class="character-info">
+
+            <div class="character-name">
+                ASCENDER
+            </div>
+
+            <div class="character-role">
+                YOUR DISCIPLINE PARTNER
+            </div>
+
+            <div class="character-message" id="characterMessage">
+                Не жди мотивации. Просто сделай следующую задачу.
+            </div>
+
+        </div>
+
+    </aside>
+
 </div>
 
-
-<!-- ================================
-     MOBILE OVERLAY
-================================= -->
-
-<div
-    class="mobile-overlay"
-    id="mobileOverlay"
-></div>
-
-
-<!-- ================================
+<!-- =========================
      ADD TASK MODAL
-================================= -->
+========================== -->
 
-<div
-    class="add-task-panel"
-    id="addTaskPanel"
->
+<div class="modal-overlay" id="addTaskPanel">
 
-    <div class="panel">
+    <div class="modal">
 
-        <div class="panel-header">
+        <div class="modal-header">
 
-            <h2>
+            <div class="modal-title">
                 Новая задача
-            </h2>
+            </div>
 
-            <button
-                class="close-button"
-                id="closeTaskPanel"
-                type="button"
-                aria-label="Закрыть"
-            >
+            <button class="close-modal" id="closeTaskPanel">
                 ×
             </button>
 
         </div>
 
-
         <form id="taskForm">
 
             <div class="form-group">
 
-                <label for="taskTitle">
-                    Название задачи
+                <label class="form-label">
+                    НАЗВАНИЕ ЗАДАЧИ
                 </label>
 
                 <input
+                    class="form-input"
                     id="taskTitle"
                     type="text"
                     placeholder="Например: Тренировка"
-                    maxlength="100"
-                    autocomplete="off"
                     required
                 >
 
             </div>
 
+            <div class="form-group">
 
-            <div class="form-row">
+                <label class="form-label">
+                    КАТЕГОРИЯ
+                </label>
 
-                <div class="form-group">
+                <select class="form-select" id="taskCategory">
 
-                    <label for="taskCategory">
-                        Категория
-                    </label>
+                    <option value="Дисциплина">Дисциплина</option>
+                    <option value="Спорт">Спорт</option>
+                    <option value="Учёба">Учёба</option>
+                    <option value="Работа">Работа</option>
+                    <option value="Трейдинг">Трейдинг</option>
+                    <option value="Личное">Личное</option>
 
-                    <select id="taskCategory">
+                </select>
 
-                        <option value="Личное">
-                            Личное
-                        </option>
+            </div>
 
-                        <option value="Работа">
-                            Работа
-                        </option>
+            <div class="form-group">
 
-                        <option value="Учёба">
-                            Учёба
-                        </option>
+                <label class="form-label">
+                    ПРИОРИТЕТ
+                </label>
 
-                        <option value="Спорт">
-                            Спорт
-                        </option>
+                <select class="form-select" id="taskPriority">
 
-                        <option value="Трейдинг">
-                            Трейдинг
-                        </option>
+                    <option value="Высокий">Высокий</option>
+                    <option value="Средний" selected>Средний</option>
+                    <option value="Низкий">Низкий</option>
 
-                        <option value="Развитие">
-                            Развитие
-                        </option>
+                </select>
 
-                    </select>
+            </div>
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    ПОВТОРЕНИЕ
+                </label>
+
+                <div class="repeat-options">
+
+                    <div class="repeat-option">
+                        <input
+                            type="radio"
+                            name="repeat"
+                            id="repeatOnce"
+                            value="once"
+                            checked
+                        >
+                        <label for="repeatOnce">Сегодня</label>
+                    </div>
+
+                    <div class="repeat-option">
+                        <input
+                            type="radio"
+                            name="repeat"
+                            id="repeatDaily"
+                            value="daily"
+                        >
+                        <label for="repeatDaily">Каждый день</label>
+                    </div>
+
+                    <div class="repeat-option">
+                        <input
+                            type="radio"
+                            name="repeat"
+                            id="repeatWeekdays"
+                            value="weekdays"
+                        >
+                        <label for="repeatWeekdays">По будням</label>
+                    </div>
+
+                    <div class="repeat-option">
+                        <input
+                            type="radio"
+                            name="repeat"
+                            id="repeatCustom"
+                            value="custom"
+                        >
+                        <label for="repeatCustom">Свои дни</label>
+                    </div>
 
                 </div>
 
+                <div class="days-options" id="daysOptions">
 
-                <div class="form-group">
+                    <div class="day-option">
+                        <input type="checkbox" id="day1" value="1">
+                        <label for="day1">ПН</label>
+                    </div>
 
-                    <label for="taskPriority">
-                        Приоритет
-                    </label>
+                    <div class="day-option">
+                        <input type="checkbox" id="day2" value="2">
+                        <label for="day2">ВТ</label>
+                    </div>
 
-                    <select id="taskPriority">
+                    <div class="day-option">
+                        <input type="checkbox" id="day3" value="3">
+                        <label for="day3">СР</label>
+                    </div>
 
-                        <option value="normal">
-                            Обычный
-                        </option>
+                    <div class="day-option">
+                        <input type="checkbox" id="day4" value="4">
+                        <label for="day4">ЧТ</label>
+                    </div>
 
-                        <option value="high">
-                            Высокий
-                        </option>
+                    <div class="day-option">
+                        <input type="checkbox" id="day5" value="5">
+                        <label for="day5">ПТ</label>
+                    </div>
 
-                        <option value="low">
-                            Низкий
-                        </option>
+                    <div class="day-option">
+                        <input type="checkbox" id="day6" value="6">
+                        <label for="day6">СБ</label>
+                    </div>
 
-                    </select>
+                    <div class="day-option">
+                        <input type="checkbox" id="day7" value="7">
+                        <label for="day7">ВС</label>
+                    </div>
 
                 </div>
 
             </div>
 
-
-            <div class="form-actions">
+            <div class="modal-actions">
 
                 <button
-                    class="secondary-button"
-                    id="cancelTaskButton"
                     type="button"
+                    class="button"
+                    id="cancelTaskButton"
                 >
                     Отмена
                 </button>
 
                 <button
-                    class="primary-button"
                     type="submit"
+                    class="button primary"
                 >
-                    Добавить
+                    Создать задачу
                 </button>
 
             </div>
@@ -2726,8 +1944,9 @@
 
 </div>
 
+<div class="toast" id="toast"></div>
 
-<script src="./script.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
