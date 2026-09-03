@@ -1,1789 +1,1893 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASCEND — Discipline System</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --bg: #080808;
-            --panel: #101010;
-            --panel-2: #151515;
-            --panel-3: #1b1b1b;
-            --border: #292929;
-            --border-light: #353535;
-            --text: #f5f5f5;
-            --muted: #858585;
-            --muted-2: #5d5d5d;
-            --white: #ffffff;
-
-            --sidebar-width: 230px;
-            --character-width: 300px;
-            --topbar-height: 70px;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        button,
-        input,
-        select {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        /* =========================
-           APP LAYOUT
-        ========================= */
-
-        .app {
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: var(--sidebar-width);
-            background: #0b0b0b;
-            border-right: 1px solid var(--border);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .logo {
-            height: var(--topbar-height);
-            display: flex;
-            align-items: center;
-            padding: 0 25px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .logo-text {
-            font-size: 23px;
-            font-weight: 900;
-            letter-spacing: 4px;
-        }
-
-        .logo-sub {
-            color: var(--muted);
-            font-size: 9px;
-            letter-spacing: 2px;
-            margin-left: 9px;
-            margin-top: 5px;
-        }
-
-        .navigation {
-            padding: 25px 14px;
-            flex: 1;
-        }
-
-        .nav-title {
-            color: var(--muted-2);
-            font-size: 10px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            padding: 0 12px 12px;
-        }
-
-        .nav-link {
-            width: 100%;
-            border: 0;
-            background: transparent;
-            color: #888;
-            display: flex;
-            align-items: center;
-            gap: 13px;
-            padding: 13px 14px;
-            margin-bottom: 5px;
-            border-radius: 8px;
-            text-align: left;
-            transition: .2s;
-        }
-
-        .nav-link:hover {
-            background: #151515;
-            color: #fff;
-        }
-
-        .nav-link.active {
-            background: #1b1b1b;
-            color: #fff;
-            box-shadow: inset 2px 0 0 #fff;
-        }
-
-        .nav-icon {
-            width: 20px;
-            text-align: center;
-            font-size: 15px;
-        }
-
-        .sidebar-bottom {
-            padding: 18px;
-            border-top: 1px solid var(--border);
-        }
-
-        .sidebar-progress-title {
-            display: flex;
-            justify-content: space-between;
-            color: var(--muted);
-            font-size: 11px;
-            margin-bottom: 8px;
-        }
-
-        .progress-bar {
-            height: 5px;
-            background: #222;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0;
-            background: #fff;
-            transition: width .3s;
-        }
-
-        .sidebar-score {
-            margin-top: 14px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-        }
-
-        .sidebar-score span:last-child {
-            font-weight: 800;
-        }
-
-        /* =========================
-           MAIN
-        ========================= */
-
-        .main-wrapper {
-            margin-left: var(--sidebar-width);
-            margin-right: var(--character-width);
-            min-height: 100vh;
-            transition: .25s;
-        }
-
-        .topbar {
-            height: var(--topbar-height);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 28px;
-            background: rgba(8, 8, 8, .96);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .mobile-menu {
-            display: none;
-            border: 1px solid var(--border);
-            background: #111;
-            color: #fff;
-            width: 38px;
-            height: 38px;
-            border-radius: 7px;
-        }
-
-        .date-display {
-            font-size: 13px;
-            color: var(--muted);
-        }
-
-        .notification-button {
-            border: 1px solid var(--border);
-            background: #111;
-            color: #fff;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-        }
-
-        .content {
-            padding: 32px;
-            max-width: 1500px;
-            margin: auto;
-        }
-
-        /* =========================
-           RIGHT CHARACTER PANEL
-        ========================= */
-
-        .character-panel {
-            position: fixed;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: var(--character-width);
-            background: #0c0c0c;
-            border-left: 1px solid var(--border);
-            z-index: 90;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .character-header {
-            height: var(--topbar-height);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 22px;
-        }
-
-        .character-header-title {
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: #aaa;
-        }
-
-        .status {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            font-size: 10px;
-            color: #777;
-        }
-
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            background: #fff;
-            border-radius: 50%;
-        }
-
-        .character-area {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .character-glow {
-            position: absolute;
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #242424 0%, transparent 70%);
-            filter: blur(10px);
-        }
-
-        .character {
-            position: relative;
-            width: 150px;
-            height: 330px;
-            z-index: 2;
-        }
-
-        /* Человекоподобный силуэт */
-
-        .character-head {
-            position: absolute;
-            width: 72px;
-            height: 82px;
-            background: #d5d5d5;
-            border-radius: 45% 45% 42% 42%;
-            top: 10px;
-            left: 39px;
-            box-shadow: 0 0 30px rgba(255,255,255,.08);
-        }
-
-        .character-hair {
-            position: absolute;
-            width: 76px;
-            height: 37px;
-            top: 5px;
-            left: 37px;
-            background: #171717;
-            border-radius: 50px 50px 15px 15px;
-            z-index: 2;
-        }
-
-        .character-neck {
-            position: absolute;
-            width: 27px;
-            height: 35px;
-            top: 79px;
-            left: 61px;
-            background: #c7c7c7;
-        }
-
-        .character-body {
-            position: absolute;
-            width: 116px;
-            height: 145px;
-            top: 103px;
-            left: 17px;
-            background: #191919;
-            border-radius: 40px 40px 12px 12px;
-            border: 1px solid #333;
-        }
-
-        .character-shirt-line {
-            position: absolute;
-            left: 55px;
-            top: 10px;
-            width: 1px;
-            height: 115px;
-            background: #343434;
-        }
-
-        .character-arm-left,
-        .character-arm-right {
-            position: absolute;
-            width: 32px;
-            height: 125px;
-            top: 110px;
-            background: #1c1c1c;
-            border: 1px solid #333;
-            border-radius: 20px;
-        }
-
-        .character-arm-left {
-            left: 1px;
-            transform: rotate(7deg);
-        }
-
-        .character-arm-right {
-            right: 1px;
-            transform: rotate(-7deg);
-        }
-
-        .character-leg-left,
-        .character-leg-right {
-            position: absolute;
-            width: 42px;
-            height: 112px;
-            top: 237px;
-            background: #151515;
-            border: 1px solid #292929;
-            border-radius: 10px 10px 18px 18px;
-        }
-
-        .character-leg-left {
-            left: 30px;
-        }
-
-        .character-leg-right {
-            right: 30px;
-        }
-
-        .character-eye {
-            position: absolute;
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #111;
-            top: 46px;
-            z-index: 3;
-        }
-
-        .character-eye.left {
-            left: 56px;
-        }
-
-        .character-eye.right {
-            right: 56px;
-        }
-
-        .character-info {
-            border-top: 1px solid var(--border);
-            padding: 20px;
-        }
-
-        .character-name {
-            font-size: 17px;
-            font-weight: 900;
-            letter-spacing: 1px;
-        }
-
-        .character-role {
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        .character-message {
-            margin-top: 15px;
-            padding: 13px;
-            background: #141414;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: #bcbcbc;
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        /* =========================
-           PAGE
-        ========================= */
-
-        .page {
-            display: none;
-            animation: fadeIn .25s ease;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(5px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .page-heading {
-            margin-bottom: 28px;
-        }
-
-        .page-heading h1 {
-            font-size: 30px;
-            font-weight: 900;
-            letter-spacing: -1px;
-        }
-
-        .page-heading p {
-            color: var(--muted);
-            margin-top: 8px;
-            font-size: 13px;
-        }
-
-        /* =========================
-           CARDS
-        ========================= */
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .stat-label {
-            color: var(--muted);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .stat-value {
-            font-size: 29px;
-            font-weight: 900;
-            margin-top: 13px;
-        }
-
-        .stat-small {
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1.4fr .8fr;
-            gap: 20px;
-        }
-
-        .card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 22px;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .card-title {
-            font-size: 15px;
-            font-weight: 800;
-        }
-
-        .card-subtitle {
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 4px;
-        }
-
-        /* =========================
-           BUTTONS
-        ========================= */
-
-        .button {
-            border: 1px solid var(--border-light);
-            background: #171717;
-            color: #fff;
-            border-radius: 7px;
-            padding: 10px 14px;
-            transition: .2s;
-        }
-
-        .button:hover {
-            background: #222;
-            border-color: #444;
-        }
-
-        .button.primary {
-            background: #fff;
-            color: #000;
-            border-color: #fff;
-            font-weight: 800;
-        }
-
-        .button.primary:hover {
-            background: #ddd;
-        }
-
-        .button.danger {
-            color: #ddd;
-        }
-
-        .button.small {
-            padding: 7px 10px;
-            font-size: 11px;
-        }
-
-        /* =========================
-           TASKS
-        ========================= */
-
-        .tasks-list {
-            display: flex;
-            flex-direction: column;
-            gap: 9px;
-        }
-
-        .task-item {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-            background: #141414;
-            border: 1px solid var(--border);
-            border-radius: 9px;
-            padding: 13px;
-            transition: .2s;
-        }
-
-        .task-item:hover {
-            border-color: #3a3a3a;
-        }
-
-        .task-item.completed {
-            opacity: .55;
-        }
-
-        .task-item.completed .task-title {
-            text-decoration: line-through;
-        }
-
-        .task-checkbox {
-            width: 20px;
-            height: 20px;
-            min-width: 20px;
-            border: 1px solid #555;
-            background: transparent;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #000;
-            padding: 0;
-        }
-
-        .task-item.completed .task-checkbox {
-            background: #fff;
-            border-color: #fff;
-        }
-
-        .task-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .task-title {
-            font-size: 13px;
-            font-weight: 700;
-            word-break: break-word;
-        }
-
-        .task-meta {
-            display: flex;
-            gap: 8px;
-            margin-top: 5px;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            font-size: 9px;
-            color: #888;
-            background: #202020;
-            padding: 4px 7px;
-            border-radius: 4px;
-        }
-
-        .task-actions {
-            display: flex;
-            gap: 5px;
-        }
-
-        .delete-task {
-            border: 0;
-            background: transparent;
-            color: #666;
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-        }
-
-        .delete-task:hover {
-            color: #fff;
-            background: #242424;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 15px;
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        /* =========================
-           PROGRESS
-        ========================= */
-
-        .progress-center {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 300px;
-        }
-
-        .progress-circle {
-            position: relative;
-            width: 190px;
-            height: 190px;
-        }
-
-        .progress-circle svg {
-            transform: rotate(-90deg);
-            width: 190px;
-            height: 190px;
-        }
-
-        .progress-track {
-            fill: none;
-            stroke: #242424;
-            stroke-width: 10;
-        }
-
-        .progress-value-circle {
-            fill: none;
-            stroke: #fff;
-            stroke-width: 10;
-            stroke-linecap: round;
-            transition: stroke-dashoffset .5s;
-        }
-
-        .progress-number {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 35px;
-            font-weight: 900;
-        }
-
-        .progress-caption {
-            color: var(--muted);
-            font-size: 12px;
-            margin-top: 14px;
-        }
-
-        /* =========================
-           CALENDAR
-        ========================= */
-
-        .calendar-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .month-title {
-            min-width: 160px;
-            text-align: center;
-            font-weight: 800;
-        }
-
-        .calendar-weekdays,
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 7px;
-        }
-
-        .calendar-weekdays {
-            margin-bottom: 7px;
-        }
-
-        .weekday {
-            text-align: center;
-            color: var(--muted);
-            font-size: 10px;
-            padding: 8px 0;
-        }
-
-        .calendar-day {
-            min-height: 110px;
-            background: #111;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 9px;
-            cursor: pointer;
-            transition: .2s;
-            position: relative;
-        }
-
-        .calendar-day:hover {
-            border-color: #555;
-            background: #151515;
-        }
-
-        .calendar-day.today {
-            border-color: #fff;
-        }
-
-        .calendar-day.other-month {
-            opacity: .3;
-        }
-
-        .day-number {
-            font-size: 12px;
-            font-weight: 800;
-        }
-
-        .day-progress {
-            position: absolute;
-            left: 9px;
-            right: 9px;
-            bottom: 9px;
-        }
-
-        .day-progress-text {
-            color: #aaa;
-            font-size: 10px;
-            margin-bottom: 5px;
-        }
-
-        .day-progress-bar {
-            height: 4px;
-            background: #252525;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .day-progress-fill {
-            height: 100%;
-            background: #fff;
-        }
-
-        /* =========================
-           ANALYTICS
-        ========================= */
-
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .analytics-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 20px;
-        }
-
-        .analytics-card h3 {
-            font-size: 12px;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .analytics-big {
-            font-size: 35px;
-            font-weight: 900;
-            margin-top: 13px;
-        }
-
-        .week-chart {
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            height: 180px;
-            padding-top: 20px;
-        }
-
-        .chart-column {
-            flex: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .chart-bar {
-            width: 100%;
-            max-width: 45px;
-            min-height: 3px;
-            background: #fff;
-            border-radius: 4px 4px 0 0;
-        }
-
-        .chart-label {
-            color: #777;
-            font-size: 10px;
-        }
-
-        /* =========================
-           PROFILE / SETTINGS
-        ========================= */
-
-        .profile-card {
-            max-width: 700px;
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border: 1px solid #444;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            margin-bottom: 18px;
-        }
-
-        .profile-name {
-            font-size: 24px;
-            font-weight: 900;
-        }
-
-        .settings-list {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .setting-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 17px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .setting-title {
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .setting-description {
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        /* =========================
-           MODAL
-        ========================= */
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.75);
-            z-index: 500;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            width: 100%;
-            max-width: 500px;
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 20px 70px rgba(0,0,0,.6);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 23px;
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 900;
-        }
-
-        .close-modal {
-            border: 0;
-            background: transparent;
-            color: #777;
-            font-size: 25px;
-            width: 35px;
-            height: 35px;
-        }
-
-        .close-modal:hover {
-            color: #fff;
-        }
-
-        .form-group {
-            margin-bottom: 17px;
-        }
-
-        .form-label {
-            display: block;
-            color: #aaa;
-            font-size: 11px;
-            margin-bottom: 8px;
-        }
-
-        .form-input,
-        .form-select {
-            width: 100%;
-            border: 1px solid var(--border-light);
-            background: #181818;
-            color: #fff;
-            padding: 12px;
-            border-radius: 7px;
-            outline: none;
-        }
-
-        .form-input:focus,
-        .form-select:focus {
-            border-color: #666;
-        }
-
-        .repeat-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-
-        .repeat-option {
-            position: relative;
-        }
-
-        .repeat-option input {
-            display: none;
-        }
-
-        .repeat-option label {
-            display: block;
-            text-align: center;
-            padding: 11px 8px;
-            background: #181818;
-            border: 1px solid var(--border);
-            color: #888;
-            border-radius: 7px;
-            cursor: pointer;
-            font-size: 11px;
-        }
-
-        .repeat-option input:checked + label {
-            background: #fff;
-            color: #000;
-            border-color: #fff;
-            font-weight: 800;
-        }
-
-        .days-options {
-            display: none;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            margin-top: 10px;
-        }
-
-        .days-options.visible {
-            display: grid;
-        }
-
-        .day-option {
-            position: relative;
-        }
-
-        .day-option input {
-            display: none;
-        }
-
-        .day-option label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 35px;
-            background: #181818;
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            color: #777;
-            font-size: 10px;
-            cursor: pointer;
-        }
-
-        .day-option input:checked + label {
-            background: #fff;
-            color: #000;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 25px;
-        }
-
-        /* =========================
-           TOAST
-        ========================= */
-
-        .toast {
-            position: fixed;
-            right: calc(var(--character-width) + 25px);
-            bottom: 25px;
-            background: #fff;
-            color: #000;
-            padding: 13px 17px;
-            border-radius: 7px;
-            font-size: 12px;
-            font-weight: 700;
-            z-index: 1000;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: .25s;
-            pointer-events: none;
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 1200px) {
-            :root {
-                --character-width: 250px;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 900px) {
-            :root {
-                --character-width: 0px;
-            }
-
-            .character-panel {
-                display: none;
-            }
-
-            .main-wrapper {
-                margin-right: 0;
-            }
-
-            .mobile-menu {
-                display: block;
-            }
-
-            .sidebar {
-                transform: translateX(-100%);
-                transition: .25s;
-                z-index: 400;
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .analytics-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .content {
-                padding: 22px;
-            }
-        }
-
-        @media (max-width: 650px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .calendar-day {
-                min-height: 70px;
-            }
-
-            .day-progress {
-                display: none;
-            }
-
-            .calendar-weekdays,
-            .calendar-grid {
-                gap: 3px;
-            }
-
-            .page-heading h1 {
-                font-size: 25px;
-            }
-
-            .topbar {
-                padding: 0 16px;
-            }
-
-            .content {
-                padding: 16px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ASCEND</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg:#080808;
+    --sidebar:#0c0c0c;
+    --panel:#111;
+    --panel2:#151515;
+    --border:#252525;
+    --border2:#333;
+    --text:#f4f4f4;
+    --muted:#777;
+    --white:#fff;
+
+    --sidebar-width:230px;
+    --character-width:280px;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+}
+
+button,
+input,
+select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    width:var(--sidebar-width);
+    background:var(--sidebar);
+    border-right:1px solid var(--border);
+    z-index:100;
+    display:flex;
+    flex-direction:column;
+}
+
+.logo{
+    height:70px;
+    display:flex;
+    align-items:center;
+    padding:0 24px;
+    border-bottom:1px solid var(--border);
+}
+
+.logo-main{
+    font-size:23px;
+    font-weight:900;
+    letter-spacing:4px;
+}
+
+.logo-sub{
+    color:#555;
+    font-size:8px;
+    letter-spacing:2px;
+    margin-left:9px;
+}
+
+.nav{
+    padding:22px 13px;
+    flex:1;
+}
+
+.nav-label{
+    color:#444;
+    font-size:9px;
+    letter-spacing:2px;
+    padding:0 12px 10px;
+}
+
+.nav-button{
+    width:100%;
+    border:0;
+    background:transparent;
+    color:#777;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 13px;
+    border-radius:7px;
+    margin-bottom:4px;
+    text-align:left;
+    transition:.2s;
+}
+
+.nav-button:hover{
+    background:#151515;
+    color:#fff;
+}
+
+.nav-button.active{
+    background:#191919;
+    color:#fff;
+    box-shadow:inset 2px 0 0 #fff;
+}
+
+.nav-icon{
+    width:19px;
+    text-align:center;
+    font-size:14px;
+}
+
+.sidebar-bottom{
+    padding:17px;
+    border-top:1px solid var(--border);
+}
+
+.sidebar-progress-head{
+    display:flex;
+    justify-content:space-between;
+    font-size:10px;
+    color:#777;
+    margin-bottom:7px;
+}
+
+.progress-bar{
+    width:100%;
+    height:4px;
+    background:#222;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    height:100%;
+    width:0;
+    background:#fff;
+    transition:.35s;
+}
+
+.score-line{
+    display:flex;
+    justify-content:space-between;
+    margin-top:13px;
+    font-size:10px;
+    color:#666;
+}
+
+.score-line strong{
+    color:#fff;
+}
+
+/* =========================
+   MAIN LAYOUT
+========================= */
+
+.main{
+    margin-left:var(--sidebar-width);
+    margin-right:var(--character-width);
+    min-height:100vh;
+}
+
+.topbar{
+    height:70px;
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:rgba(8,8,8,.96);
+    border-bottom:1px solid var(--border);
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 28px;
+}
+
+.topbar-date{
+    color:#777;
+    font-size:12px;
+}
+
+.topbar-button{
+    width:38px;
+    height:38px;
+    border:1px solid var(--border);
+    background:#111;
+    color:#fff;
+    border-radius:7px;
+}
+
+.content{
+    padding:32px;
+    max-width:1450px;
+    margin:auto;
+}
+
+/* =========================
+   RIGHT CHARACTER PANEL
+========================= */
+
+.character-panel{
+    position:fixed;
+    right:0;
+    top:0;
+    bottom:0;
+    width:var(--character-width);
+
+    background:#0c0c0c;
+    border-left:1px solid var(--border);
+
+    display:flex;
+    flex-direction:column;
+
+    z-index:90;
+}
+
+.character-top{
+    height:70px;
+    border-bottom:1px solid var(--border);
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 20px;
+}
+
+.character-title{
+    font-size:10px;
+    letter-spacing:2px;
+    color:#777;
+    font-weight:bold;
+}
+
+.online{
+    font-size:9px;
+    color:#777;
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.online-dot{
+    width:6px;
+    height:6px;
+    background:#fff;
+    border-radius:50%;
+}
+
+.character-area{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+}
+
+.character-glow{
+    position:absolute;
+    width:190px;
+    height:190px;
+    border-radius:50%;
+    background:radial-gradient(circle,#242424 0%,transparent 70%);
+}
+
+.character{
+    position:relative;
+    width:145px;
+    height:310px;
+    z-index:2;
+}
+
+.head{
+    position:absolute;
+    top:5px;
+    left:38px;
+    width:69px;
+    height:78px;
+    background:#d0d0d0;
+    border-radius:45% 45% 43% 43%;
+}
+
+.hair{
+    position:absolute;
+    top:0;
+    left:35px;
+    width:75px;
+    height:34px;
+    background:#151515;
+    border-radius:50px 50px 10px 10px;
+    z-index:2;
+}
+
+.eye{
+    position:absolute;
+    top:45px;
+    width:6px;
+    height:6px;
+    background:#111;
+    border-radius:50%;
+    z-index:3;
+}
+
+.eye.left{
+    left:55px;
+}
+
+.eye.right{
+    left:83px;
+}
+
+.neck{
+    position:absolute;
+    top:76px;
+    left:60px;
+    width:26px;
+    height:34px;
+    background:#c7c7c7;
+}
+
+.body{
+    position:absolute;
+    top:100px;
+    left:14px;
+    width:117px;
+    height:138px;
+    background:#181818;
+    border:1px solid #303030;
+    border-radius:38px 38px 10px 10px;
+}
+
+.body-line{
+    position:absolute;
+    top:12px;
+    left:57px;
+    width:1px;
+    height:110px;
+    background:#303030;
+}
+
+.arm{
+    position:absolute;
+    top:105px;
+    width:30px;
+    height:119px;
+    background:#1a1a1a;
+    border:1px solid #303030;
+    border-radius:20px;
+}
+
+.arm.left{
+    left:0;
+    transform:rotate(6deg);
+}
+
+.arm.right{
+    right:0;
+    transform:rotate(-6deg);
+}
+
+.leg{
+    position:absolute;
+    top:230px;
+    width:40px;
+    height:80px;
+    background:#141414;
+    border:1px solid #292929;
+    border-radius:8px 8px 15px 15px;
+}
+
+.leg.left{
+    left:28px;
+}
+
+.leg.right{
+    right:28px;
+}
+
+.character-info{
+    padding:19px;
+    border-top:1px solid var(--border);
+}
+
+.username{
+    font-size:17px;
+    font-weight:900;
+    letter-spacing:1px;
+}
+
+.character-role{
+    color:#555;
+    font-size:9px;
+    letter-spacing:1px;
+    margin-top:5px;
+}
+
+.character-message{
+    background:#141414;
+    border:1px solid var(--border);
+    border-radius:7px;
+    padding:12px;
+    color:#999;
+    font-size:11px;
+    line-height:1.5;
+    margin-top:14px;
+}
+
+/* =========================
+   PAGES
+========================= */
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.page-heading{
+    margin-bottom:26px;
+}
+
+.page-heading h1{
+    font-size:29px;
+    font-weight:900;
+}
+
+.page-heading p{
+    color:#666;
+    font-size:12px;
+    margin-top:7px;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:13px;
+    margin-bottom:18px;
+}
+
+.stat{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:18px;
+}
+
+.stat-label{
+    color:#666;
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.stat-value{
+    font-size:28px;
+    font-weight:900;
+    margin-top:12px;
+}
+
+.stat-sub{
+    color:#555;
+    font-size:10px;
+    margin-top:4px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1.35fr .75fr;
+    gap:18px;
+}
+
+.card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:20px;
+}
+
+.card-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    margin-bottom:18px;
+}
+
+.card-title{
+    font-size:14px;
+    font-weight:800;
+}
+
+.card-sub{
+    color:#555;
+    font-size:10px;
+    margin-top:4px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.btn{
+    border:1px solid var(--border2);
+    background:#171717;
+    color:#fff;
+    border-radius:6px;
+    padding:9px 13px;
+    font-size:11px;
+    transition:.2s;
+}
+
+.btn:hover{
+    background:#222;
+}
+
+.btn.primary{
+    background:#fff;
+    color:#000;
+    border-color:#fff;
+    font-weight:800;
+}
+
+.btn.primary:hover{
+    background:#ddd;
+}
+
+.btn.danger:hover{
+    background:#202020;
+}
+
+/* =========================
+   TASKS
+========================= */
+
+.tasks{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.task{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px;
+    background:#141414;
+    border:1px solid var(--border);
+    border-radius:7px;
+    transition:.2s;
+}
+
+.task:hover{
+    border-color:#3b3b3b;
+}
+
+.task.completed{
+    opacity:.5;
+}
+
+.task.completed .task-title{
+    text-decoration:line-through;
+}
+
+.check{
+    width:20px;
+    height:20px;
+    min-width:20px;
+    border:1px solid #555;
+    border-radius:5px;
+    background:transparent;
+    color:#000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+}
+
+.task.completed .check{
+    background:#fff;
+    border-color:#fff;
+}
+
+.task-body{
+    flex:1;
+    min-width:0;
+}
+
+.task-title{
+    font-size:12px;
+    font-weight:700;
+    word-break:break-word;
+}
+
+.task-meta{
+    display:flex;
+    gap:5px;
+    margin-top:5px;
+    flex-wrap:wrap;
+}
+
+.badge{
+    background:#202020;
+    color:#777;
+    font-size:8px;
+    padding:4px 6px;
+    border-radius:4px;
+}
+
+.delete{
+    width:30px;
+    height:30px;
+    border:0;
+    background:transparent;
+    color:#555;
+    border-radius:5px;
+}
+
+.delete:hover{
+    color:#fff;
+    background:#222;
+}
+
+.empty{
+    padding:35px 15px;
+    text-align:center;
+    color:#555;
+    font-size:11px;
+}
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress-box{
+    min-height:280px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+}
+
+.circle{
+    width:180px;
+    height:180px;
+    position:relative;
+}
+
+.circle svg{
+    width:180px;
+    height:180px;
+    transform:rotate(-90deg);
+}
+
+.circle-track{
+    fill:none;
+    stroke:#252525;
+    stroke-width:10;
+}
+
+.circle-value{
+    fill:none;
+    stroke:#fff;
+    stroke-width:10;
+    stroke-linecap:round;
+    transition:.5s;
+}
+
+.circle-number{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    font-weight:900;
+}
+
+.progress-caption{
+    margin-top:12px;
+    color:#555;
+    font-size:10px;
+}
+
+/* =========================
+   CALENDAR
+========================= */
+
+.calendar-controls{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.month{
+    width:170px;
+    text-align:center;
+    font-size:13px;
+    font-weight:800;
+    text-transform:capitalize;
+}
+
+.weekdays,
+.calendar{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:6px;
+}
+
+.weekday{
+    text-align:center;
+    color:#555;
+    font-size:9px;
+    padding:7px 0;
+}
+
+.day{
+    min-height:105px;
+    background:#111;
+    border:1px solid var(--border);
+    border-radius:7px;
+    padding:9px;
+    cursor:pointer;
+    position:relative;
+    transition:.2s;
+}
+
+.day:hover{
+    border-color:#444;
+    background:#151515;
+}
+
+.day.today{
+    border-color:#fff;
+}
+
+.day.other{
+    opacity:.25;
+}
+
+.day-number{
+    font-size:11px;
+    font-weight:800;
+}
+
+.day-progress{
+    position:absolute;
+    left:9px;
+    right:9px;
+    bottom:9px;
+}
+
+.day-percent{
+    color:#777;
+    font-size:9px;
+    margin-bottom:4px;
+}
+
+.day-bar{
+    height:4px;
+    background:#242424;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.day-fill{
+    height:100%;
+    background:#fff;
+}
+
+/* =========================
+   ANALYTICS
+========================= */
+
+.analytics{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:13px;
+}
+
+.analytics-card{
+    background:#111;
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:18px;
+}
+
+.analytics-label{
+    color:#666;
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.analytics-value{
+    font-size:32px;
+    font-weight:900;
+    margin-top:12px;
+}
+
+.chart{
+    height:180px;
+    display:flex;
+    align-items:flex-end;
+    gap:9px;
+}
+
+.chart-column{
+    flex:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    align-items:center;
+    gap:7px;
+}
+
+.chart-bar{
+    width:100%;
+    max-width:40px;
+    background:#fff;
+    border-radius:4px 4px 0 0;
+    min-height:3px;
+}
+
+.chart-label{
+    color:#555;
+    font-size:9px;
+}
+
+/* =========================
+   PROFILE
+========================= */
+
+.profile{
+    max-width:700px;
+}
+
+.profile-head{
+    display:flex;
+    align-items:center;
+    gap:17px;
+    padding-bottom:20px;
+    border-bottom:1px solid var(--border);
+}
+
+.avatar{
+    width:70px;
+    height:70px;
+    border:1px solid #444;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
+    font-weight:900;
+}
+
+.profile-name{
+    font-size:22px;
+    font-weight:900;
+}
+
+.profile-role{
+    color:#555;
+    font-size:10px;
+    margin-top:5px;
+}
+
+.profile-edit{
+    margin-top:22px;
+}
+
+.profile-edit label{
+    display:block;
+    color:#777;
+    font-size:10px;
+    margin-bottom:7px;
+}
+
+.name-row{
+    display:flex;
+    gap:7px;
+}
+
+.name-input{
+    flex:1;
+    border:1px solid var(--border2);
+    background:#171717;
+    color:#fff;
+    border-radius:6px;
+    padding:11px;
+    outline:none;
+}
+
+.name-input:focus{
+    border-color:#666;
+}
+
+/* =========================
+   SETTINGS
+========================= */
+
+.settings{
+    display:flex;
+    flex-direction:column;
+}
+
+.setting{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    padding:18px 0;
+    border-bottom:1px solid var(--border);
+}
+
+.setting-title{
+    font-size:12px;
+    font-weight:700;
+}
+
+.setting-text{
+    color:#555;
+    font-size:10px;
+    margin-top:5px;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal-bg{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.78);
+    z-index:500;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal-bg.show{
+    display:flex;
+}
+
+.modal{
+    width:100%;
+    max-width:490px;
+    background:#111;
+    border:1px solid #333;
+    border-radius:10px;
+    padding:23px;
+}
+
+.modal-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:22px;
+}
+
+.modal-title{
+    font-size:17px;
+    font-weight:900;
+}
+
+.close{
+    border:0;
+    background:transparent;
+    color:#666;
+    font-size:25px;
+}
+
+.close:hover{
+    color:#fff;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-label{
+    display:block;
+    color:#777;
+    font-size:9px;
+    margin-bottom:7px;
+    letter-spacing:1px;
+}
+
+.input,
+.select{
+    width:100%;
+    border:1px solid var(--border2);
+    background:#181818;
+    color:#fff;
+    border-radius:6px;
+    padding:11px;
+    outline:none;
+}
+
+.input:focus,
+.select:focus{
+    border-color:#666;
+}
+
+.repeat-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:7px;
+}
+
+.repeat{
+    position:relative;
+}
+
+.repeat input{
+    display:none;
+}
+
+.repeat label{
+    display:block;
+    padding:10px;
+    text-align:center;
+    border:1px solid var(--border);
+    background:#181818;
+    color:#777;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:10px;
+}
+
+.repeat input:checked + label{
+    background:#fff;
+    color:#000;
+    border-color:#fff;
+    font-weight:800;
+}
+
+.days{
+    display:none;
+    grid-template-columns:repeat(7,1fr);
+    gap:4px;
+    margin-top:8px;
+}
+
+.days.show{
+    display:grid;
+}
+
+.day-check{
+    position:relative;
+}
+
+.day-check input{
+    display:none;
+}
+
+.day-check label{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:32px;
+    border:1px solid var(--border);
+    background:#181818;
+    color:#666;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:9px;
+}
+
+.day-check input:checked + label{
+    background:#fff;
+    color:#000;
+}
+
+.modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:7px;
+    margin-top:22px;
+}
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+    position:fixed;
+    right:calc(var(--character-width) + 22px);
+    bottom:22px;
+    background:#fff;
+    color:#000;
+    padding:11px 15px;
+    border-radius:6px;
+    font-size:10px;
+    font-weight:800;
+    transform:translateY(80px);
+    opacity:0;
+    transition:.25s;
+    z-index:1000;
+}
+
+.toast.show{
+    transform:translateY(0);
+    opacity:1;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+.mobile-menu{
+    display:none;
+}
+
+@media(max-width:1100px){
+
+    :root{
+        --character-width:230px;
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:850px){
+
+    :root{
+        --character-width:0px;
+    }
+
+    .character-panel{
+        display:none;
+    }
+
+    .main{
+        margin-right:0;
+    }
+
+    .sidebar{
+        transform:translateX(-100%);
+        transition:.25s;
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+    .mobile-menu{
+        display:block;
+        width:38px;
+        height:38px;
+        border:1px solid var(--border);
+        background:#111;
+        color:#fff;
+        border-radius:6px;
+    }
+
+    .topbar{
+        justify-content:flex-start;
+        gap:12px;
+    }
+
+    .analytics{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:600px){
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .content{
+        padding:18px;
+    }
+
+    .topbar{
+        padding:0 18px;
+    }
+
+    .calendar{
+        gap:3px;
+    }
+
+    .day{
+        min-height:65px;
+        padding:6px;
+    }
+
+    .day-progress{
+        display:none;
+    }
+
+    .weekdays{
+        gap:3px;
+    }
+
+    .name-row{
+        flex-direction:column;
+    }
+}
+</style>
 </head>
 
 <body>
 
-<div class="app">
+<!-- =========================
+     SIDEBAR
+========================= -->
 
-    <!-- =========================
-         SIDEBAR
-    ========================== -->
+<aside class="sidebar" id="sidebar">
 
-    <aside class="sidebar" id="sidebar">
+    <div class="logo">
+        <div class="logo-main">ASCEND</div>
+        <div class="logo-sub">DISCIPLINE</div>
+    </div>
 
-        <div class="logo">
-            <div class="logo-text">ASCEND</div>
-            <div class="logo-sub">DISCIPLINE</div>
+    <nav class="nav">
+
+        <div class="nav-label">SYSTEM</div>
+
+        <button class="nav-button active" data-page="dashboard">
+            <span class="nav-icon">⌂</span>
+            <span>Главная</span>
+        </button>
+
+        <button class="nav-button" data-page="calendar">
+            <span class="nav-icon">▦</span>
+            <span>Календарь</span>
+        </button>
+
+        <button class="nav-button" data-page="tasks">
+            <span class="nav-icon">✓</span>
+            <span>Задачи</span>
+        </button>
+
+        <button class="nav-button" data-page="analytics">
+            <span class="nav-icon">◫</span>
+            <span>Аналитика</span>
+        </button>
+
+        <div class="nav-label" style="margin-top:25px;">
+            ACCOUNT
         </div>
 
-        <nav class="navigation">
+        <button class="nav-button" data-page="profile">
+            <span class="nav-icon">◯</span>
+            <span>Профиль</span>
+        </button>
 
-            <div class="nav-title">SYSTEM</div>
+        <button class="nav-button" data-page="settings">
+            <span class="nav-icon">⚙</span>
+            <span>Настройки</span>
+        </button>
 
-            <button class="nav-link active" data-page="dashboard">
-                <span class="nav-icon">⌂</span>
-                <span>Главная</span>
+    </nav>
+
+    <div class="sidebar-bottom">
+
+        <div class="sidebar-progress-head">
+            <span>СЕГОДНЯ</span>
+            <span id="sidebarPercent">0%</span>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="sidebarFill"></div>
+        </div>
+
+        <div class="score-line">
+            <span>ASCEND SCORE</span>
+            <strong id="sidebarScore">0</strong>
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+    <header class="topbar">
+
+        <div style="display:flex;align-items:center;gap:12px;">
+
+            <button class="mobile-menu" id="mobileMenu">
+                ☰
             </button>
 
-            <button class="nav-link" data-page="calendar">
-                <span class="nav-icon">▦</span>
-                <span>Календарь</span>
-            </button>
-
-            <button class="nav-link" data-page="tasks">
-                <span class="nav-icon">✓</span>
-                <span>Задачи</span>
-            </button>
-
-            <button class="nav-link" data-page="analytics">
-                <span class="nav-icon">◫</span>
-                <span>Аналитика</span>
-            </button>
-
-            <div class="nav-title" style="margin-top:25px;">ACCOUNT</div>
-
-            <button class="nav-link" data-page="profile">
-                <span class="nav-icon">◯</span>
-                <span>Профиль</span>
-            </button>
-
-            <button class="nav-link" data-page="settings">
-                <span class="nav-icon">⚙</span>
-                <span>Настройки</span>
-            </button>
-
-        </nav>
-
-        <div class="sidebar-bottom">
-
-            <div class="sidebar-progress-title">
-                <span>СЕГОДНЯ</span>
-                <span id="sidebarProgress">0%</span>
-            </div>
-
-            <div class="progress-bar">
-                <div class="progress-fill" id="sidebarProgressFill"></div>
-            </div>
-
-            <div class="sidebar-score">
-                <span>ASCEND SCORE</span>
-                <span id="ascendScore">0</span>
-            </div>
+            <div class="topbar-date" id="currentDate"></div>
 
         </div>
 
-    </aside>
+        <button class="topbar-button" id="notification">
+            ♢
+        </button>
 
-    <!-- =========================
-         MAIN
-    ========================== -->
+    </header>
 
-    <main class="main-wrapper">
 
-        <header class="topbar">
+    <div class="content">
 
-            <div class="topbar-left">
+        <!-- DASHBOARD -->
 
-                <button class="mobile-menu" id="mobileMenuButton">☰</button>
+        <section class="page active" id="page-dashboard">
 
-                <div class="date-display" id="currentDate"></div>
+            <div class="page-heading">
+                <h1>Добро пожаловать в ASCEND.</h1>
+                <p>
+                    Сегодняшняя дисциплина определяет твой результат.
+                </p>
+            </div>
+
+            <div class="stats">
+
+                <div class="stat">
+                    <div class="stat-label">Сегодня</div>
+                    <div class="stat-value" id="dailyPercent">0%</div>
+                    <div class="stat-sub">Выполнение</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-label">Задачи</div>
+                    <div class="stat-value" id="taskCount">0/0</div>
+                    <div class="stat-sub">На сегодня</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-label">Серия</div>
+                    <div class="stat-value" id="streak">0</div>
+                    <div class="stat-sub">Дней подряд</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="score">0</div>
+                    <div class="stat-sub">Общий показатель</div>
+                </div>
 
             </div>
 
-            <button class="notification-button" id="notificationButton">
-                ♢
-            </button>
 
-        </header>
-
-        <div class="content">
-
-            <!-- =========================
-                 DASHBOARD
-            ========================== -->
-
-            <section class="page active" id="page-dashboard">
-
-                <div class="page-heading">
-                    <h1>Добро пожаловать в ASCEND.</h1>
-                    <p>Сегодняшняя дисциплина определяет твой результат.</p>
-                </div>
-
-                <div class="stats-grid">
-
-                    <div class="stat-card">
-                        <div class="stat-label">Сегодня</div>
-                        <div class="stat-value" id="dailyProgress">0%</div>
-                        <div class="stat-small">Выполнено задач</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-label">Задачи</div>
-                        <div class="stat-value" id="completedTasks">0/0</div>
-                        <div class="stat-small">На сегодня</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-label">Серия</div>
-                        <div class="stat-value" id="streakValue">0</div>
-                        <div class="stat-small">Дней подряд</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-label">Score</div>
-                        <div class="stat-value" id="dashboardScore">0</div>
-                        <div class="stat-small">Общий показатель</div>
-                    </div>
-
-                </div>
-
-                <div class="dashboard-grid">
-
-                    <div class="card">
-
-                        <div class="card-header">
-                            <div>
-                                <div class="card-title">Задачи на сегодня</div>
-                                <div class="card-subtitle" id="progressMessage">
-                                    Начни выполнять задачи.
-                                </div>
-                            </div>
-
-                            <button class="button primary" id="addTaskButton">
-                                + Добавить
-                            </button>
-                        </div>
-
-                        <div class="tasks-list" id="tasksContainer"></div>
-
-                    </div>
-
-                    <div class="card">
-
-                        <div class="card-header">
-                            <div>
-                                <div class="card-title">Прогресс дня</div>
-                                <div class="card-subtitle">Твой сегодняшний результат</div>
-                            </div>
-                        </div>
-
-                        <div class="progress-center">
-
-                            <div class="progress-circle">
-
-                                <svg viewBox="0 0 190 190">
-
-                                    <circle
-                                        class="progress-track"
-                                        cx="95"
-                                        cy="95"
-                                        r="80"
-                                    ></circle>
-
-                                    <circle
-                                        class="progress-value-circle"
-                                        id="dailyProgressCircle"
-                                        cx="95"
-                                        cy="95"
-                                        r="80"
-                                    ></circle>
-
-                                </svg>
-
-                                <div class="progress-number">
-                                    <span id="progressCircleNumber">0%</span>
-                                </div>
-
-                            </div>
-
-                            <div class="progress-caption">
-                                Дисциплина за сегодня
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-            <!-- =========================
-                 CALENDAR
-            ========================== -->
-
-            <section class="page" id="page-calendar">
-
-                <div class="page-heading">
-                    <h1>Календарь</h1>
-                    <p>Следи за своей дисциплиной каждый день.</p>
-                </div>
-
-                <div class="card">
-
-                    <div class="card-header">
-
-                        <div class="calendar-controls">
-
-                            <button class="button small" id="previousMonth">
-                                ←
-                            </button>
-
-                            <div class="month-title" id="calendarMonth"></div>
-
-                            <button class="button small" id="nextMonth">
-                                →
-                            </button>
-
-                        </div>
-
-                        <div class="card-subtitle">
-                            Нажми на день
-                        </div>
-
-                    </div>
-
-                    <div class="calendar-weekdays">
-                        <div class="weekday">ПН</div>
-                        <div class="weekday">ВТ</div>
-                        <div class="weekday">СР</div>
-                        <div class="weekday">ЧТ</div>
-                        <div class="weekday">ПТ</div>
-                        <div class="weekday">СБ</div>
-                        <div class="weekday">ВС</div>
-                    </div>
-
-                    <div class="calendar-grid" id="calendarGrid"></div>
-
-                </div>
-
-            </section>
-
-            <!-- =========================
-                 TASKS
-            ========================== -->
-
-            <section class="page" id="page-tasks">
-
-                <div class="page-heading">
-
-                    <h1>Задачи</h1>
-
-                    <p>
-                        Создай задачу один раз — ASCEND автоматически добавит её в нужные дни.
-                    </p>
-
-                </div>
+            <div class="grid">
 
                 <div class="card">
 
                     <div class="card-header">
 
                         <div>
-                            <div class="card-title">Мои задачи</div>
-                            <div class="card-subtitle">
-                                Управляй своей системой дисциплины
+                            <div class="card-title">
+                                Задачи на сегодня
+                            </div>
+
+                            <div class="card-sub" id="progressMessage">
+                                Начни выполнять задачи.
                             </div>
                         </div>
 
-                        <button class="button primary" id="createTaskButton">
-                            + Новая задача
+                        <button class="btn primary" id="addTask">
+                            + Добавить
                         </button>
 
                     </div>
 
-                    <div class="tasks-list" id="allTasksContainer"></div>
+                    <div class="tasks" id="todayTasks"></div>
 
                 </div>
 
-            </section>
 
-            <!-- =========================
-                 ANALYTICS
-            ========================== -->
-
-            <section class="page" id="page-analytics">
-
-                <div class="page-heading">
-                    <h1>Аналитика</h1>
-                    <p>Смотри на дисциплину без эмоций.</p>
-                </div>
-
-                <div class="analytics-grid">
-
-                    <div class="analytics-card">
-                        <h3>Средний процент</h3>
-                        <div class="analytics-big" id="averageProgress">0%</div>
-                    </div>
-
-                    <div class="analytics-card">
-                        <h3>Лучший день</h3>
-                        <div class="analytics-big" id="bestDay">—</div>
-                    </div>
-
-                    <div class="analytics-card">
-                        <h3>Выполнено всего</h3>
-                        <div class="analytics-big" id="totalCompleted">0</div>
-                    </div>
-
-                </div>
-
-                <div class="card" style="margin-top:20px;">
+                <div class="card">
 
                     <div class="card-header">
 
                         <div>
-                            <div class="card-title">Последние 7 дней</div>
-                            <div class="card-subtitle">
-                                Процент выполнения задач
+                            <div class="card-title">
+                                Прогресс дня
+                            </div>
+
+                            <div class="card-sub">
+                                Твой сегодняшний результат
                             </div>
                         </div>
 
                     </div>
 
-                    <div class="week-chart" id="weekChart"></div>
+                    <div class="progress-box">
 
-                </div>
+                        <div class="circle">
 
-            </section>
+                            <svg viewBox="0 0 180 180">
 
-            <!-- =========================
-                 PROFILE
-            ========================== -->
+                                <circle
+                                    class="circle-track"
+                                    cx="90"
+                                    cy="90"
+                                    r="75"
+                                ></circle>
 
-            <section class="page" id="page-profile">
+                                <circle
+                                    class="circle-value"
+                                    id="progressCircle"
+                                    cx="90"
+                                    cy="90"
+                                    r="75"
+                                ></circle>
 
-                <div class="page-heading">
-                    <h1>Профиль</h1>
-                    <p>Твоя статистика и путь.</p>
-                </div>
+                            </svg>
 
-                <div class="card profile-card">
-
-                    <div class="profile-avatar">A</div>
-
-                    <div class="profile-name">
-                        ASCENDER
-                    </div>
-
-                    <div class="card-subtitle" style="margin-top:7px;">
-                        Discipline is a lifestyle.
-                    </div>
-
-                    <div class="stats-grid" style="margin-top:25px; grid-template-columns:repeat(2,1fr);">
-
-                        <div class="stat-card">
-                            <div class="stat-label">Score</div>
-                            <div class="stat-value" id="profileScore">0</div>
-                        </div>
-
-                        <div class="stat-card">
-                            <div class="stat-label">Серия</div>
-                            <div class="stat-value" id="profileStreak">0</div>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-            <!-- =========================
-                 SETTINGS
-            ========================== -->
-
-            <section class="page" id="page-settings">
-
-                <div class="page-heading">
-                    <h1>Настройки</h1>
-                    <p>Управление системой ASCEND.</p>
-                </div>
-
-                <div class="card">
-
-                    <div class="settings-list">
-
-                        <div class="setting-row">
-
-                            <div>
-                                <div class="setting-title">
-                                    Система задач
-                                </div>
-
-                                <div class="setting-description">
-                                    Повторяющиеся задачи сохраняются автоматически.
-                                </div>
+                            <div class="circle-number" id="circleNumber">
+                                0%
                             </div>
 
-                            <span class="badge">ACTIVE</span>
-
                         </div>
 
-                        <div class="setting-row">
-
-                            <div>
-                                <div class="setting-title">
-                                    Локальное хранение
-                                </div>
-
-                                <div class="setting-description">
-                                    Данные сохраняются в браузере.
-                                </div>
-                            </div>
-
-                            <span class="badge">LOCAL</span>
-
-                        </div>
-
-                        <div class="setting-row">
-
-                            <div>
-                                <div class="setting-title">
-                                    Сбросить все данные
-                                </div>
-
-                                <div class="setting-description">
-                                    Удалить все задачи и историю выполнения.
-                                </div>
-                            </div>
-
-                            <button class="button danger" id="resetDataButton">
-                                Сбросить
-                            </button>
-
+                        <div class="progress-caption">
+                            Дисциплина за сегодня
                         </div>
 
                     </div>
 
                 </div>
 
-            </section>
-
-        </div>
-
-    </main>
-
-    <!-- =========================
-         CHARACTER
-    ========================== -->
-
-    <aside class="character-panel">
-
-        <div class="character-header">
-
-            <div class="character-header-title">
-                ASCEND ASSISTANT
             </div>
 
-            <div class="status">
-                <span class="status-dot"></span>
-                ONLINE
+        </section>
+
+
+        <!-- CALENDAR -->
+
+        <section class="page" id="page-calendar">
+
+            <div class="page-heading">
+                <h1>Календарь</h1>
+                <p>
+                    Каждый день — ещё один шаг вверх.
+                </p>
             </div>
 
-        </div>
+            <div class="card">
 
-        <div class="character-area">
+                <div class="card-header">
 
-            <div class="character-glow"></div>
+                    <div class="calendar-controls">
 
-            <div class="character">
+                        <button class="btn" id="prevMonth">
+                            ←
+                        </button>
 
-                <div class="character-hair"></div>
+                        <div class="month" id="monthName"></div>
 
-                <div class="character-head">
+                        <button class="btn" id="nextMonth">
+                            →
+                        </button>
 
-                    <div class="character-eye left"></div>
-                    <div class="character-eye right"></div>
+                    </div>
 
                 </div>
 
-                <div class="character-neck"></div>
-
-                <div class="character-body">
-                    <div class="character-shirt-line"></div>
+                <div class="weekdays">
+                    <div class="weekday">ПН</div>
+                    <div class="weekday">ВТ</div>
+                    <div class="weekday">СР</div>
+                    <div class="weekday">ЧТ</div>
+                    <div class="weekday">ПТ</div>
+                    <div class="weekday">СБ</div>
+                    <div class="weekday">ВС</div>
                 </div>
 
-                <div class="character-arm-left"></div>
-                <div class="character-arm-right"></div>
-
-                <div class="character-leg-left"></div>
-                <div class="character-leg-right"></div>
+                <div class="calendar" id="calendar"></div>
 
             </div>
 
-        </div>
+        </section>
 
-        <div class="character-info">
 
-            <div class="character-name">
-                ASCENDER
+        <!-- TASKS -->
+
+        <section class="page" id="page-tasks">
+
+            <div class="page-heading">
+                <h1>Задачи</h1>
+                <p>
+                    Создай задачу один раз — ASCEND сам распределит её по дням.
+                </p>
             </div>
 
-            <div class="character-role">
-                YOUR DISCIPLINE PARTNER
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div>
+                        <div class="card-title">
+                            Мои задачи
+                        </div>
+
+                        <div class="card-sub">
+                            Все твои задачи и расписание
+                        </div>
+                    </div>
+
+                    <button class="btn primary" id="addTask2">
+                        + Новая задача
+                    </button>
+
+                </div>
+
+                <div class="tasks" id="allTasks"></div>
+
             </div>
 
-            <div class="character-message" id="characterMessage">
-                Не жди мотивации. Просто сделай следующую задачу.
+        </section>
+
+
+        <!-- ANALYTICS -->
+
+        <section class="page" id="page-analytics">
+
+            <div class="page-heading">
+                <h1>Аналитика</h1>
+                <p>
+                    Смотри на результат без эмоций.
+                </p>
             </div>
 
-        </div>
+            <div class="analytics">
 
-    </aside>
+                <div class="analytics-card">
+                    <div class="analytics-label">
+                        Средний процент
+                    </div>
 
-</div>
+                    <div class="analytics-value" id="average">
+                        0%
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <div class="analytics-label">
+                        Лучший день
+                    </div>
+
+                    <div class="analytics-value" id="bestDay">
+                        —
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <div class="analytics-label">
+                        Выполнено
+                    </div>
+
+                    <div class="analytics-value" id="totalDone">
+                        0
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card" style="margin-top:18px;">
+
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">
+                            Последние 7 дней
+                        </div>
+
+                        <div class="card-sub">
+                            Твоя дисциплина
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart" id="chart"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PROFILE -->
+
+        <section class="page" id="page-profile">
+
+            <div class="page-heading">
+                <h1>Профиль</h1>
+                <p>
+                    Твой путь в ASCEND.
+                </p>
+            </div>
+
+            <div class="card profile">
+
+                <div class="profile-head">
+
+                    <div class="avatar" id="avatar">
+                        A
+                    </div>
+
+                    <div>
+
+                        <div class="profile-name" id="profileName">
+                            ASCENDER
+                        </div>
+
+                        <div class="profile-role">
+                            DISCIPLINE IS A LIFESTYLE
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="profile-edit">
+
+                    <label>
+                        ИМЯ ПОЛЬЗОВАТЕЛЯ
+                    </label>
+
+                    <div class="name-row">
+
+                        <input
+                            class="name-input"
+                            id="nameInput"
+                            type="text"
+                            maxlength="25"
+                            placeholder="Введите ник"
+                        >
+
+                        <button
+                            class="btn primary"
+                            id="saveName"
+                        >
+                            Сохранить
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stats" style="margin-top:22px;">
+
+                    <div class="stat">
+                        <div class="stat-label">
+                            Score
+                        </div>
+
+                        <div class="stat-value" id="profileScore">
+                            0
+                        </div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-label">
+                            Серия
+                        </div>
+
+                        <div class="stat-value" id="profileStreak">
+                            0
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SETTINGS -->
+
+        <section class="page" id="page-settings">
+
+            <div class="page-heading">
+                <h1>Настройки</h1>
+                <p>
+                    Управление системой ASCEND.
+                </p>
+            </div>
+
+            <div class="card">
+
+                <div class="settings">
+
+                    <div class="setting">
+
+                        <div>
+                            <div class="setting-title">
+                                Хранение данных
+                            </div>
+
+                            <div class="setting-text">
+                                Все задачи сохраняются в браузере.
+                            </div>
+                        </div>
+
+                        <span class="badge">
+                            LOCAL
+                        </span>
+
+                    </div>
+
+
+                    <div class="setting">
+
+                        <div>
+                            <div class="setting-title">
+                                Повторяющиеся задачи
+                            </div>
+
+                            <div class="setting-text">
+                                Одна задача может автоматически появляться каждый день.
+                            </div>
+                        </div>
+
+                        <span class="badge">
+                            ACTIVE
+                        </span>
+
+                    </div>
+
+
+                    <div class="setting">
+
+                        <div>
+                            <div class="setting-title">
+                                Удалить все данные
+                            </div>
+
+                            <div class="setting-text">
+                                Полностью очистить задачи и историю.
+                            </div>
+                        </div>
+
+                        <button class="btn danger" id="reset">
+                            Сбросить
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
 
 <!-- =========================
-     ADD TASK MODAL
-========================== -->
+     CHARACTER
+========================= -->
 
-<div class="modal-overlay" id="addTaskPanel">
+<aside class="character-panel">
+
+    <div class="character-top">
+
+        <div class="character-title">
+            ASCEND ASSISTANT
+        </div>
+
+        <div class="online">
+            <span class="online-dot"></span>
+            ONLINE
+        </div>
+
+    </div>
+
+
+    <div class="character-area">
+
+        <div class="character-glow"></div>
+
+        <div class="character">
+
+            <div class="hair"></div>
+
+            <div class="head">
+
+                <div class="eye left"></div>
+                <div class="eye right"></div>
+
+            </div>
+
+            <div class="neck"></div>
+
+            <div class="body">
+                <div class="body-line"></div>
+            </div>
+
+            <div class="arm left"></div>
+            <div class="arm right"></div>
+
+            <div class="leg left"></div>
+            <div class="leg right"></div>
+
+        </div>
+
+    </div>
+
+
+    <div class="character-info">
+
+        <div class="username" id="characterName">
+            ASCENDER
+        </div>
+
+        <div class="character-role">
+            YOUR DISCIPLINE PARTNER
+        </div>
+
+        <div class="character-message" id="characterMessage">
+            Не жди мотивации. Просто сделай следующую задачу.
+        </div>
+
+    </div>
+
+</aside>
+
+
+<!-- =========================
+     MODAL
+========================= -->
+
+<div class="modal-bg" id="modal">
 
     <div class="modal">
 
-        <div class="modal-header">
+        <div class="modal-head">
 
             <div class="modal-title">
                 Новая задача
             </div>
 
-            <button class="close-modal" id="closeTaskPanel">
+            <button class="close" id="closeModal">
                 ×
             </button>
 
         </div>
+
 
         <form id="taskForm">
 
             <div class="form-group">
 
                 <label class="form-label">
-                    НАЗВАНИЕ ЗАДАЧИ
+                    НАЗВАНИЕ
                 </label>
 
                 <input
-                    class="form-input"
+                    class="input"
                     id="taskTitle"
                     type="text"
                     placeholder="Например: Тренировка"
@@ -1792,24 +1896,26 @@
 
             </div>
 
+
             <div class="form-group">
 
                 <label class="form-label">
                     КАТЕГОРИЯ
                 </label>
 
-                <select class="form-select" id="taskCategory">
+                <select class="select" id="category">
 
-                    <option value="Дисциплина">Дисциплина</option>
-                    <option value="Спорт">Спорт</option>
-                    <option value="Учёба">Учёба</option>
-                    <option value="Работа">Работа</option>
-                    <option value="Трейдинг">Трейдинг</option>
-                    <option value="Личное">Личное</option>
+                    <option>Дисциплина</option>
+                    <option>Спорт</option>
+                    <option>Учёба</option>
+                    <option>Работа</option>
+                    <option>Трейдинг</option>
+                    <option>Личное</option>
 
                 </select>
 
             </div>
+
 
             <div class="form-group">
 
@@ -1817,15 +1923,16 @@
                     ПРИОРИТЕТ
                 </label>
 
-                <select class="form-select" id="taskPriority">
+                <select class="select" id="priority">
 
-                    <option value="Высокий">Высокий</option>
-                    <option value="Средний" selected>Средний</option>
-                    <option value="Низкий">Низкий</option>
+                    <option>Высокий</option>
+                    <option selected>Средний</option>
+                    <option>Низкий</option>
 
                 </select>
 
             </div>
+
 
             <div class="form-group">
 
@@ -1833,107 +1940,124 @@
                     ПОВТОРЕНИЕ
                 </label>
 
-                <div class="repeat-options">
+                <div class="repeat-grid">
 
-                    <div class="repeat-option">
+                    <div class="repeat">
                         <input
                             type="radio"
                             name="repeat"
-                            id="repeatOnce"
+                            id="once"
                             value="once"
                             checked
                         >
-                        <label for="repeatOnce">Сегодня</label>
+
+                        <label for="once">
+                            Сегодня
+                        </label>
                     </div>
 
-                    <div class="repeat-option">
+
+                    <div class="repeat">
                         <input
                             type="radio"
                             name="repeat"
-                            id="repeatDaily"
+                            id="daily"
                             value="daily"
                         >
-                        <label for="repeatDaily">Каждый день</label>
+
+                        <label for="daily">
+                            Каждый день
+                        </label>
                     </div>
 
-                    <div class="repeat-option">
+
+                    <div class="repeat">
                         <input
                             type="radio"
                             name="repeat"
-                            id="repeatWeekdays"
+                            id="weekdays"
                             value="weekdays"
                         >
-                        <label for="repeatWeekdays">По будням</label>
+
+                        <label for="weekdays">
+                            Пн–Пт
+                        </label>
                     </div>
 
-                    <div class="repeat-option">
+
+                    <div class="repeat">
                         <input
                             type="radio"
                             name="repeat"
-                            id="repeatCustom"
+                            id="custom"
                             value="custom"
                         >
-                        <label for="repeatCustom">Свои дни</label>
+
+                        <label for="custom">
+                            Свои дни
+                        </label>
                     </div>
 
                 </div>
 
-                <div class="days-options" id="daysOptions">
 
-                    <div class="day-option">
-                        <input type="checkbox" id="day1" value="1">
-                        <label for="day1">ПН</label>
+                <div class="days" id="days">
+
+                    <div class="day-check">
+                        <input type="checkbox" id="mon" value="1">
+                        <label for="mon">ПН</label>
                     </div>
 
-                    <div class="day-option">
-                        <input type="checkbox" id="day2" value="2">
-                        <label for="day2">ВТ</label>
+                    <div class="day-check">
+                        <input type="checkbox" id="tue" value="2">
+                        <label for="tue">ВТ</label>
                     </div>
 
-                    <div class="day-option">
-                        <input type="checkbox" id="day3" value="3">
-                        <label for="day3">СР</label>
+                    <div class="day-check">
+                        <input type="checkbox" id="wed" value="3">
+                        <label for="wed">СР</label>
                     </div>
 
-                    <div class="day-option">
-                        <input type="checkbox" id="day4" value="4">
-                        <label for="day4">ЧТ</label>
+                    <div class="day-check">
+                        <input type="checkbox" id="thu" value="4">
+                        <label for="thu">ЧТ</label>
                     </div>
 
-                    <div class="day-option">
-                        <input type="checkbox" id="day5" value="5">
-                        <label for="day5">ПТ</label>
+                    <div class="day-check">
+                        <input type="checkbox" id="fri" value="5">
+                        <label for="fri">ПТ</label>
                     </div>
 
-                    <div class="day-option">
-                        <input type="checkbox" id="day6" value="6">
-                        <label for="day6">СБ</label>
+                    <div class="day-check">
+                        <input type="checkbox" id="sat" value="6">
+                        <label for="sat">СБ</label>
                     </div>
 
-                    <div class="day-option">
-                        <input type="checkbox" id="day7" value="7">
-                        <label for="day7">ВС</label>
+                    <div class="day-check">
+                        <input type="checkbox" id="sun" value="7">
+                        <label for="sun">ВС</label>
                     </div>
 
                 </div>
 
             </div>
 
+
             <div class="modal-actions">
 
                 <button
                     type="button"
-                    class="button"
-                    id="cancelTaskButton"
+                    class="btn"
+                    id="cancel"
                 >
                     Отмена
                 </button>
 
                 <button
                     type="submit"
-                    class="button primary"
+                    class="btn primary"
                 >
-                    Создать задачу
+                    Создать
                 </button>
 
             </div>
@@ -1944,7 +2068,9 @@
 
 </div>
 
+
 <div class="toast" id="toast"></div>
+
 
 <script src="script.js"></script>
 
