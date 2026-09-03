@@ -1,1 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta
+        name="description"
+        content="ASCEND — a personal productivity and discipline platform."
+    >
+
+    <meta name="theme-color" content="#0a0a0a">
+
+    <title>ASCEND — Become Better Every Day</title>
+
+    <!--
+        ASCEND
+        Main entry point
+
+        Future structure:
+        /pages/calendar.html
+        /pages/tasks.html
+        /pages/analytics.html
+        /pages/profile.html
+        /pages/settings.html
+    -->
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- =========================================
+         APPLICATION
+    ========================================== -->
+
+    <div class="app" id="app">
+
+        <!-- =====================================
+             SIDEBAR
+        ====================================== -->
+
+        <aside class="sidebar" id="sidebar">
+
+            <!-- Brand -->
+            <div class="brand">
+                <a href="index.html" class="brand-link">
+                    <span class="brand-mark">A</span>
+                    <span class="brand-name">ASCEND</span>
+                </a>
+            </div>
+
+
+            <!-- Main Navigation -->
+            <nav class="navigation" aria-label="Main navigation">
+
+                <div class="navigation-section">
+
+                    <span class="navigation-label">
+                        WORKSPACE
+                    </span>
+
+                    <a
+                        href="index.html"
+                        class="nav-item active"
+                        data-page="dashboard"
+                    >
+                        <span class="nav-icon">⌂</span>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+
+                    <a
+                        href="pages/calendar.html"
+                        class="nav-item"
+                        data-page="calendar"
+                    >
+                        <span class="nav-icon">□</span>
+                        <span class="nav-text">Calendar</span>
+                    </a>
+
+                    <a
+                        href="pages/tasks.html"
+                        class="nav-item"
+                        data-page="tasks"
+                    >
+                        <span class="nav-icon">✓</span>
+                        <span class="nav-text">Tasks</span>
+                    </a>
+
+                    <a
+                        href="pages/analytics.html"
+                        class="nav-item"
+                        data-page="analytics"
+                    >
+                        <span class="nav-icon">↗</span>
+                        <span class="nav-text">Analytics</span>
+                    </a>
+
+                </div>
+
+
+                <div class="navigation-section">
+
+                    <span class="navigation-label">
+                        PERSONAL
+                    </span>
+
+                    <a
+                        href="pages/profile.html"
+                        class="nav-item"
+                        data-page="profile"
+                    >
+                        <span class="nav-icon">○</span>
+                        <span class="nav-text">Profile</span>
+                    </a>
+
+                    <a
+                        href="pages/settings.html"
+                        class="nav-item"
+                        data-page="settings"
+                    >
+                        <span class="nav-icon">⚙</span>
+                        <span class="nav-text">Settings</span>
+                    </a>
+
+                </div>
+
+            </nav>
+
+
+            <!-- Sidebar Bottom -->
+            <div class="sidebar-bottom">
+
+                <div class="sidebar-progress">
+
+                    <div class="sidebar-progress-top">
+                        <span>Today's progress</span>
+                        <strong id="sidebarProgress">0%</strong>
+                    </div>
+
+                    <div class="progress-track">
+                        <div
+                            class="progress-fill"
+                            id="sidebarProgressFill"
+                            style="width: 0%"
+                        ></div>
+                    </div>
+
+                </div>
+
+
+                <div class="sidebar-user">
+
+                    <div class="avatar" id="sidebarAvatar">
+                        A
+                    </div>
+
+                    <div class="sidebar-user-info">
+
+                        <span
+                            class="sidebar-user-name"
+                            id="sidebarUserName"
+                        >
+                            Alex
+                        </span>
+
+                        <span class="sidebar-user-handle">
+                            @alex
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================
+             MAIN AREA
+        ====================================== -->
+
+        <main class="main-content">
+
+            <!-- =================================
+                 TOP BAR
+            ================================== -->
+
+            <header class="topbar">
+
+                <button
+                    class="mobile-menu-button"
+                    id="mobileMenuButton"
+                    type="button"
+                    aria-label="Open menu"
+                >
+                    ☰
+                </button>
+
+
+                <div class="topbar-left">
+
+                    <span class="topbar-date" id="currentDate">
+                        Thursday, September 3
+                    </span>
+
+                </div>
+
+
+                <div class="topbar-right">
+
+                    <button
+                        class="icon-button"
+                        type="button"
+                        aria-label="Notifications"
+                    >
+                        ♢
+                    </button>
+
+                    <a
+                        href="pages/profile.html"
+                        class="topbar-profile"
+                    >
+
+                        <div class="avatar avatar-small">
+                            A
+                        </div>
+
+                        <span id="topbarUsername">
+                            Alex
+                        </span>
+
+                    </a>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================
+                 CONTENT
+            ================================== -->
+
+            <section class="dashboard-content">
+
+                <!-- =================================
+                     HERO
+                ================================== -->
+
+                <section class="hero-section">
+
+                    <div class="hero-content">
+
+                        <span class="eyebrow">
+                            YOUR JOURNEY
+                        </span>
+
+                        <h1>
+                            Become better<br>
+                            <span>every day.</span>
+                        </h1>
+
+                        <p class="hero-description">
+                            Small actions. Consistent discipline.
+                            Real progress.
+                        </p>
+
+                    </div>
+
+
+                    <!--
+                        FUTURE 3D CHARACTER
+
+                        This container is intentionally empty.
+
+                        Later we will place the animated
+                        ASCEND character here using WebGL /
+                        Three.js.
+
+                        The character will remain behind
+                        the interface across the website.
+                    -->
+
+                    <div
+                        class="character-layer"
+                        id="characterLayer"
+                        aria-hidden="true"
+                    >
+
+                        <div class="character-placeholder">
+
+                            <div class="character-glow"></div>
+
+                            <div class="character-silhouette">
+                                ASCEND
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================
+                     TODAY OVERVIEW
+                ================================== -->
+
+                <section class="today-section">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <span class="section-eyebrow">
+                                TODAY
+                            </span>
+
+                            <h2>
+                                Your progress
+                            </h2>
+                        </div>
+
+                        <span
+                            class="today-date"
+                            id="todayDate"
+                        >
+                            Sep 03, 2026
+                        </span>
+
+                    </div>
+
+
+                    <div class="overview-grid">
+
+                        <!-- Progress Card -->
+                        <article class="progress-card">
+
+                            <div class="card-header">
+
+                                <span class="card-label">
+                                    DAILY COMPLETION
+                                </span>
+
+                                <span class="card-status">
+                                    TODAY
+                                </span>
+
+                            </div>
+
+
+                            <div class="progress-main">
+
+                                <div class="progress-circle">
+
+                                    <svg
+                                        viewBox="0 0 120 120"
+                                        class="progress-svg"
+                                    >
+
+                                        <circle
+                                            class="progress-circle-bg"
+                                            cx="60"
+                                            cy="60"
+                                            r="50"
+                                        ></circle>
+
+                                        <circle
+                                            class="progress-circle-value"
+                                            id="dailyProgressCircle"
+                                            cx="60"
+                                            cy="60"
+                                            r="50"
+                                        ></circle>
+
+                                    </svg>
+
+                                    <div class="progress-circle-text">
+
+                                        <strong id="dailyProgress">
+                                            0%
+                                        </strong>
+
+                                        <span>
+                                            complete
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="progress-info">
+
+                                    <span class="progress-info-number">
+                                        <strong id="completedTasks">
+                                            0
+                                        </strong>
+                                        /
+                                        <span id="totalTasks">
+                                            0
+                                        </span>
+                                    </span>
+
+                                    <span class="progress-info-label">
+                                        tasks completed
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- Streak Card -->
+                        <article class="stat-card">
+
+                            <div class="stat-icon">
+                                ✦
+                            </div>
+
+                            <span class="card-label">
+                                CURRENT STREAK
+                            </span>
+
+                            <div class="stat-value">
+                                <span id="streakValue">
+                                    0
+                                </span>
+                                <small>days</small>
+                            </div>
+
+                            <p class="stat-description">
+                                Keep showing up.
+                            </p>
+
+                        </article>
+
+
+                        <!-- Score Card -->
+                        <article class="stat-card">
+
+                            <div class="stat-icon">
+                                ↑
+                            </div>
+
+                            <span class="card-label">
+                                ASCEND SCORE
+                            </span>
+
+                            <div class="stat-value">
+                                <span id="ascendScore">
+                                    0
+                                </span>
+                            </div>
+
+                            <p class="stat-description">
+                                Your overall progress.
+                            </p>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================
+                     TASKS
+                ================================== -->
+
+                <section class="tasks-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="section-eyebrow">
+                                DAILY SYSTEM
+                            </span>
+
+                            <h2>
+                                Today's tasks
+                            </h2>
+
+                        </div>
+
+                        <a
+                            href="pages/tasks.html"
+                            class="view-all-link"
+                        >
+                            View all →
+                        </a>
+
+                    </div>
+
+
+                    <div
+                        class="tasks-container"
+                        id="tasksContainer"
+                    >
+
+                        <!--
+                            Tasks will be generated
+                            dynamically by JavaScript.
+                        -->
+
+                        <div class="empty-state">
+
+                            <div class="empty-state-icon">
+                                +
+                            </div>
+
+                            <h3>
+                                No tasks yet
+                            </h3>
+
+                            <p>
+                                Create your first task and
+                                start your journey.
+                            </p>
+
+                            <a
+                                href="pages/tasks.html"
+                                class="primary-button"
+                            >
+                                Create task
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================
+                     WEEKLY PROGRESS
+                ================================== -->
+
+                <section class="weekly-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="section-eyebrow">
+                                CONSISTENCY
+                            </span>
+
+                            <h2>
+                                This week
+                            </h2>
+
+                        </div>
+
+                        <a
+                            href="pages/analytics.html"
+                            class="view-all-link"
+                        >
+                            Analytics →
+                        </a>
+
+                    </div>
+
+
+                    <div class="week-card">
+
+                        <div class="week-days">
+
+                            <div class="week-day">
+                                <span>MON</span>
+                                <strong>—</strong>
+                            </div>
+
+                            <div class="week-day">
+                                <span>TUE</span>
+                                <strong>—</strong>
+                            </div>
+
+                            <div class="week-day">
+                                <span>WED</span>
+                                <strong>—</strong>
+                            </div>
+
+                            <div class="week-day active">
+                                <span>THU</span>
+                                <strong id="weekTodayProgress">0%</strong>
+                            </div>
+
+                            <div class="week-day">
+                                <span>FRI</span>
+                                <strong>—</strong>
+                            </div>
+
+                            <div class="week-day">
+                                <span>SAT</span>
+                                <strong>—</strong>
+                            </div>
+
+                            <div class="week-day">
+                                <span>SUN</span>
+                                <strong>—</strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+            </section>
+
+
+            <!-- =====================================
+                 FOOTER
+            ====================================== -->
+
+            <footer class="footer">
+
+                <span>
+                    ASCEND
+                </span>
+
+                <span>
+                    Become better every day.
+                </span>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- =========================================
+         MOBILE OVERLAY
+    ========================================== -->
+
+    <div
+        class="mobile-overlay"
+        id="mobileOverlay"
+        aria-hidden="true"
+    ></div>
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script src="js/app.js"></script>
+
+</body>
+</html>
