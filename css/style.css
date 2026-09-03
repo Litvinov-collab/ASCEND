@@ -1,11 +1,7 @@
 /* =========================================================
-   ASCEND — MAIN STYLES
-   Designed specifically for index.html
+   ASCEND
+   MAIN STYLE
 ========================================================= */
-
-/* =========================
-   ROOT
-========================= */
 
 :root {
     --bg: #070707;
@@ -16,14 +12,14 @@
     --surface-3: #181818;
 
     --border: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(255, 255, 255, 0.15);
+    --border-light: rgba(255, 255, 255, 0.14);
 
     --text: #f5f5f5;
-    --text-secondary: #a1a1a1;
+    --text-soft: #b0b0b0;
     --text-muted: #666;
+    --text-dark: #444;
 
-    --accent: #ffffff;
-    --accent-soft: rgba(255, 255, 255, 0.08);
+    --white: #ffffff;
 
     --sidebar-width: 250px;
     --topbar-height: 72px;
@@ -35,9 +31,10 @@
     --transition: 0.2s ease;
 }
 
-/* =========================
+
+/* =========================================================
    RESET
-========================= */
+========================================================= */
 
 * {
     margin: 0;
@@ -54,14 +51,14 @@ body {
 
     background:
         radial-gradient(
-            circle at 75% 10%,
+            circle at 80% 10%,
             rgba(255, 255, 255, 0.045),
-            transparent 30%
+            transparent 28%
         ),
         radial-gradient(
-            circle at 20% 80%,
+            circle at 15% 80%,
             rgba(255, 255, 255, 0.025),
-            transparent 35%
+            transparent 32%
         ),
         var(--bg);
 
@@ -84,6 +81,7 @@ body::before {
     content: "";
 
     position: fixed;
+
     inset: 0;
 
     pointer-events: none;
@@ -113,8 +111,8 @@ a {
 
 button,
 input,
-textarea,
-select {
+select,
+textarea {
     font: inherit;
 }
 
@@ -122,22 +120,29 @@ button {
     border: none;
 }
 
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
 ::selection {
     background: rgba(255, 255, 255, 0.2);
     color: #fff;
 }
 
-/* =========================
+
+/* =========================================================
    APP
-========================= */
+========================================================= */
 
 .app {
     min-height: 100vh;
 }
 
-/* =========================
+
+/* =========================================================
    SIDEBAR
-========================= */
+========================================================= */
 
 .sidebar {
     position: fixed;
@@ -151,54 +156,57 @@ button {
     display: flex;
     flex-direction: column;
 
-    background: rgba(10, 10, 10, 0.94);
+    background:
+        linear-gradient(
+            180deg,
+            rgba(15, 15, 15, 0.97),
+            rgba(8, 8, 8, 0.97)
+        );
 
     border-right: 1px solid var(--border);
 
+    z-index: 100;
+
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-
-    z-index: 100;
 }
 
-/* =========================
-   BRAND
-========================= */
 
-.brand {
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo {
     height: 92px;
 
     display: flex;
     align-items: center;
 
-    padding: 0 26px;
+    gap: 12px;
+
+    padding: 0 25px;
 
     border-bottom: 1px solid var(--border);
 }
 
-.brand-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.brand-mark {
-    width: 34px;
-    height: 34px;
+.logo-mark {
+    width: 35px;
+    height: 35px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 
     border-radius: 9px;
 
-    background: linear-gradient(
-        145deg,
-        #1d1d1d,
-        #0b0b0b
-    );
+    background:
+        linear-gradient(
+            145deg,
+            #252525,
+            #0c0c0c
+        );
 
     color: #fff;
 
@@ -206,50 +214,55 @@ button {
     font-weight: 800;
 
     box-shadow:
-        0 0 20px rgba(255, 255, 255, 0.04);
+        0 0 25px rgba(255, 255, 255, 0.03);
 }
 
-.brand-name {
+.logo-text {
+    color: #fff;
+
     font-size: 16px;
     font-weight: 800;
+
     letter-spacing: 0.22em;
 }
 
-/* =========================
-   NAVIGATION
-========================= */
 
-.navigation {
+/* =========================================================
+   SIDEBAR NAVIGATION
+========================================================= */
+
+.sidebar-nav {
     flex: 1;
 
     padding: 28px 14px;
 }
 
-.navigation-section {
+.nav-group {
     margin-bottom: 30px;
 }
 
-.navigation-label {
-    display: block;
-
+.nav-title {
     padding: 0 12px;
+
     margin-bottom: 10px;
 
-    color: #555;
+    color: #505050;
 
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
 
-    letter-spacing: 0.16em;
+    letter-spacing: 0.18em;
 }
 
-.nav-item {
+.nav-link {
     position: relative;
+
+    min-height: 46px;
 
     display: flex;
     align-items: center;
 
-    min-height: 46px;
+    gap: 5px;
 
     padding: 0 12px;
 
@@ -257,25 +270,29 @@ button {
 
     border-radius: 10px;
 
-    color: var(--text-secondary);
+    color: #888;
+
+    font-size: 13px;
+    font-weight: 500;
 
     transition:
-        background var(--transition),
         color var(--transition),
-        transform var(--transition);
+        background var(--transition);
 }
 
-.nav-item:hover {
+.nav-link:hover {
     background: rgba(255, 255, 255, 0.045);
+
     color: #fff;
 }
 
-.nav-item.active {
-    background: rgba(255, 255, 255, 0.08);
+.nav-link.active {
+    background: rgba(255, 255, 255, 0.075);
+
     color: #fff;
 }
 
-.nav-item.active::before {
+.nav-link.active::before {
     content: "";
 
     position: absolute;
@@ -291,30 +308,26 @@ button {
     background: #fff;
 }
 
-.nav-icon {
+.nav-link-icon {
     width: 30px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    font-size: 17px;
+    color: #666;
 
-    color: #777;
+    font-size: 16px;
 }
 
-.nav-item.active .nav-icon {
+.nav-link.active .nav-link-icon {
     color: #fff;
 }
 
-.nav-text {
-    font-size: 13px;
-    font-weight: 500;
-}
 
-/* =========================
+/* =========================================================
    SIDEBAR BOTTOM
-========================= */
+========================================================= */
 
 .sidebar-bottom {
     padding: 18px 18px 20px;
@@ -322,74 +335,77 @@ button {
     border-top: 1px solid var(--border);
 }
 
+
 /* Progress */
 
 .sidebar-progress {
     margin-bottom: 20px;
 }
 
-.sidebar-progress-top {
+.sidebar-progress-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
 
     margin-bottom: 9px;
 
-    color: var(--text-muted);
+    color: #555;
 
-    font-size: 10px;
-    font-weight: 600;
+    font-size: 9px;
+    font-weight: 700;
 
-    text-transform: uppercase;
     letter-spacing: 0.08em;
 }
 
-.sidebar-progress-top strong {
+.sidebar-progress-header strong {
     color: #fff;
 
-    font-size: 11px;
+    font-size: 10px;
 }
 
-.progress-track {
+.sidebar-progress-track {
     width: 100%;
     height: 4px;
 
     overflow: hidden;
 
-    border-radius: 99px;
+    border-radius: 100px;
 
     background: #202020;
 }
 
-.progress-fill {
+.sidebar-progress-fill {
+    width: 0;
     height: 100%;
-
-    width: 0%;
 
     border-radius: inherit;
 
     background: #fff;
 
-    transition: width 0.4s ease;
+    transition: width 0.5s ease;
 }
+
 
 /* User */
 
 .sidebar-user {
     display: flex;
     align-items: center;
+
     gap: 11px;
 }
 
-.avatar {
-    width: 34px;
-    height: 34px;
+.user-avatar {
+    width: 35px;
+    height: 35px;
 
     flex-shrink: 0;
 
     display: flex;
     align-items: center;
     justify-content: center;
+
+    border: 1px solid var(--border);
 
     border-radius: 50%;
 
@@ -400,29 +416,27 @@ button {
             #101010
         );
 
-    border: 1px solid var(--border);
-
     color: #fff;
 
     font-size: 12px;
     font-weight: 700;
 }
 
-.sidebar-user-info {
+.user-info {
     display: flex;
     flex-direction: column;
 
     min-width: 0;
 }
 
-.sidebar-user-name {
-    color: #eee;
+.user-info strong {
+    color: #ddd;
 
     font-size: 12px;
     font-weight: 600;
 }
 
-.sidebar-user-handle {
+.user-info span {
     margin-top: 1px;
 
     color: #555;
@@ -430,19 +444,21 @@ button {
     font-size: 10px;
 }
 
-/* =========================
-   MAIN
-========================= */
 
-.main-content {
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main {
     min-height: 100vh;
 
     margin-left: var(--sidebar-width);
 }
 
-/* =========================
+
+/* =========================================================
    TOPBAR
-========================= */
+========================================================= */
 
 .topbar {
     position: sticky;
@@ -470,9 +486,11 @@ button {
 .topbar-left {
     display: flex;
     align-items: center;
+
+    gap: 14px;
 }
 
-.topbar-date {
+.current-date {
     color: #777;
 
     font-size: 12px;
@@ -482,10 +500,11 @@ button {
 .topbar-right {
     display: flex;
     align-items: center;
+
     gap: 14px;
 }
 
-.icon-button {
+.notification-button {
     width: 36px;
     height: 36px;
 
@@ -506,15 +525,18 @@ button {
     transition: all var(--transition);
 }
 
-.icon-button:hover {
+.notification-button:hover {
     background: var(--surface-2);
-    border-color: var(--border-hover);
+
+    border-color: var(--border-light);
+
     color: #fff;
 }
 
-.topbar-profile {
+.topbar-user {
     display: flex;
     align-items: center;
+
     gap: 9px;
 
     color: #aaa;
@@ -523,22 +545,37 @@ button {
     font-weight: 600;
 }
 
-.topbar-profile:hover {
-    color: #fff;
-}
-
 .avatar-small {
     width: 30px;
     height: 30px;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--border);
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            145deg,
+            #292929,
+            #101010
+        );
+
+    color: #fff;
+
     font-size: 10px;
+    font-weight: 700;
 }
 
-/* =========================
-   MOBILE MENU
-========================= */
 
-.mobile-menu-button {
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+.mobile-menu {
     display: none;
 
     width: 38px;
@@ -558,39 +595,30 @@ button {
     cursor: pointer;
 }
 
-.mobile-overlay {
-    display: none;
 
-    position: fixed;
-    inset: 0;
+/* =========================================================
+   PAGE CONTENT
+========================================================= */
 
-    background: rgba(0, 0, 0, 0.65);
-
-    z-index: 90;
-}
-
-/* =========================
-   DASHBOARD CONTENT
-========================= */
-
-.dashboard-content {
+.page-content {
     width: 100%;
 
     max-width: 1400px;
 
     margin: 0 auto;
 
-    padding: 0 38px 50px;
+    padding: 0 38px 60px;
 }
 
-/* =========================
-   HERO
-========================= */
 
-.hero-section {
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
     position: relative;
 
-    min-height: 390px;
+    min-height: 400px;
 
     display: flex;
     align-items: center;
@@ -605,17 +633,15 @@ button {
 
     z-index: 3;
 
-    max-width: 650px;
+    max-width: 700px;
 
-    padding: 65px 0;
+    padding: 70px 0;
 }
 
-.eyebrow {
-    display: inline-block;
-
+.hero-eyebrow {
     margin-bottom: 18px;
 
-    color: #777;
+    color: #666;
 
     font-size: 10px;
     font-weight: 700;
@@ -623,135 +649,191 @@ button {
     letter-spacing: 0.22em;
 }
 
-.hero-section h1 {
-    margin: 0;
+.hero h1 {
+    max-width: 700px;
 
-    font-size: clamp(48px, 6vw, 82px);
+    color: #f5f5f5;
+
+    font-size: clamp(50px, 6vw, 82px);
 
     line-height: 0.96;
 
-    letter-spacing: -0.055em;
-
     font-weight: 750;
+
+    letter-spacing: -0.06em;
 }
 
-.hero-section h1 span {
+.hero h1 span {
+    display: block;
+
     color: #666;
 }
 
-.hero-description {
-    max-width: 400px;
+.hero p {
+    max-width: 420px;
 
-    margin-top: 24px;
+    margin-top: 25px;
 
-    color: #777;
+    color: #707070;
 
     font-size: 14px;
 
     line-height: 1.7;
 }
 
-/* =========================
-   CHARACTER
-========================= */
 
-.character-layer {
+/* =========================================================
+   CHARACTER
+========================================================= */
+
+.character {
     position: absolute;
 
-    right: 0;
     top: 0;
+    right: 0;
 
-    width: 52%;
+    width: 48%;
     height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     pointer-events: none;
 
     z-index: 1;
 }
 
-.character-placeholder {
-    position: absolute;
-
-    inset: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .character-glow {
     position: absolute;
 
-    width: 360px;
-    height: 360px;
+    width: 300px;
+    height: 300px;
 
     border-radius: 50%;
 
     background: rgba(255, 255, 255, 0.055);
 
-    filter: blur(70px);
+    filter: blur(75px);
 
-    animation: characterGlow 5s ease-in-out infinite;
+    animation: glow 5s ease-in-out infinite;
 }
 
-.character-silhouette {
+.character-body {
     position: relative;
 
-    width: 190px;
-    height: 260px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius:
-        50% 50% 45% 45% /
-        30% 30% 70% 70%;
-
-    background:
-        radial-gradient(
-            circle at 50% 25%,
-            #3b3b3b,
-            #171717 45%,
-            #080808 75%
-        );
-
-    border: 1px solid rgba(255, 255, 255, 0.1);
-
-    color: rgba(255, 255, 255, 0.08);
-
-    font-size: 11px;
-    font-weight: 700;
-
-    letter-spacing: 0.2em;
-
-    box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.7),
-        inset 0 0 30px rgba(255, 255, 255, 0.025);
+    width: 155px;
+    height: 270px;
 
     animation: characterFloat 5s ease-in-out infinite;
 }
 
-.character-silhouette::before {
-    content: "";
 
+/* Head */
+
+.character-head {
     position: absolute;
 
-    top: -58px;
+    top: 0;
+    left: 50%;
 
-    width: 78px;
-    height: 78px;
+    width: 76px;
+    height: 76px;
+
+    transform: translateX(-50%);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
 
     border-radius: 50%;
 
     background:
         radial-gradient(
-            circle at 50% 35%,
-            #333,
-            #101010 70%
+            circle at 40% 30%,
+            #454545,
+            #181818 65%,
+            #090909
         );
 
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.7);
+}
+
+
+/* Body */
+
+.character-torso {
+    position: absolute;
+
+    top: 66px;
+    left: 50%;
+
+    width: 100px;
+    height: 135px;
+
+    transform: translateX(-50%);
+
+    border-radius:
+        42px 42px 25px 25px;
+
+    border: 1px solid rgba(255, 255, 255, 0.09);
+
+    background:
+        linear-gradient(
+            145deg,
+            #333,
+            #131313 60%,
+            #080808
+        );
+
+    box-shadow:
+        inset 0 0 30px rgba(255, 255, 255, 0.02),
+        0 20px 50px rgba(0, 0, 0, 0.65);
+}
+
+.character-line {
+    position: absolute;
+
+    top: 45px;
+    left: 50%;
+
+    width: 35px;
+    height: 1px;
+
+    transform: translateX(-50%);
+
+    background: rgba(255, 255, 255, 0.13);
+}
+
+
+/* Legs */
+
+.character-legs {
+    position: absolute;
+
+    top: 190px;
+    left: 50%;
+
+    display: flex;
+
+    gap: 13px;
+
+    transform: translateX(-50%);
+}
+
+.character-leg {
+    width: 37px;
+    height: 78px;
+
+    border-radius: 15px 15px 10px 10px;
+
+    border: 1px solid rgba(255, 255, 255, 0.07);
+
+    background:
+        linear-gradient(
+            180deg,
+            #1f1f1f,
+            #0a0a0a
+        );
 }
 
 @keyframes characterFloat {
@@ -765,30 +847,29 @@ button {
     }
 }
 
-@keyframes characterGlow {
+@keyframes glow {
     0%,
     100% {
+        opacity: 0.65;
         transform: scale(1);
-        opacity: 0.7;
     }
 
     50% {
-        transform: scale(1.08);
         opacity: 1;
+        transform: scale(1.08);
     }
 }
 
-/* =========================
-   SECTIONS
-========================= */
 
-.today-section,
-.tasks-section,
-.weekly-section {
-    padding-top: 48px;
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.section {
+    padding-top: 50px;
 }
 
-.section-heading {
+.section-header {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
@@ -798,9 +879,7 @@ button {
     margin-bottom: 22px;
 }
 
-.section-eyebrow {
-    display: block;
-
+.section-label {
     margin-bottom: 7px;
 
     color: #555;
@@ -811,27 +890,84 @@ button {
     letter-spacing: 0.18em;
 }
 
-.section-heading h2 {
+.section-header h2 {
     color: #eee;
 
     font-size: 23px;
+    font-weight: 650;
 
     line-height: 1.2;
 
-    letter-spacing: -0.03em;
+    letter-spacing: -0.035em;
 }
 
-.today-date {
+.section-date {
     color: #555;
 
     font-size: 11px;
 }
 
-/* =========================
-   OVERVIEW GRID
-========================= */
+.text-button {
+    padding: 0;
 
-.overview-grid {
+    background: transparent;
+
+    color: #666;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: color var(--transition);
+}
+
+.text-button:hover {
+    color: #fff;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.card {
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.035),
+            rgba(255, 255, 255, 0.008)
+        );
+
+    transition:
+        border-color var(--transition),
+        transform var(--transition),
+        background var(--transition);
+}
+
+.card:hover {
+    border-color: var(--border-light);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.045),
+            rgba(255, 255, 255, 0.012)
+        );
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   STATS GRID
+========================================================= */
+
+.stats-grid {
     display: grid;
 
     grid-template-columns:
@@ -842,55 +978,21 @@ button {
     gap: 14px;
 }
 
-/* =========================
-   PROGRESS CARD
-========================= */
 
-.progress-card,
-.stat-card {
-    position: relative;
+/* =========================================================
+   DAILY PROGRESS CARD
+========================================================= */
 
+.daily-progress-card {
     min-height: 220px;
 
     padding: 23px;
-
-    overflow: hidden;
-
-    border: 1px solid var(--border);
-
-    border-radius: var(--radius-lg);
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255, 255, 255, 0.035),
-            rgba(255, 255, 255, 0.01)
-        );
-
-    transition:
-        border-color var(--transition),
-        transform var(--transition),
-        background var(--transition);
 }
 
-.progress-card:hover,
-.stat-card:hover {
-    border-color: var(--border-hover);
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255, 255, 255, 0.05),
-            rgba(255, 255, 255, 0.015)
-        );
-
-    transform: translateY(-2px);
-}
-
-.card-header {
+.card-top {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
 }
 
 .card-label {
@@ -902,14 +1004,14 @@ button {
     letter-spacing: 0.14em;
 }
 
-.card-status {
+.card-badge {
     padding: 5px 8px;
 
     border-radius: 6px;
 
     background: rgba(255, 255, 255, 0.05);
 
-    color: #777;
+    color: #666;
 
     font-size: 8px;
     font-weight: 700;
@@ -917,7 +1019,7 @@ button {
     letter-spacing: 0.1em;
 }
 
-.progress-main {
+.daily-progress-content {
     display: flex;
     align-items: center;
 
@@ -926,11 +1028,12 @@ button {
     margin-top: 28px;
 }
 
-/* =========================
-   PROGRESS CIRCLE
-========================= */
 
-.progress-circle {
+/* =========================================================
+   PROGRESS RING
+========================================================= */
+
+.progress-ring {
     position: relative;
 
     width: 135px;
@@ -939,87 +1042,99 @@ button {
     flex-shrink: 0;
 }
 
-.progress-svg {
+.progress-ring svg {
     width: 100%;
     height: 100%;
 
     transform: rotate(-90deg);
 }
 
-.progress-circle-bg,
-.progress-circle-value {
+.progress-ring-track,
+.progress-ring-value {
     fill: none;
 
     stroke-width: 5;
 }
 
-.progress-circle-bg {
+.progress-ring-track {
     stroke: #202020;
 }
 
-.progress-circle-value {
+.progress-ring-value {
     stroke: #fff;
 
     stroke-linecap: round;
 
-    stroke-dasharray: 314;
+    stroke-dasharray: 364.4;
 
-    stroke-dashoffset: 314;
+    stroke-dashoffset: 364.4;
 
     transition:
         stroke-dashoffset 0.8s ease;
 }
 
-.progress-circle-text {
+.progress-ring-center {
     position: absolute;
 
     inset: 0;
 
     display: flex;
     flex-direction: column;
+
     align-items: center;
     justify-content: center;
 }
 
-.progress-circle-text strong {
+.progress-ring-center strong {
     color: #fff;
 
     font-size: 27px;
 
     line-height: 1;
 
-    letter-spacing: -0.04em;
+    letter-spacing: -0.05em;
 }
 
-.progress-circle-text span {
-    margin-top: 5px;
+.progress-ring-center span {
+    margin-top: 6px;
 
     color: #555;
 
-    font-size: 9px;
+    font-size: 8px;
+    font-weight: 700;
 
-    text-transform: uppercase;
-
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
 }
+
+
+/* Progress Info */
 
 .progress-info {
     display: flex;
     flex-direction: column;
 }
 
-.progress-info-number {
+.progress-number {
+    display: flex;
+    align-items: baseline;
+
+    gap: 6px;
+
     color: #fff;
 
-    font-size: 27px;
+    font-size: 28px;
 
     line-height: 1;
 
-    letter-spacing: -0.04em;
+    letter-spacing: -0.05em;
 }
 
-.progress-info-number strong {
+.progress-number strong {
     font-weight: 700;
+}
+
+.progress-number span {
+    color: #555;
 }
 
 .progress-info-label {
@@ -1030,15 +1145,28 @@ button {
     font-size: 10px;
 }
 
-/* =========================
-   STAT CARDS
-========================= */
+.progress-message {
+    margin-top: 18px;
+
+    color: #777;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   STAT CARD
+========================================================= */
 
 .stat-card {
+    min-height: 220px;
+
     display: flex;
     flex-direction: column;
 
     justify-content: center;
+
+    padding: 23px;
 }
 
 .stat-icon {
@@ -1049,7 +1177,7 @@ button {
     align-items: center;
     justify-content: center;
 
-    margin-bottom: 24px;
+    margin-bottom: 22px;
 
     border: 1px solid var(--border);
 
@@ -1063,15 +1191,16 @@ button {
 }
 
 .stat-value {
-    margin-top: 10px;
+    margin-top: 11px;
 
     color: #fff;
 
-    font-size: 38px;
+    font-size: 39px;
+    font-weight: 600;
 
     line-height: 1;
 
-    letter-spacing: -0.05em;
+    letter-spacing: -0.055em;
 }
 
 .stat-value small {
@@ -1079,12 +1208,13 @@ button {
 
     color: #555;
 
-    font-size: 11px;
+    font-size: 9px;
+    font-weight: 700;
 
-    letter-spacing: 0;
+    letter-spacing: 0.08em;
 }
 
-.stat-description {
+.stat-card p {
     margin-top: 9px;
 
     color: #555;
@@ -1092,44 +1222,54 @@ button {
     font-size: 10px;
 }
 
-/* =========================
-   TASKS
-========================= */
 
-.tasks-container {
-    min-height: 130px;
+/* =========================================================
+   TASKS
+========================================================= */
+
+.tasks-card {
+    min-height: 150px;
+
+    overflow: hidden;
 
     border: 1px solid var(--border);
 
     border-radius: var(--radius-lg);
 
-    background: rgba(255, 255, 255, 0.015);
-
-    overflow: hidden;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.025),
+            rgba(255, 255, 255, 0.008)
+        );
 }
 
+
+/* Empty State */
+
 .empty-state {
-    min-height: 130px;
+    min-height: 150px;
 
     display: flex;
     flex-direction: column;
+
     align-items: center;
     justify-content: center;
 
-    padding: 35px 20px;
+    padding: 30px 20px;
 
     text-align: center;
 }
 
-.empty-state-icon {
-    width: 32px;
-    height: 32px;
+.empty-icon {
+    width: 34px;
+    height: 34px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    margin-bottom: 10px;
+    margin-bottom: 11px;
 
     border: 1px solid var(--border);
 
@@ -1144,11 +1284,12 @@ button {
     color: #aaa;
 
     font-size: 13px;
-
     font-weight: 600;
 }
 
 .empty-state p {
+    max-width: 300px;
+
     margin-top: 4px;
 
     color: #555;
@@ -1157,15 +1298,15 @@ button {
 }
 
 .primary-button {
+    min-height: 37px;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    min-height: 36px;
-
     margin-top: 17px;
 
-    padding: 0 15px;
+    padding: 0 17px;
 
     border-radius: 8px;
 
@@ -1176,6 +1317,8 @@ button {
     font-size: 10px;
     font-weight: 700;
 
+    cursor: pointer;
+
     transition: all var(--transition);
 }
 
@@ -1185,9 +1328,10 @@ button {
     transform: translateY(-1px);
 }
 
-/* =========================
+
+/* =========================================================
    TASK ITEMS
-========================= */
+========================================================= */
 
 .task-item {
     display: flex;
@@ -1220,11 +1364,15 @@ button {
 
     border-radius: 6px;
 
+    background: transparent;
+
     cursor: pointer;
 }
 
 .task-content {
     flex: 1;
+
+    min-width: 0;
 }
 
 .task-title {
@@ -1248,28 +1396,16 @@ button {
     font-size: 9px;
 }
 
-/* =========================
-   LINKS
-========================= */
 
-.view-all-link {
-    color: #666;
+/* =========================================================
+   ADD TASK PANEL
+========================================================= */
 
-    font-size: 10px;
-    font-weight: 600;
+.add-task-panel {
+    margin-top: 30px;
 
-    transition: color var(--transition);
-}
+    padding: 24px;
 
-.view-all-link:hover {
-    color: #fff;
-}
-
-/* =========================
-   WEEKLY
-========================= */
-
-.week-card {
     border: 1px solid var(--border);
 
     border-radius: var(--radius-lg);
@@ -1277,14 +1413,176 @@ button {
     background:
         linear-gradient(
             145deg,
-            rgba(255, 255, 255, 0.025),
-            rgba(255, 255, 255, 0.008)
+            rgba(255, 255, 255, 0.035),
+            rgba(255, 255, 255, 0.01)
         );
+}
 
+.add-task-panel[hidden] {
+    display: none;
+}
+
+.panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    margin-bottom: 25px;
+}
+
+.panel-header h2 {
+    color: #eee;
+
+    font-size: 21px;
+}
+
+.close-button {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #777;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    transition: all var(--transition);
+}
+
+.close-button:hover {
+    background: var(--surface-2);
+
+    color: #fff;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+#taskForm {
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+.form-row {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 14px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.form-group label {
+    color: #777;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+
+    min-height: 42px;
+
+    padding: 0 13px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 9px;
+
+    outline: none;
+
+    background: #0b0b0b;
+
+    color: #ddd;
+
+    font-size: 12px;
+
+    transition:
+        border-color var(--transition),
+        background var(--transition);
+}
+
+.form-group input::placeholder {
+    color: #444;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: rgba(255, 255, 255, 0.22);
+
+    background: #0e0e0e;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 5px;
+}
+
+.secondary-button {
+    min-height: 37px;
+
+    padding: 0 17px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #888;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all var(--transition);
+}
+
+.secondary-button:hover {
+    background: var(--surface-2);
+
+    color: #fff;
+}
+
+
+/* =========================================================
+   WEEKLY
+========================================================= */
+
+.weekly-card {
     overflow: hidden;
 }
 
-.week-days {
+.week-grid {
     display: grid;
 
     grid-template-columns: repeat(7, 1fr);
@@ -1293,14 +1591,15 @@ button {
 .week-day {
     position: relative;
 
-    min-height: 105px;
+    min-height: 130px;
 
     display: flex;
     flex-direction: column;
+
     align-items: center;
     justify-content: center;
 
-    gap: 10px;
+    gap: 12px;
 
     border-right: 1px solid var(--border);
 
@@ -1315,21 +1614,46 @@ button {
     background: rgba(255, 255, 255, 0.025);
 }
 
-.week-day span {
+.week-day-name {
     color: #555;
 
     font-size: 9px;
     font-weight: 700;
 
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
 }
 
-.week-day strong {
+.week-day-progress {
     color: #777;
 
     font-size: 18px;
 
+    line-height: 1;
+
     letter-spacing: -0.03em;
+}
+
+.week-day-bar {
+    width: 55px;
+    height: 3px;
+
+    overflow: hidden;
+
+    border-radius: 100px;
+
+    background: #202020;
+}
+
+.week-day-fill {
+    height: 100%;
+
+    width: 0;
+
+    border-radius: inherit;
+
+    background: #fff;
+
+    transition: width 0.5s ease;
 }
 
 .week-day.active {
@@ -1341,31 +1665,88 @@ button {
 
     position: absolute;
 
-    bottom: 0;
     left: 20%;
     right: 20%;
+    bottom: 0;
 
     height: 2px;
 
     background: #fff;
 }
 
-.week-day.active span {
+.week-day.active .week-day-name {
     color: #aaa;
 }
 
-.week-day.active strong {
+.week-day.active .week-day-progress {
     color: #fff;
 }
 
-/* =========================
+
+/* =========================================================
+   MOTIVATION
+========================================================= */
+
+.motivation {
+    display: flex;
+    align-items: center;
+
+    gap: 25px;
+
+    padding: 75px 0 35px;
+}
+
+.motivation-line {
+    flex: 1;
+
+    height: 1px;
+
+    background: var(--border);
+}
+
+.motivation-content {
+    flex-shrink: 0;
+
+    text-align: center;
+}
+
+.motivation-content > span {
+    color: #444;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 0.18em;
+}
+
+.motivation-content h2 {
+    margin-top: 10px;
+
+    color: #aaa;
+
+    font-size: 18px;
+    font-weight: 500;
+
+    letter-spacing: -0.02em;
+}
+
+.motivation-content p {
+    margin-top: 5px;
+
+    color: #444;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
    FOOTER
-========================= */
+========================================================= */
 
 .footer {
     max-width: 1400px;
 
-    margin: 55px auto 0;
+    margin: 0 auto;
 
     padding: 22px 38px;
 
@@ -1378,11 +1759,9 @@ button {
     color: #444;
 
     font-size: 9px;
-
-    letter-spacing: 0.05em;
 }
 
-.footer span:first-child {
+.footer div {
     color: #666;
 
     font-weight: 800;
@@ -1390,9 +1769,27 @@ button {
     letter-spacing: 0.18em;
 }
 
-/* =========================
+
+/* =========================================================
+   MOBILE OVERLAY
+========================================================= */
+
+.mobile-overlay {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    z-index: 90;
+}
+
+
+/* =========================================================
    SCROLLBAR
-========================= */
+========================================================= */
 
 ::-webkit-scrollbar {
     width: 7px;
@@ -1403,7 +1800,7 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #252525;
+    background: #242424;
 
     border-radius: 10px;
 }
@@ -1412,40 +1809,35 @@ button {
     background: #333;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+
+/* =========================================================
+   RESPONSIVE — 1100px
+========================================================= */
 
 @media (max-width: 1100px) {
 
-    .overview-grid {
+    .stats-grid {
         grid-template-columns: 1fr 1fr;
     }
 
-    .progress-card {
+    .daily-progress-card {
         grid-column: 1 / -1;
     }
 
-    .hero-section {
-        min-height: 350px;
-    }
+    .character {
+        width: 43%;
 
-    .character-layer {
-        width: 45%;
         opacity: 0.65;
     }
 
-    .character-silhouette {
-        width: 155px;
-        height: 220px;
-    }
 }
 
-@media (max-width: 800px) {
 
-    :root {
-        --sidebar-width: 230px;
-    }
+/* =========================================================
+   RESPONSIVE — 800px
+========================================================= */
+
+@media (max-width: 800px) {
 
     .sidebar {
         transform: translateX(-100%);
@@ -1457,100 +1849,116 @@ button {
         transform: translateX(0);
     }
 
-    .main-content {
+    .main {
         margin-left: 0;
     }
 
-    .mobile-menu-button {
+    .mobile-menu {
         display: flex;
     }
 
     .topbar {
         padding: 0 20px;
-
-        gap: 15px;
     }
 
-    .topbar-left {
-        flex: 1;
+    .page-content {
+        padding: 0 20px 45px;
     }
 
-    .topbar-date {
-        font-size: 10px;
+    .hero {
+        min-height: 350px;
     }
 
-    .dashboard-content {
-        padding: 0 20px 40px;
+    .hero h1 {
+        font-size: clamp(45px, 10vw, 68px);
     }
 
-    .hero-section {
-        min-height: 340px;
-    }
+    .character {
+        width: 45%;
 
-    .hero-section h1 {
-        font-size: clamp(44px, 11vw, 65px);
-    }
-
-    .character-layer {
-        width: 48%;
-        opacity: 0.4;
+        opacity: 0.35;
     }
 
     .footer {
         padding: 20px;
     }
+
 }
+
+
+/* =========================================================
+   RESPONSIVE — 600px
+========================================================= */
 
 @media (max-width: 600px) {
 
-    .overview-grid {
+    .stats-grid {
         grid-template-columns: 1fr;
     }
 
-    .progress-card {
+    .daily-progress-card {
         grid-column: auto;
     }
 
-    .progress-card,
+    .daily-progress-card,
     .stat-card {
         min-height: 190px;
     }
 
-    .progress-main {
+    .daily-progress-content {
         gap: 20px;
     }
 
-    .progress-circle {
+    .progress-ring {
         width: 115px;
         height: 115px;
     }
 
-    .progress-info-number {
-        font-size: 23px;
+    .progress-number {
+        font-size: 24px;
     }
 
-    .section-heading {
+    .section-header {
         align-items: flex-start;
     }
 
-    .week-days {
+    .week-grid {
         overflow-x: auto;
 
-        grid-template-columns: repeat(7, minmax(70px, 1fr));
+        grid-template-columns:
+            repeat(7, minmax(75px, 1fr));
     }
 
     .week-day {
-        min-height: 90px;
+        min-height: 105px;
     }
 
-    .character-layer {
+    .character {
         display: none;
     }
 
     .hero-content {
         padding: 55px 0;
     }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .motivation {
+        gap: 15px;
+    }
+
+    .motivation-content h2 {
+        font-size: 15px;
+    }
+
 }
+
+
+/* =========================================================
+   RESPONSIVE — 420px
+========================================================= */
 
 @media (max-width: 420px) {
 
@@ -1558,51 +1966,72 @@ button {
         padding: 0 14px;
     }
 
-    .topbar-profile span {
+    .topbar-user span {
         display: none;
     }
 
-    .dashboard-content {
-        padding: 0 14px 30px;
+    .page-content {
+        padding: 0 14px 35px;
     }
 
-    .hero-section {
-        min-height: 300px;
+    .hero {
+        min-height: 310px;
     }
 
-    .hero-section h1 {
+    .hero h1 {
         font-size: 42px;
     }
 
-    .hero-description {
+    .hero p {
         font-size: 12px;
     }
 
-    .today-section,
-    .tasks-section,
-    .weekly-section {
-        padding-top: 35px;
+    .section {
+        padding-top: 38px;
     }
 
-    .progress-main {
-        gap: 15px;
+    .section-header h2 {
+        font-size: 20px;
     }
 
-    .progress-circle {
+    .daily-progress-content {
+        gap: 14px;
+    }
+
+    .progress-ring {
         width: 105px;
         height: 105px;
     }
 
-    .progress-circle-text strong {
+    .progress-ring-center strong {
         font-size: 23px;
+    }
+
+    .progress-message {
+        display: none;
+    }
+
+    .add-task-panel {
+        padding: 18px;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .primary-button,
+    .secondary-button {
+        width: 100%;
     }
 
     .footer {
         flex-direction: column;
+
         align-items: flex-start;
 
         gap: 7px;
 
         padding: 20px 14px;
     }
+
 }
