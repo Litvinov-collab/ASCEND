@@ -1,114 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <meta
-        name="description"
-        content="ASCEND — become better every day."
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
     >
 
-    <meta name="theme-color" content="#080808">
-
-    <title>ASCEND — Become Better Every Day</title>
+    <title>ASCEND — Дисциплина каждый день</title>
 
     <style>
-        /* =====================================================
-           ASCEND — ALL STYLES
-           ===================================================== */
-
         :root {
             --bg: #080808;
-            --surface: #101010;
-            --surface-2: #141414;
-            --surface-3: #181818;
+            --sidebar: #0d0d0d;
+            --surface: #111111;
+            --surface-2: #151515;
+            --surface-3: #1a1a1a;
 
             --border: #242424;
             --border-light: #303030;
 
             --white: #ffffff;
-            --text: #eeeeee;
-            --text-soft: #aaaaaa;
-            --text-muted: #666666;
-            --text-dark: #444444;
+            --text: #e9e9e9;
+            --text-soft: #a4a4a4;
+            --text-muted: #686868;
 
-            --sidebar-width: 250px;
-            --topbar-height: 72px;
+            --sidebar-width: 240px;
+            --character-width: 300px;
 
             --radius: 16px;
-            --small-radius: 10px;
-
-            --transition: 0.2s ease;
+            --transition: 0.25s ease;
         }
 
-        /* =====================================================
-           RESET
-           ===================================================== */
-
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         html {
-            min-height: 100%;
-            background: var(--bg);
+            scroll-behavior: smooth;
         }
 
         body {
             min-height: 100vh;
-
             background: var(--bg);
             color: var(--text);
-
             font-family:
                 Inter,
                 -apple-system,
                 BlinkMacSystemFont,
                 "Segoe UI",
-                Roboto,
-                Arial,
                 sans-serif;
-
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
+            overflow-x: hidden;
         }
 
         button,
         input,
-        select,
-        textarea {
+        select {
             font: inherit;
         }
 
         button {
-            border: none;
+            cursor: pointer;
         }
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        /* =====================================================
+        /* =========================
            APP
-           ===================================================== */
+        ========================= */
 
         .app {
             min-height: 100vh;
-            background: var(--bg);
         }
 
-        /* =====================================================
+        /* =========================
            SIDEBAR
-           ===================================================== */
+        ========================= */
 
         .sidebar {
             position: fixed;
-            top: 0;
             left: 0;
+            top: 0;
 
             width: var(--sidebar-width);
             height: 100vh;
@@ -116,28 +89,178 @@
             display: flex;
             flex-direction: column;
 
-            padding: 26px 18px;
+            padding: 28px 18px;
 
-            background: #0b0b0b;
+            background: var(--sidebar);
             border-right: 1px solid var(--border);
 
-            z-index: 100;
+            z-index: 1000;
         }
-
-        /* =====================================================
-           LOGO
-           ===================================================== */
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 11px;
 
             padding: 0 10px;
-            margin-bottom: 48px;
+            margin-bottom: 42px;
         }
 
         .logo-mark {
+            width: 32px;
+            height: 32px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid #555;
+            border-radius: 9px;
+
+            color: var(--white);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .logo-text {
+            color: var(--white);
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 3px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+        }
+
+        .nav-group {
+            margin-bottom: 28px;
+        }
+
+        .nav-title {
+            padding: 0 10px;
+            margin-bottom: 9px;
+
+            color: var(--text-muted);
+
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .nav-link {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 11px 12px;
+            margin-bottom: 3px;
+
+            border: 0;
+            border-radius: 10px;
+
+            background: transparent;
+            color: var(--text-soft);
+
+            text-align: left;
+
+            transition:
+                background var(--transition),
+                color var(--transition),
+                transform var(--transition);
+        }
+
+        .nav-link:hover {
+            background: var(--surface-2);
+            color: var(--white);
+        }
+
+        .nav-link.active {
+            background: var(--surface-3);
+            color: var(--white);
+        }
+
+        .nav-link-icon {
+            width: 20px;
+
+            color: var(--text-muted);
+            font-size: 14px;
+
+            text-align: center;
+        }
+
+        .nav-link.active .nav-link-icon,
+        .nav-link:hover .nav-link-icon {
+            color: var(--white);
+        }
+
+        /* =========================
+           SIDEBAR BOTTOM
+        ========================= */
+
+        .sidebar-bottom {
+            margin-top: auto;
+        }
+
+        .sidebar-progress {
+            padding: 14px;
+            margin-bottom: 16px;
+
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .sidebar-progress-header {
+            display: flex;
+            justify-content: space-between;
+
+            margin-bottom: 9px;
+
+            font-size: 10px;
+        }
+
+        .sidebar-progress-header span:first-child {
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #sidebarProgress {
+            color: var(--white);
+            font-weight: 700;
+        }
+
+        .sidebar-progress-track {
+            height: 4px;
+
+            overflow: hidden;
+
+            background: #252525;
+            border-radius: 10px;
+        }
+
+        .sidebar-progress-fill {
+            width: 0;
+            height: 100%;
+
+            background: var(--white);
+
+            transition: width 0.5s ease;
+        }
+
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            padding: 8px;
+        }
+
+        .user-avatar {
             width: 35px;
             height: 35px;
 
@@ -145,286 +268,96 @@
             align-items: center;
             justify-content: center;
 
-            border: 1px solid #3a3a3a;
-            border-radius: 9px;
-
-            background: #151515;
-            color: #fff;
-
-            font-size: 15px;
-            font-weight: 800;
-        }
-
-        .logo-text {
-            color: #fff;
-
-            font-size: 17px;
-            font-weight: 800;
-
-            letter-spacing: 3px;
-        }
-
-        /* =====================================================
-           NAVIGATION
-           ===================================================== */
-
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 35px;
-        }
-
-        .nav-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .nav-title {
-            padding: 0 12px;
-            margin-bottom: 8px;
-
-            color: #505050;
-
-            font-size: 9px;
-            font-weight: 700;
-
-            letter-spacing: 1.8px;
-        }
-
-        .nav-link {
-            min-height: 44px;
-
-            display: flex;
-            align-items: center;
-            gap: 13px;
-
-            padding: 0 12px;
-
-            border: 1px solid transparent;
-            border-radius: 10px;
-
-            color: #777;
-
-            font-size: 14px;
-            font-weight: 500;
-
-            transition:
-                background var(--transition),
-                color var(--transition),
-                border-color var(--transition);
-        }
-
-        .nav-link:hover {
-            color: #fff;
-            background: #121212;
-        }
-
-        .nav-link.active {
-            color: #fff;
-            background: #171717;
-            border-color: #292929;
-        }
-
-        .nav-link-icon {
-            width: 20px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            color: #666;
-
-            font-size: 15px;
-        }
-
-        .nav-link.active .nav-link-icon {
-            color: #fff;
-        }
-
-        /* =====================================================
-           SIDEBAR BOTTOM
-           ===================================================== */
-
-        .sidebar-bottom {
-            margin-top: auto;
-        }
-
-        .sidebar-progress {
-            padding: 16px;
-
-            border: 1px solid var(--border);
-            border-radius: 12px;
-
-            background: #101010;
-        }
-
-        .sidebar-progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            margin-bottom: 10px;
-        }
-
-        .sidebar-progress-header span {
-            color: #555;
-
-            font-size: 9px;
-            font-weight: 700;
-
-            letter-spacing: 1px;
-        }
-
-        .sidebar-progress-header strong {
-            color: #eee;
-
-            font-size: 12px;
-        }
-
-        .sidebar-progress-track {
-            width: 100%;
-            height: 4px;
-
-            overflow: hidden;
-
-            border-radius: 999px;
-
-            background: #242424;
-        }
-
-        .sidebar-progress-fill {
-            width: 0;
-            height: 100%;
-
-            border-radius: inherit;
-
-            background: #fff;
-
-            transition: width 0.35s ease;
-        }
-
-        .sidebar-user {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-
-            margin-top: 18px;
-            padding: 8px 10px;
-        }
-
-        .user-avatar {
-            width: 34px;
-            height: 34px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
+            border: 1px solid var(--border-light);
             border-radius: 50%;
-            border: 1px solid #303030;
 
-            background: #181818;
-            color: #fff;
+            background: var(--surface-2);
 
+            color: var(--white);
             font-size: 12px;
             font-weight: 700;
         }
 
         .user-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
+            min-width: 0;
         }
 
         .user-info strong {
-            color: #ddd;
+            display: block;
 
-            font-size: 13px;
-            font-weight: 600;
+            margin-bottom: 2px;
+
+            color: var(--text);
+            font-size: 12px;
         }
 
         .user-info span {
-            color: #555;
-
-            font-size: 11px;
+            color: var(--text-muted);
+            font-size: 10px;
         }
 
-        /* =====================================================
+        /* =========================
            MAIN
-           ===================================================== */
+        ========================= */
 
         .main {
             min-height: 100vh;
 
             margin-left: var(--sidebar-width);
+            padding-right: var(--character-width);
 
-            background: var(--bg);
+            position: relative;
         }
 
-        /* =====================================================
+        /* =========================
            TOPBAR
-           ===================================================== */
+        ========================= */
 
         .topbar {
-            position: sticky;
-            top: 0;
-
-            height: var(--topbar-height);
+            height: 72px;
 
             display: flex;
             align-items: center;
             justify-content: space-between;
 
-            padding: 0 40px;
+            padding: 0 34px;
 
-            background: rgba(8, 8, 8, 0.94);
             border-bottom: 1px solid var(--border);
-
-            backdrop-filter: blur(15px);
-
-            z-index: 50;
         }
 
-        .topbar-left,
-        .topbar-right {
+        .topbar-left {
             display: flex;
             align-items: center;
+            gap: 15px;
         }
 
         .current-date {
-            color: #777;
-
+            color: var(--text-soft);
             font-size: 12px;
         }
 
         .topbar-right {
-            gap: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
         .notification-button {
-            width: 36px;
-            height: 36px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 34px;
+            height: 34px;
 
             border: 1px solid var(--border);
             border-radius: 9px;
 
-            background: #101010;
-            color: #aaa;
-
-            cursor: pointer;
+            background: var(--surface);
+            color: var(--text-soft);
 
             transition: var(--transition);
         }
 
         .notification-button:hover {
-            color: #fff;
-            background: #171717;
-            border-color: #383838;
+            border-color: var(--border-light);
+            color: var(--white);
         }
 
         .topbar-user {
@@ -432,9 +365,8 @@
             align-items: center;
             gap: 9px;
 
-            color: #aaa;
-
-            font-size: 13px;
+            color: var(--text-soft);
+            font-size: 11px;
         }
 
         .avatar-small {
@@ -445,370 +377,242 @@
             align-items: center;
             justify-content: center;
 
+            border: 1px solid var(--border-light);
             border-radius: 50%;
-            border: 1px solid #303030;
 
-            background: #181818;
-            color: #fff;
+            background: var(--surface-2);
 
-            font-size: 11px;
+            color: var(--white);
+            font-size: 10px;
             font-weight: 700;
         }
 
         .mobile-menu {
             display: none;
 
-            width: 36px;
-            height: 36px;
-
-            align-items: center;
-            justify-content: center;
-
-            margin-right: 12px;
+            width: 35px;
+            height: 35px;
 
             border: 1px solid var(--border);
             border-radius: 8px;
 
-            background: #101010;
-            color: #aaa;
-
-            cursor: pointer;
+            background: var(--surface);
+            color: var(--white);
         }
 
-        /* =====================================================
-           PAGE CONTENT
-           ===================================================== */
+        /* =========================
+           CONTENT
+        ========================= */
 
         .page-content {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1250px;
 
             margin: 0 auto;
-
-            padding: 50px 40px 80px;
+            padding: 35px;
         }
 
-        /* =====================================================
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: pageIn 0.3s ease;
+        }
+
+        @keyframes pageIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* =========================
            HERO
-           ===================================================== */
+        ========================= */
 
         .hero {
             position: relative;
 
-            min-height: 300px;
+            min-height: 230px;
 
             display: flex;
             align-items: center;
-            justify-content: space-between;
 
-            margin-bottom: 70px;
-            padding: 45px 50px;
+            padding: 35px;
+
+            margin-bottom: 32px;
 
             overflow: hidden;
 
-            border: 1px solid var(--border);
-            border-radius: 20px;
-
             background:
-                radial-gradient(
-                    circle at 85% 50%,
-                    rgba(255, 255, 255, 0.06),
-                    transparent 30%
-                ),
-                #0d0d0d;
+                linear-gradient(
+                    135deg,
+                    #111111,
+                    #0b0b0b
+                );
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
         }
 
         .hero-content {
-            position: relative;
-            z-index: 2;
-
-            max-width: 650px;
+            max-width: 580px;
         }
 
         .hero-eyebrow {
-            margin-bottom: 18px;
+            margin-bottom: 12px;
 
-            color: #5c5c5c;
+            color: var(--text-muted);
 
             font-size: 10px;
             font-weight: 700;
-
-            letter-spacing: 2.5px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
         .hero h1 {
-            margin-bottom: 17px;
+            margin-bottom: 10px;
 
-            color: #fff;
+            color: var(--white);
 
-            font-size: clamp(42px, 5vw, 72px);
-            line-height: 0.98;
-
-            font-weight: 800;
-
-            letter-spacing: -3px;
-        }
-
-        .hero h1 span {
-            display: block;
-
-            color: #555;
+            font-size: clamp(28px, 4vw, 46px);
+            line-height: 1.05;
+            letter-spacing: -2px;
         }
 
         .hero p {
-            max-width: 430px;
+            max-width: 480px;
 
-            color: #777;
+            color: var(--text-soft);
 
-            font-size: 15px;
+            font-size: 13px;
             line-height: 1.7;
         }
 
-        /* =====================================================
-           CHARACTER
-           ===================================================== */
-
-        .character {
-            position: relative;
-
-            width: 240px;
-            height: 240px;
-
-            flex-shrink: 0;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .character-glow {
-            position: absolute;
-
-            width: 170px;
-            height: 170px;
-
-            border-radius: 50%;
-
-            background: rgba(255, 255, 255, 0.035);
-
-            filter: blur(20px);
-        }
-
-        .character-body {
-            position: relative;
-
-            width: 100px;
-            height: 190px;
-
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-
-            z-index: 2;
-        }
-
-        .character-head {
-            width: 48px;
-            height: 48px;
-
-            border-radius: 50%;
-
-            background: #d8d8d8;
-
-            box-shadow:
-                0 0 0 1px #999,
-                0 10px 30px rgba(255, 255, 255, 0.08);
-        }
-
-        .character-torso {
-            position: relative;
-
-            width: 66px;
-            height: 78px;
-
-            margin-top: 9px;
-
-            border-radius: 20px 20px 13px 13px;
-
-            background: linear-gradient(
-                180deg,
-                #d2d2d2,
-                #858585
-            );
-        }
-
-        .character-line {
-            position: absolute;
-
-            top: 25px;
-            left: 50%;
-
-            width: 25px;
-            height: 2px;
-
-            transform: translateX(-50%);
-
-            background: #666;
-        }
-
-        .character-legs {
-            display: flex;
-            gap: 9px;
-
-            margin-top: 7px;
-        }
-
-        .character-leg {
-            width: 23px;
-            height: 60px;
-
-            border-radius: 9px;
-
-            background: #777;
-        }
-
-        /* =====================================================
-           SECTION
-           ===================================================== */
+        /* =========================
+           SECTIONS
+        ========================= */
 
         .section {
-            margin-bottom: 65px;
+            margin-bottom: 30px;
         }
 
         .section-header {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: space-between;
 
-            margin-bottom: 22px;
+            margin-bottom: 15px;
         }
 
         .section-label {
-            margin-bottom: 7px;
+            color: var(--text-muted);
 
-            color: #555;
-
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 700;
-
             letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
         .section-header h2 {
-            color: #eee;
+            margin-top: 4px;
 
-            font-size: 25px;
-            line-height: 1.2;
+            color: var(--white);
 
-            font-weight: 700;
-
-            letter-spacing: -0.7px;
+            font-size: 21px;
         }
 
         .section-date {
-            color: #555;
-
+            color: var(--text-muted);
             font-size: 11px;
         }
 
-        /* =====================================================
+        /* =========================
            BUTTONS
-           ===================================================== */
+        ========================= */
 
+        .primary-button,
+        .secondary-button,
         .text-button {
-            padding: 6px 0;
-
-            background: transparent;
-            color: #999;
-
-            font-size: 12px;
-            font-weight: 600;
-
-            cursor: pointer;
-
-            transition: color var(--transition);
-        }
-
-        .text-button:hover {
-            color: #fff;
+            border: 0;
+            transition: var(--transition);
         }
 
         .primary-button {
-            min-height: 42px;
-
-            padding: 0 18px;
+            padding: 10px 15px;
 
             border-radius: 9px;
 
-            background: #fff;
+            background: var(--white);
             color: #080808;
 
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-
-            cursor: pointer;
-
-            transition:
-                background var(--transition),
-                transform var(--transition);
         }
 
         .primary-button:hover {
-            background: #ddd;
             transform: translateY(-1px);
+            background: #dcdcdc;
         }
 
         .secondary-button {
-            min-height: 42px;
-
-            padding: 0 18px;
+            padding: 10px 15px;
 
             border: 1px solid var(--border-light);
             border-radius: 9px;
 
-            background: #111;
-            color: #999;
+            background: var(--surface-2);
+            color: var(--text-soft);
 
-            font-size: 12px;
-            font-weight: 600;
-
-            cursor: pointer;
-
-            transition: var(--transition);
+            font-size: 11px;
         }
 
         .secondary-button:hover {
-            background: #181818;
-            color: #fff;
+            color: var(--white);
+            border-color: #444;
         }
 
-        /* =====================================================
-           STATS
-           ===================================================== */
+        .text-button {
+            background: transparent;
+            color: var(--text-soft);
+
+            font-size: 11px;
+        }
+
+        .text-button:hover {
+            color: var(--white);
+        }
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .card {
+            background: var(--surface);
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        /* =========================
+           DAILY PROGRESS
+        ========================= */
 
         .stats-grid {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr;
-            gap: 16px;
+            gap: 14px;
         }
-
-        .card {
-            min-width: 0;
-
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-
-            background: var(--surface);
-        }
-
-        /* =====================================================
-           DAILY PROGRESS
-           ===================================================== */
 
         .daily-progress-card {
-            min-height: 245px;
-
-            padding: 25px;
+            padding: 22px;
         }
 
         .card-top {
@@ -816,46 +620,39 @@
             align-items: center;
             justify-content: space-between;
 
-            margin-bottom: 12px;
+            margin-bottom: 18px;
         }
 
         .card-label {
-            color: #666;
+            color: var(--text-muted);
 
             font-size: 9px;
             font-weight: 700;
-
-            letter-spacing: 1.7px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
         }
 
         .card-badge {
             padding: 5px 8px;
 
-            border: 1px solid #292929;
+            border: 1px solid var(--border);
             border-radius: 6px;
 
-            color: #666;
-
+            color: var(--text-muted);
             font-size: 8px;
-            font-weight: 700;
-
-            letter-spacing: 1px;
         }
 
         .daily-progress-content {
-            min-height: 170px;
-
             display: flex;
             align-items: center;
-
-            gap: 35px;
+            gap: 25px;
         }
 
         .progress-ring {
             position: relative;
 
-            width: 150px;
-            height: 150px;
+            width: 125px;
+            height: 125px;
 
             flex-shrink: 0;
         }
@@ -864,31 +661,26 @@
             width: 100%;
             height: 100%;
 
-            display: block;
-
             transform: rotate(-90deg);
         }
 
         .progress-ring-track,
         .progress-ring-value {
             fill: none;
-
-            stroke-width: 7;
+            stroke-width: 5;
         }
 
         .progress-ring-track {
-            stroke: #222;
+            stroke: #252525;
         }
 
         .progress-ring-value {
-            stroke: #fff;
+            stroke: var(--white);
 
             stroke-linecap: round;
 
-            stroke-dasharray: 364.4;
-            stroke-dashoffset: 364.4;
-
-            transition: stroke-dashoffset 0.5s ease;
+            transition:
+                stroke-dashoffset 0.6s ease;
         }
 
         .progress-ring-center {
@@ -896,236 +688,132 @@
             inset: 0;
 
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
+
+            flex-direction: column;
         }
 
         .progress-ring-center strong {
-            color: #fff;
-
-            font-size: 28px;
-            line-height: 1;
-
-            font-weight: 800;
+            color: var(--white);
+            font-size: 24px;
         }
 
         .progress-ring-center span {
-            margin-top: 6px;
-
-            color: #555;
-
-            font-size: 8px;
-            font-weight: 700;
-
-            letter-spacing: 1.3px;
+            color: var(--text-muted);
+            font-size: 9px;
         }
 
         .progress-info {
-            display: flex;
-            flex-direction: column;
+            flex: 1;
         }
 
         .progress-number {
-            display: flex;
-            align-items: baseline;
-            gap: 5px;
-        }
+            margin-bottom: 4px;
 
-        .progress-number strong {
-            color: #eee;
+            color: var(--white);
 
-            font-size: 32px;
-            line-height: 1;
-        }
-
-        .progress-number span {
-            color: #555;
-
-            font-size: 22px;
+            font-size: 30px;
+            font-weight: 700;
         }
 
         .progress-info-label {
-            margin-top: 8px;
-
-            color: #666;
-
-            font-size: 11px;
+            color: var(--text-muted);
+            font-size: 10px;
         }
 
         .progress-message {
-            max-width: 210px;
+            margin-top: 18px;
 
-            margin-top: 28px;
+            color: var(--text-soft);
 
-            color: #999;
-
-            font-size: 12px;
-            line-height: 1.5;
+            font-size: 11px;
         }
 
-        /* =====================================================
+        /* =========================
            STAT CARDS
-           ===================================================== */
+        ========================= */
 
         .stat-card {
-            min-height: 245px;
-
-            padding: 25px;
+            padding: 22px;
 
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
         }
 
         .stat-icon {
-            width: 38px;
-            height: 38px;
+            width: 32px;
+            height: 32px;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            margin-bottom: 24px;
+            margin-bottom: 25px;
 
-            border: 1px solid #292929;
-            border-radius: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
 
-            background: #171717;
-            color: #aaa;
-
-            font-size: 15px;
-        }
-
-        .stat-card .card-label {
-            margin-bottom: 10px;
+            color: var(--text-soft);
+            font-size: 12px;
         }
 
         .stat-value {
-            color: #fff;
+            color: var(--white);
 
-            font-size: 42px;
-            line-height: 1;
-
-            font-weight: 800;
-
-            letter-spacing: -2px;
-        }
-
-        .stat-value small {
-            margin-left: 4px;
-
-            color: #555;
-
-            font-size: 9px;
+            font-size: 32px;
             font-weight: 700;
-
-            letter-spacing: 1px;
         }
 
         .stat-card p {
-            margin-top: 12px;
+            margin-top: 5px;
 
-            color: #555;
-
-            font-size: 11px;
+            color: var(--text-muted);
+            font-size: 10px;
         }
 
-        /* =====================================================
+        /* =========================
            TASKS
-           ===================================================== */
+        ========================= */
 
         .tasks-card {
-            min-height: 170px;
-
-            overflow: hidden;
-
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-
-            background: var(--surface);
+            padding: 18px;
         }
 
-        .empty-state {
-            min-height: 260px;
-
+        .tasks-list {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-
-            padding: 40px 20px;
-
-            text-align: center;
+            gap: 8px;
         }
-
-        .empty-icon {
-            width: 42px;
-            height: 42px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            margin-bottom: 15px;
-
-            border: 1px dashed #333;
-            border-radius: 10px;
-
-            color: #777;
-
-            font-size: 20px;
-        }
-
-        .empty-state h3 {
-            margin-bottom: 7px;
-
-            color: #ddd;
-
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .empty-state p {
-            max-width: 300px;
-
-            margin-bottom: 20px;
-
-            color: #555;
-
-            font-size: 11px;
-            line-height: 1.5;
-        }
-
-        /* =====================================================
-           TASK ITEM
-           ===================================================== */
 
         .task-item {
-            min-height: 76px;
+            min-height: 65px;
 
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 13px;
 
-            padding: 15px 20px;
+            padding: 12px;
 
-            border-bottom: 1px solid var(--border);
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 11px;
 
-            transition: background var(--transition);
-        }
-
-        .task-item:last-child {
-            border-bottom: none;
+            transition: var(--transition);
         }
 
         .task-item:hover {
-            background: #141414;
+            border-color: var(--border-light);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
         }
 
         .task-checkbox {
-            width: 24px;
-            height: 24px;
+            width: 23px;
+            height: 23px;
 
             flex-shrink: 0;
 
@@ -1133,175 +821,421 @@
             align-items: center;
             justify-content: center;
 
-            border: 1px solid #383838;
+            border: 1px solid #3a3a3a;
             border-radius: 7px;
 
-            background: #0d0d0d;
-            color: transparent;
+            background: transparent;
+            color: #080808;
+
+            font-size: 12px;
+            font-weight: 900;
+
+            transition: var(--transition);
+        }
+
+        .task-checkbox:hover {
+            border-color: #777;
+        }
+
+        .task-item.completed .task-checkbox {
+            background: var(--white);
+            border-color: var(--white);
+        }
+
+        .task-content {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .task-title {
+            overflow: hidden;
+
+            color: var(--text);
+
+            font-size: 12px;
+            font-weight: 600;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+        }
+
+        .task-category {
+            margin-top: 4px;
+
+            color: var(--text-muted);
+
+            font-size: 9px;
+        }
+
+        .task-status {
+            color: var(--text-muted);
+
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .empty-state {
+            padding: 45px 20px;
+
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 45px;
+            height: 45px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0 auto 14px;
+
+            border: 1px solid var(--border-light);
+            border-radius: 50%;
+
+            color: var(--text-soft);
+            font-size: 22px;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 7px;
+
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .empty-state p {
+            margin-bottom: 17px;
+
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        /* =========================
+           WEEK
+        ========================= */
+
+        .weekly-card {
+            padding: 20px;
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .week-day {
+            padding: 13px 8px;
+
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            background: var(--surface-2);
+
+            text-align: center;
+        }
+
+        .week-day.active {
+            border-color: #555;
+        }
+
+        .week-day-name {
+            margin-bottom: 9px;
+
+            color: var(--text-muted);
+
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .week-day-progress {
+            margin-bottom: 7px;
+
+            color: var(--text);
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .week-day-bar {
+            height: 3px;
+
+            overflow: hidden;
+
+            background: #252525;
+            border-radius: 10px;
+        }
+
+        .week-day-fill {
+            width: 0;
+            height: 100%;
+
+            background: var(--white);
+
+            transition: width 0.5s ease;
+        }
+
+        /* =========================
+           MOTIVATION
+        ========================= */
+
+        .motivation {
+            padding: 20px;
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #111111,
+                    #0d0d0d
+                );
+        }
+
+        .motivation-line {
+            width: 30px;
+            height: 2px;
+
+            margin-bottom: 14px;
+
+            background: var(--white);
+        }
+
+        .motivation-content {
+            color: var(--text-soft);
+
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           OTHER PAGES
+        ========================= */
+
+        .page-title {
+            margin-bottom: 7px;
+
+            color: var(--white);
+
+            font-size: 30px;
+            letter-spacing: -1px;
+        }
+
+        .page-description {
+            margin-bottom: 30px;
+
+            color: var(--text-muted);
+
+            font-size: 12px;
+        }
+
+        .placeholder-card {
+            padding: 35px;
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+
+            background: var(--surface);
+        }
+
+        .placeholder-card h3 {
+            margin-bottom: 8px;
+
+            color: var(--white);
+            font-size: 16px;
+        }
+
+        .placeholder-card p {
+            color: var(--text-muted);
+
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           CALENDAR
+        ========================= */
+
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 15px;
+        }
+
+        .calendar-month {
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .calendar-weekday {
+            padding: 10px 5px;
+
+            color: var(--text-muted);
+
+            font-size: 9px;
+            font-weight: 700;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .calendar-day {
+            min-height: 80px;
+
+            padding: 10px;
+
+            border: 1px solid var(--border);
+            border-radius: 9px;
+
+            background: var(--surface-2);
 
             cursor: pointer;
 
             transition: var(--transition);
         }
 
-        .task-checkbox:hover {
-            border-color: #666;
+        .calendar-day:hover {
+            border-color: #444;
         }
 
-        .task-item.completed .task-checkbox {
-            background: #fff;
-            border-color: #fff;
-
-            color: #080808;
+        .calendar-day.today {
+            border-color: #777;
         }
 
-        .task-content {
-            min-width: 0;
-            flex: 1;
-
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+        .calendar-day.empty {
+            opacity: 0.2;
+            cursor: default;
         }
 
-        .task-title {
-            color: #ddd;
-
-            font-size: 13px;
-            font-weight: 600;
-
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .task-item.completed .task-title {
-            color: #555;
-
-            text-decoration: line-through;
-        }
-
-        .task-category {
-            color: #555;
-
+        .calendar-day-number {
+            color: var(--text-soft);
             font-size: 10px;
         }
 
-        .task-status {
-            color: #555;
-
-            font-size: 10px;
-            font-weight: 600;
+        .calendar-day.today .calendar-day-number {
+            color: var(--white);
+            font-weight: 800;
         }
 
-        /* =====================================================
+        .calendar-day-progress {
+            margin-top: 20px;
+
+            color: var(--text-muted);
+            font-size: 9px;
+        }
+
+        /* =========================
            ADD TASK PANEL
-           ===================================================== */
+        ========================= */
 
         .add-task-panel {
-            margin-top: -30px;
-            margin-bottom: 65px;
+            position: fixed;
+            inset: 0;
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            background: rgba(0, 0, 0, 0.72);
+
+            z-index: 3000;
+        }
+
+        .add-task-panel.active {
+            display: flex;
+        }
+
+        .task-panel {
+            width: 100%;
+            max-width: 450px;
 
             padding: 25px;
 
-            border: 1px solid #292929;
-            border-radius: var(--radius);
+            background: #111;
+            border: 1px solid var(--border-light);
+            border-radius: 17px;
 
-            background: #101010;
-        }
-
-        .add-task-panel[hidden] {
-            display: none;
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.6);
         }
 
         .panel-header {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: space-between;
 
             margin-bottom: 25px;
         }
 
         .panel-header h2 {
-            color: #eee;
-
-            font-size: 22px;
-            font-weight: 700;
+            color: var(--white);
+            font-size: 18px;
         }
 
         .close-button {
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border: 1px solid #292929;
+            border: 1px solid var(--border);
             border-radius: 8px;
 
-            background: #151515;
-            color: #777;
+            background: var(--surface-2);
+            color: var(--text-soft);
 
-            font-size: 20px;
-            line-height: 1;
-
-            cursor: pointer;
-
-            transition: var(--transition);
-        }
-
-        .close-button:hover {
-            background: #1d1d1d;
-            color: #fff;
-        }
-
-        #taskForm {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-
-            gap: 16px;
+            font-size: 18px;
         }
 
         .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            margin-bottom: 17px;
         }
 
         .form-group label {
-            color: #777;
+            display: block;
 
-            font-size: 10px;
+            margin-bottom: 7px;
+
+            color: var(--text-muted);
+
+            font-size: 9px;
             font-weight: 700;
-
             letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
-            min-height: 44px;
 
-            padding: 0 13px;
+            padding: 11px 12px;
 
             outline: none;
 
-            border: 1px solid #292929;
-            border-radius: 9px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
 
-            background: #0b0b0b;
-            color: #eee;
+            background: var(--surface-2);
+            color: var(--text);
 
             font-size: 12px;
 
-            transition: border-color var(--transition);
+            transition: var(--transition);
         }
 
         .form-group input:focus,
@@ -1309,195 +1243,339 @@
             border-color: #555;
         }
 
-        .form-group input::placeholder {
-            color: #444;
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
         .form-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
+            gap: 9px;
 
-            padding-top: 5px;
+            margin-top: 25px;
         }
 
-        /* =====================================================
-           WEEK
-           ===================================================== */
+        /* =========================
+           PERMANENT CHARACTER
+        ========================= */
 
-        .weekly-card {
-            padding: 25px;
-        }
+        .character-side {
+            position: fixed;
 
-        .week-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
+            top: 72px;
+            right: 0;
+            bottom: 0;
 
-            gap: 10px;
-        }
+            width: var(--character-width);
 
-        .week-day {
-            min-width: 0;
-
-            padding: 16px 12px;
-
-            border: 1px solid #1f1f1f;
-            border-radius: 10px;
-
-            background: #0d0d0d;
-
-            transition: var(--transition);
-        }
-
-        .week-day.active {
-            border-color: #3a3a3a;
-            background: #151515;
-        }
-
-        .week-day-name {
-            display: block;
-
-            margin-bottom: 12px;
-
-            color: #555;
-
-            font-size: 9px;
-            font-weight: 700;
-
-            letter-spacing: 1px;
-        }
-
-        .week-day.active .week-day-name {
-            color: #aaa;
-        }
-
-        .week-day-progress {
-            display: block;
-
-            margin-bottom: 10px;
-
-            color: #ccc;
-
-            font-size: 17px;
-            font-weight: 700;
-        }
-
-        .week-day-bar {
-            width: 100%;
-            height: 4px;
-
-            overflow: hidden;
-
-            border-radius: 999px;
-
-            background: #222;
-        }
-
-        .week-day-fill {
-            width: 0;
-            height: 100%;
-
-            border-radius: inherit;
-
-            background: #fff;
-
-            transition: width 0.35s ease;
-        }
-
-        /* =====================================================
-           MOTIVATION
-           ===================================================== */
-
-        .motivation {
             display: flex;
             align-items: center;
-            gap: 30px;
+            justify-content: center;
 
-            margin: 85px 0 30px;
+            border-left: 1px solid var(--border);
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    #151515 0%,
+                    #0b0b0b 55%,
+                    #080808 100%
+                );
+
+            z-index: 100;
         }
 
-        .motivation-line {
-            height: 1px;
+        .character-wrapper {
+            position: relative;
 
-            flex: 1;
+            width: 220px;
+            height: 470px;
 
-            background: #1e1e1e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            animation: characterFloat 4s ease-in-out infinite;
         }
 
-        .motivation-content {
-            text-align: center;
+        @keyframes characterFloat {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
         }
 
-        .motivation-content span {
-            display: block;
+        .character-glow {
+            position: absolute;
 
-            margin-bottom: 10px;
+            width: 190px;
+            height: 190px;
 
-            color: #444;
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.035);
+
+            filter: blur(35px);
+        }
+
+        .character {
+            position: relative;
+
+            width: 150px;
+            height: 360px;
+        }
+
+        .character-head {
+            position: absolute;
+
+            top: 25px;
+            left: 50%;
+
+            width: 82px;
+            height: 82px;
+
+            transform: translateX(-50%);
+
+            border: 2px solid #8b8b8b;
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle at 50% 40%,
+                    #333,
+                    #151515 70%
+                );
+
+            box-shadow:
+                0 0 35px rgba(255,255,255,0.04);
+        }
+
+        .character-head::before,
+        .character-head::after {
+            content: "";
+
+            position: absolute;
+
+            top: 36px;
+
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: #ddd;
+
+            box-shadow:
+                0 0 10px rgba(255,255,255,0.4);
+        }
+
+        .character-head::before {
+            left: 23px;
+        }
+
+        .character-head::after {
+            right: 23px;
+        }
+
+        .character-neck {
+            position: absolute;
+
+            top: 100px;
+            left: 50%;
+
+            width: 25px;
+            height: 25px;
+
+            transform: translateX(-50%);
+
+            background: #202020;
+            border-left: 1px solid #555;
+            border-right: 1px solid #555;
+        }
+
+        .character-torso {
+            position: absolute;
+
+            top: 115px;
+            left: 50%;
+
+            width: 105px;
+            height: 145px;
+
+            transform: translateX(-50%);
+
+            border: 2px solid #707070;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #202020,
+                    #0f0f0f
+                );
+
+            clip-path: polygon(
+                18% 0,
+                82% 0,
+                100% 18%,
+                86% 100%,
+                14% 100%,
+                0 18%
+            );
+        }
+
+        .character-line {
+            position: absolute;
+
+            top: 30px;
+            left: 50%;
+
+            width: 2px;
+            height: 85px;
+
+            transform: translateX(-50%);
+
+            background: #5e5e5e;
+        }
+
+        .character-arm {
+            position: absolute;
+
+            top: 125px;
+
+            width: 22px;
+            height: 125px;
+
+            border: 2px solid #5b5b5b;
+            border-radius: 20px;
+
+            background: #141414;
+        }
+
+        .character-arm.left {
+            left: 4px;
+            transform: rotate(7deg);
+        }
+
+        .character-arm.right {
+            right: 4px;
+            transform: rotate(-7deg);
+        }
+
+        .character-legs {
+            position: absolute;
+
+            top: 250px;
+            left: 50%;
+
+            width: 85px;
+            height: 105px;
+
+            transform: translateX(-50%);
+        }
+
+        .character-leg {
+            position: absolute;
+
+            top: 0;
+
+            width: 28px;
+            height: 105px;
+
+            border: 2px solid #5b5b5b;
+            border-radius: 12px;
+
+            background: #111;
+        }
+
+        .character-leg.left {
+            left: 8px;
+            transform: rotate(2deg);
+        }
+
+        .character-leg.right {
+            right: 8px;
+            transform: rotate(-2deg);
+        }
+
+        .character-status {
+            position: absolute;
+
+            bottom: 45px;
+
+            padding: 7px 11px;
+
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+
+            background: rgba(10, 10, 10, 0.8);
+
+            color: var(--text-muted);
 
             font-size: 8px;
             font-weight: 700;
-
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
         }
 
-        .motivation-content h2 {
-            color: #ddd;
-
-            font-size: 20px;
-            font-weight: 700;
-
-            letter-spacing: -0.5px;
-        }
-
-        .motivation-content p {
-            margin-top: 8px;
-
-            color: #555;
-
-            font-size: 11px;
-        }
-
-        /* =====================================================
+        /* =========================
            FOOTER
-           ===================================================== */
+        ========================= */
 
         .footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 25px 0;
 
-            padding: 25px 40px;
+            color: var(--text-muted);
 
-            border-top: 1px solid var(--border);
+            font-size: 9px;
 
-            color: #444;
-
-            font-size: 10px;
+            text-align: center;
         }
 
-        .footer div {
-            color: #666;
+        /* =========================
+           TOAST
+        ========================= */
+
+        .ascend-toast {
+            position: fixed;
+
+            right: 25px;
+            bottom: 25px;
+
+            z-index: 5000;
+
+            padding: 13px 17px;
+
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+
+            background: #151515;
+
+            color: var(--text);
 
             font-size: 11px;
-            font-weight: 800;
 
-            letter-spacing: 2px;
+            box-shadow:
+                0 15px 40px rgba(0,0,0,0.4);
         }
 
-        /* =====================================================
-           MOBILE OVERLAY
-           ===================================================== */
+        /* =========================
+           MOBILE
+        ========================= */
 
         .mobile-overlay {
             display: none;
         }
 
-        /* =====================================================
-           RESPONSIVE — 1100
-           ===================================================== */
-
-        @media (max-width: 1100px) {
+        @media (max-width: 1250px) {
+            :root {
+                --character-width: 240px;
+            }
 
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
@@ -1506,35 +1584,27 @@
             .daily-progress-card {
                 grid-column: 1 / -1;
             }
+        }
 
-            .hero {
-                padding: 40px;
+        @media (max-width: 1000px) {
+            :root {
+                --character-width: 0px;
             }
 
-            .character {
-                width: 200px;
-                height: 200px;
+            .character-side {
+                display: none;
             }
 
-            .week-grid {
-                gap: 7px;
-            }
-
-            .week-day {
-                padding: 14px 9px;
+            .main {
+                padding-right: 0;
             }
         }
 
-        /* =====================================================
-           RESPONSIVE — 800
-           ===================================================== */
-
         @media (max-width: 800px) {
-
             .sidebar {
                 transform: translateX(-100%);
 
-                transition: transform 0.25s ease;
+                transition: transform 0.3s ease;
             }
 
             .sidebar.open {
@@ -1545,12 +1615,16 @@
                 margin-left: 0;
             }
 
-            .topbar {
-                padding: 0 20px;
+            .mobile-menu {
+                display: block;
             }
 
-            .mobile-menu {
-                display: flex;
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .page-content {
+                padding: 25px 18px;
             }
 
             .mobile-overlay {
@@ -1559,102 +1633,23 @@
 
                 display: block;
 
-                background: rgba(0, 0, 0, 0.65);
+                background: rgba(0,0,0,0.65);
 
                 opacity: 0;
                 visibility: hidden;
 
-                transition:
-                    opacity 0.25s ease,
-                    visibility 0.25s ease;
+                transition: var(--transition);
 
-                z-index: 90;
+                z-index: 900;
             }
 
             .mobile-overlay.active {
                 opacity: 1;
                 visibility: visible;
             }
-
-            .page-content {
-                padding: 35px 25px 60px;
-            }
-
-            .hero {
-                min-height: 280px;
-
-                padding: 35px;
-            }
-
-            .character {
-                width: 170px;
-                height: 170px;
-            }
-
-            .character-body {
-                transform: scale(0.8);
-            }
         }
 
-        /* =====================================================
-           RESPONSIVE — 600
-           ===================================================== */
-
         @media (max-width: 600px) {
-
-            .topbar {
-                height: 64px;
-            }
-
-            .current-date {
-                font-size: 10px;
-            }
-
-            .topbar-user span {
-                display: none;
-            }
-
-            .page-content {
-                padding: 25px 16px 50px;
-            }
-
-            .hero {
-                min-height: 360px;
-
-                display: block;
-
-                padding: 30px 25px;
-            }
-
-            .hero h1 {
-                font-size: 43px;
-                letter-spacing: -2px;
-            }
-
-            .hero p {
-                font-size: 13px;
-            }
-
-            .character {
-                position: absolute;
-
-                right: 15px;
-                bottom: 0;
-
-                width: 150px;
-                height: 150px;
-
-                opacity: 0.45;
-            }
-
-            .section {
-                margin-bottom: 50px;
-            }
-
-            .section-header h2 {
-                font-size: 21px;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -1664,63 +1659,47 @@
             }
 
             .daily-progress-content {
-                gap: 20px;
+                gap: 18px;
             }
 
             .progress-ring {
-                width: 125px;
-                height: 125px;
+                width: 100px;
+                height: 100px;
             }
 
-            .progress-ring-center strong {
-                font-size: 24px;
+            .week-grid {
+                gap: 4px;
             }
 
-            .progress-number strong {
-                font-size: 27px;
+            .week-day {
+                padding: 10px 4px;
             }
 
-            .stat-card {
-                min-height: 190px;
+            .calendar-day {
+                min-height: 60px;
+                padding: 7px;
+            }
+
+            .calendar-day-progress {
+                margin-top: 12px;
+            }
+
+            .topbar-user {
+                display: none;
             }
 
             .form-row {
                 grid-template-columns: 1fr;
             }
-
-            .week-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-
-            .week-day {
-                padding: 12px 10px;
-            }
-
-            .motivation {
-                gap: 15px;
-            }
-
-            .motivation-line {
-                display: none;
-            }
-
-            .footer {
-                padding: 22px 20px;
-            }
         }
 
-        /* =====================================================
-           RESPONSIVE — 420
-           ===================================================== */
-
         @media (max-width: 420px) {
-
             .hero {
-                min-height: 380px;
+                padding: 25px;
             }
 
             .hero h1 {
-                font-size: 38px;
+                font-size: 30px;
             }
 
             .daily-progress-content {
@@ -1728,31 +1707,12 @@
                 align-items: flex-start;
             }
 
-            .progress-info {
-                width: 100%;
+            .week-day-name {
+                font-size: 7px;
             }
 
-            .progress-message {
-                margin-top: 15px;
-            }
-
-            .week-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .form-actions {
-                flex-direction: column-reverse;
-            }
-
-            .form-actions button {
-                width: 100%;
-            }
-
-            .footer {
-                flex-direction: column;
-                gap: 8px;
-
-                text-align: center;
+            .week-day-progress {
+                font-size: 9px;
             }
         }
     </style>
@@ -1760,303 +1720,329 @@
 
 <body>
 
-    <div class="app" id="app">
+<div class="app">
 
-        <!-- =================================================
-             SIDEBAR
-             ================================================= -->
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
 
-        <aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar">
 
-            <div class="logo">
-                <div class="logo-mark">A</div>
-                <div class="logo-text">ASCEND</div>
+        <div class="logo">
+            <div class="logo-mark">A</div>
+            <div class="logo-text">ASCEND</div>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <div class="nav-group">
+
+                <div class="nav-title">
+                    Главное
+                </div>
+
+                <button
+                    class="nav-link active"
+                    data-page="dashboard"
+                    type="button"
+                >
+                    <span class="nav-link-icon">⌂</span>
+                    <span>Главная</span>
+                </button>
+
+                <button
+                    class="nav-link"
+                    data-page="calendar"
+                    type="button"
+                >
+                    <span class="nav-link-icon">□</span>
+                    <span>Календарь</span>
+                </button>
+
+                <button
+                    class="nav-link"
+                    data-page="tasks"
+                    type="button"
+                >
+                    <span class="nav-link-icon">✓</span>
+                    <span>Задачи</span>
+                </button>
+
             </div>
 
-            <nav class="sidebar-nav">
+            <div class="nav-group">
 
-                <div class="nav-group">
+                <div class="nav-title">
+                    Развитие
+                </div>
 
-                    <div class="nav-title">
-                        WORKSPACE
-                    </div>
+                <button
+                    class="nav-link"
+                    data-page="analytics"
+                    type="button"
+                >
+                    <span class="nav-link-icon">◒</span>
+                    <span>Аналитика</span>
+                </button>
 
-                    <a
-                        href="#"
-                        class="nav-link active"
-                        data-page="dashboard"
-                    >
-                        <span class="nav-link-icon">⌂</span>
-                        <span>Dashboard</span>
-                    </a>
+                <button
+                    class="nav-link"
+                    data-page="profile"
+                    type="button"
+                >
+                    <span class="nav-link-icon">○</span>
+                    <span>Профиль</span>
+                </button>
 
-                    <a
-                        href="#"
-                        class="nav-link"
-                        data-page="calendar"
-                    >
-                        <span class="nav-link-icon">□</span>
-                        <span>Calendar</span>
-                    </a>
+                <button
+                    class="nav-link"
+                    data-page="settings"
+                    type="button"
+                >
+                    <span class="nav-link-icon">⚙</span>
+                    <span>Настройки</span>
+                </button>
 
-                    <a
-                        href="#"
-                        class="nav-link"
-                        data-page="tasks"
-                    >
-                        <span class="nav-link-icon">✓</span>
-                        <span>Tasks</span>
-                    </a>
+            </div>
 
-                    <a
-                        href="#"
-                        class="nav-link"
-                        data-page="analytics"
-                    >
-                        <span class="nav-link-icon">↗</span>
-                        <span>Analytics</span>
-                    </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-progress">
+
+                <div class="sidebar-progress-header">
+                    <span>Сегодня</span>
+                    <span id="sidebarProgress">0%</span>
+                </div>
+
+                <div class="sidebar-progress-track">
+                    <div
+                        class="sidebar-progress-fill"
+                        id="sidebarProgressFill"
+                    ></div>
+                </div>
+
+            </div>
+
+            <div class="sidebar-user">
+
+                <div
+                    class="user-avatar"
+                    id="sidebarAvatar"
+                >
+                    A
+                </div>
+
+                <div class="user-info">
+
+                    <strong id="sidebarUserName">
+                        Alex
+                    </strong>
+
+                    <span>
+                        @alex
+                    </span>
 
                 </div>
 
-                <div class="nav-group">
+            </div>
 
-                    <div class="nav-title">
-                        PERSONAL
-                    </div>
+        </div>
 
-                    <a
-                        href="#"
-                        class="nav-link"
-                        data-page="profile"
-                    >
-                        <span class="nav-link-icon">○</span>
-                        <span>Profile</span>
-                    </a>
+    </aside>
 
-                    <a
-                        href="#"
-                        class="nav-link"
-                        data-page="settings"
-                    >
-                        <span class="nav-link-icon">⚙</span>
-                        <span>Settings</span>
-                    </a>
 
+    <!-- =========================
+         MOBILE OVERLAY
+    ========================== -->
+
+    <div
+        class="mobile-overlay"
+        id="mobileOverlay"
+    ></div>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    class="mobile-menu"
+                    id="mobileMenuButton"
+                    type="button"
+                >
+                    ☰
+                </button>
+
+                <div
+                    class="current-date"
+                    id="currentDate"
+                >
+                    Четверг, 3 сентября 2026
                 </div>
 
-            </nav>
+            </div>
 
-            <div class="sidebar-bottom">
+            <div class="topbar-right">
 
-                <div class="sidebar-progress">
+                <button
+                    class="notification-button"
+                    id="notificationButton"
+                    type="button"
+                    aria-label="Уведомления"
+                >
+                    ♢
+                </button>
 
-                    <div class="sidebar-progress-header">
-
-                        <span>
-                            TODAY'S PROGRESS
-                        </span>
-
-                        <strong id="sidebarProgress">
-                            0%
-                        </strong>
-
-                    </div>
-
-                    <div class="sidebar-progress-track">
-
-                        <div
-                            class="sidebar-progress-fill"
-                            id="sidebarProgressFill"
-                        ></div>
-
-                    </div>
-
-                </div>
-
-                <div class="sidebar-user">
+                <div class="topbar-user">
 
                     <div
-                        class="user-avatar"
-                        id="sidebarAvatar"
+                        class="avatar-small"
                     >
                         A
                     </div>
 
-                    <div class="user-info">
+                    <span id="topbarUsername">
+                        Alex
+                    </span>
 
-                        <strong id="sidebarUserName">
-                            Alex
-                        </strong>
+                </div>
 
-                        <span>
-                            @alex
-                        </span>
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             PERMANENT CHARACTER
+        ========================== -->
+
+        <aside class="character-side">
+
+            <div class="character-wrapper">
+
+                <div class="character-glow"></div>
+
+                <div class="character">
+
+                    <div class="character-head"></div>
+
+                    <div class="character-neck"></div>
+
+                    <div class="character-torso">
+                        <div class="character-line"></div>
+                    </div>
+
+                    <div class="character-arm left"></div>
+                    <div class="character-arm right"></div>
+
+                    <div class="character-legs">
+
+                        <div class="character-leg left"></div>
+                        <div class="character-leg right"></div>
 
                     </div>
 
+                </div>
+
+                <div class="character-status">
+                    В процессе развития
                 </div>
 
             </div>
 
         </aside>
 
-        <!-- =================================================
-             MAIN
-             ================================================= -->
 
-        <main class="main">
+        <!-- =========================
+             PAGE CONTENT
+        ========================== -->
 
-            <!-- TOPBAR -->
+        <div class="page-content">
 
-            <header class="topbar">
 
-                <div class="topbar-left">
+            <!-- =========================
+                 DASHBOARD
+            ========================== -->
 
-                    <button
-                        class="mobile-menu"
-                        id="mobileMenuButton"
-                        type="button"
-                        aria-label="Open menu"
-                    >
-                        ☰
-                    </button>
+            <section
+                class="page active"
+                id="page-dashboard"
+            >
 
-                    <div
-                        class="current-date"
-                        id="currentDate"
-                    >
-                        Thursday, September 3, 2026
-                    </div>
-
-                </div>
-
-                <div class="topbar-right">
-
-                    <button
-                        class="notification-button"
-                        id="notificationButton"
-                        type="button"
-                        aria-label="Notifications"
-                    >
-                        ♢
-                    </button>
-
-                    <div class="topbar-user">
-
-                        <div class="avatar-small">
-                            A
-                        </div>
-
-                        <span id="topbarUsername">
-                            Alex
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </header>
-
-            <!-- PAGE CONTENT -->
-
-            <div class="page-content">
-
-                <!-- HERO -->
-
-                <section class="hero">
+                <div class="hero">
 
                     <div class="hero-content">
 
                         <div class="hero-eyebrow">
-                            YOUR JOURNEY
+                            ASCEND / Дисциплина
                         </div>
 
                         <h1>
-                            Become better
-                            <span>every day.</span>
+                            Становись лучше
+                            каждый день.
                         </h1>
 
                         <p>
-                            Small actions.
-                            Consistent discipline.
-                            Real progress.
+                            Не нужно быть идеальным.
+                            Нужно каждый день делать
+                            следующий шаг.
                         </p>
 
                     </div>
 
-                    <div
-                        class="character"
-                        id="character"
-                        aria-hidden="true"
-                    >
+                </div>
 
-                        <div class="character-glow"></div>
 
-                        <div class="character-body">
-
-                            <div class="character-head"></div>
-
-                            <div class="character-torso">
-
-                                <div class="character-line"></div>
-
-                            </div>
-
-                            <div class="character-legs">
-
-                                <div class="character-leg"></div>
-                                <div class="character-leg"></div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-                <!-- TODAY -->
+                <!-- DAILY -->
 
                 <section class="section">
 
                     <div class="section-header">
 
                         <div>
-
                             <div class="section-label">
-                                TODAY
+                                Сегодня
                             </div>
 
                             <h2>
-                                Your progress
+                                Прогресс за день
                             </h2>
-
                         </div>
 
                         <div
                             class="section-date"
                             id="todayDate"
                         >
-                            Sep 03, 2026
+                            03 сен 2026
                         </div>
 
                     </div>
 
+
                     <div class="stats-grid">
 
-                        <!-- DAILY COMPLETION -->
-
-                        <article class="card daily-progress-card">
+                        <div
+                            class="card daily-progress-card"
+                        >
 
                             <div class="card-top">
 
                                 <span class="card-label">
-                                    DAILY COMPLETION
+                                    Выполнение
                                 </span>
 
                                 <span class="card-badge">
-                                    TODAY
+                                    ДЕНЬ
                                 </span>
 
                             </div>
@@ -2067,7 +2053,6 @@
 
                                     <svg
                                         viewBox="0 0 140 140"
-                                        aria-hidden="true"
                                     >
 
                                         <circle
@@ -2087,111 +2072,113 @@
 
                                     </svg>
 
-                                    <div class="progress-ring-center">
+                                    <div
+                                        class="progress-ring-center"
+                                    >
 
-                                        <strong id="dailyProgress">
+                                        <strong
+                                            id="dailyProgress"
+                                        >
                                             0%
                                         </strong>
 
                                         <span>
-                                            COMPLETE
+                                            выполнено
                                         </span>
 
                                     </div>
 
                                 </div>
 
+
                                 <div class="progress-info">
 
-                                    <div class="progress-number">
-
-                                        <strong id="completedTasks">
-                                            0
-                                        </strong>
-
-                                        <span>/</span>
-
-                                        <strong id="totalTasks">
-                                            0
-                                        </strong>
-
+                                    <div
+                                        class="progress-number"
+                                        id="completedTasks"
+                                    >
+                                        0
                                     </div>
 
-                                    <div class="progress-info-label">
-                                        tasks completed
+                                    <div
+                                        class="progress-info-label"
+                                    >
+                                        из
+                                        <span id="totalTasks">
+                                            0
+                                        </span>
+                                        задач выполнено
                                     </div>
 
                                     <div
                                         class="progress-message"
                                         id="progressMessage"
                                     >
-                                        Start your day.
+                                        Создай первую задачу.
                                     </div>
 
                                 </div>
 
                             </div>
 
-                        </article>
+                        </div>
+
 
                         <!-- STREAK -->
 
-                        <article class="card stat-card">
+                        <div class="card stat-card">
 
                             <div class="stat-icon">
-                                ✦
+                                ↗
                             </div>
 
-                            <div class="card-label">
-                                CURRENT STREAK
-                            </div>
+                            <div>
 
-                            <div class="stat-value">
-
-                                <span id="streakValue">
+                                <div
+                                    class="stat-value"
+                                    id="streakValue"
+                                >
                                     0
-                                </span>
+                                </div>
 
-                                <small>
-                                    DAYS
-                                </small>
+                                <p>
+                                    дней подряд
+                                </p>
 
                             </div>
 
-                            <p>
-                                Keep showing up.
-                            </p>
+                        </div>
 
-                        </article>
 
                         <!-- SCORE -->
 
-                        <article class="card stat-card">
+                        <div class="card stat-card">
 
                             <div class="stat-icon">
-                                ↑
+                                ◈
                             </div>
 
-                            <div class="card-label">
-                                ASCEND SCORE
+                            <div>
+
+                                <div
+                                    class="stat-value"
+                                    id="ascendScore"
+                                >
+                                    0
+                                </div>
+
+                                <p>
+                                    ASCEND Score
+                                </p>
+
                             </div>
 
-                            <div
-                                class="stat-value"
-                                id="ascendScore"
-                            >
-                                0
-                            </div>
-
-                            <p>
-                                Your overall progress.
-                            </p>
-
-                        </article>
+                        </div>
 
                     </div>
 
                 </section>
+
 
                 <!-- TASKS -->
 
@@ -2202,55 +2189,57 @@
                         <div>
 
                             <div class="section-label">
-                                DAILY SYSTEM
+                                Сегодня
                             </div>
 
                             <h2>
-                                Today's tasks
+                                Мои задачи
                             </h2>
 
                         </div>
 
                         <button
-                            class="text-button"
+                            class="primary-button"
                             id="addTaskButton"
                             type="button"
                         >
-                            + Add task
+                            + Добавить задачу
                         </button>
 
                     </div>
 
-                    <div
-                        class="tasks-card"
-                        id="tasksContainer"
-                    >
+
+                    <div class="card tasks-card">
 
                         <div
-                            class="empty-state"
-                            id="emptyState"
+                            class="tasks-list"
+                            id="tasksContainer"
                         >
 
-                            <div class="empty-icon">
-                                +
+                            <div class="empty-state">
+
+                                <div class="empty-icon">
+                                    +
+                                </div>
+
+                                <h3>
+                                    Пока нет задач
+                                </h3>
+
+                                <p>
+                                    Создай первую задачу
+                                    и начни сегодняшний день.
+                                </p>
+
+                                <button
+                                    class="primary-button"
+                                    id="createTaskButton"
+                                    type="button"
+                                >
+                                    Создать задачу
+                                </button>
+
                             </div>
-
-                            <h3>
-                                No tasks yet
-                            </h3>
-
-                            <p>
-                                Create your first task
-                                and start your journey.
-                            </p>
-
-                            <button
-                                class="primary-button"
-                                id="createTaskButton"
-                                type="button"
-                            >
-                                Create task
-                            </button>
 
                         </div>
 
@@ -2258,142 +2247,6 @@
 
                 </section>
 
-                <!-- ADD TASK -->
-
-                <section
-                    class="add-task-panel"
-                    id="addTaskPanel"
-                    hidden
-                >
-
-                    <div class="panel-header">
-
-                        <div>
-
-                            <div class="section-label">
-                                DAILY SYSTEM
-                            </div>
-
-                            <h2>
-                                New task
-                            </h2>
-
-                        </div>
-
-                        <button
-                            class="close-button"
-                            id="closeTaskPanel"
-                            type="button"
-                            aria-label="Close"
-                        >
-                            ×
-                        </button>
-
-                    </div>
-
-                    <form id="taskForm">
-
-                        <div class="form-group">
-
-                            <label for="taskTitle">
-                                Task
-                            </label>
-
-                            <input
-                                type="text"
-                                id="taskTitle"
-                                name="taskTitle"
-                                placeholder="What needs to be done?"
-                                maxlength="100"
-                                required
-                            >
-
-                        </div>
-
-                        <div class="form-row">
-
-                            <div class="form-group">
-
-                                <label for="taskCategory">
-                                    Category
-                                </label>
-
-                                <select
-                                    id="taskCategory"
-                                    name="taskCategory"
-                                >
-
-                                    <option value="Personal">
-                                        Personal
-                                    </option>
-
-                                    <option value="Work">
-                                        Work
-                                    </option>
-
-                                    <option value="Health">
-                                        Health
-                                    </option>
-
-                                    <option value="Study">
-                                        Study
-                                    </option>
-
-                                    <option value="Other">
-                                        Other
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-                            <div class="form-group">
-
-                                <label for="taskPriority">
-                                    Priority
-                                </label>
-
-                                <select
-                                    id="taskPriority"
-                                    name="taskPriority"
-                                >
-
-                                    <option value="normal">
-                                        Normal
-                                    </option>
-
-                                    <option value="high">
-                                        High
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-                        </div>
-
-                        <div class="form-actions">
-
-                            <button
-                                type="button"
-                                class="secondary-button"
-                                id="cancelTaskButton"
-                            >
-                                Cancel
-                            </button>
-
-                            <button
-                                type="submit"
-                                class="primary-button"
-                            >
-                                Add task
-                            </button>
-
-                        </div>
-
-                    </form>
-
-                </section>
 
                 <!-- WEEK -->
 
@@ -2404,11 +2257,11 @@
                         <div>
 
                             <div class="section-label">
-                                CONSISTENCY
+                                Неделя
                             </div>
 
                             <h2>
-                                This week
+                                Недельный прогресс
                             </h2>
 
                         </div>
@@ -2418,10 +2271,11 @@
                             id="analyticsButton"
                             type="button"
                         >
-                            Analytics →
+                            Открыть аналитику →
                         </button>
 
                     </div>
+
 
                     <div class="card weekly-card">
 
@@ -2431,147 +2285,147 @@
                                 class="week-day"
                                 data-day="monday"
                             >
-
-                                <span class="week-day-name">
-                                    MON
-                                </span>
-
-                                <strong class="week-day-progress">
-                                    0%
-                                </strong>
-
-                                <div class="week-day-bar">
-
-                                    <div class="week-day-fill"></div>
-
+                                <div class="week-day-name">
+                                    Пн
                                 </div>
 
+                                <div
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </div>
+
+                                <div class="week-day-bar">
+                                    <div
+                                        class="week-day-fill"
+                                    ></div>
+                                </div>
                             </div>
 
                             <div
                                 class="week-day"
                                 data-day="tuesday"
                             >
-
-                                <span class="week-day-name">
-                                    TUE
-                                </span>
-
-                                <strong class="week-day-progress">
-                                    0%
-                                </strong>
-
-                                <div class="week-day-bar">
-
-                                    <div class="week-day-fill"></div>
-
+                                <div class="week-day-name">
+                                    Вт
                                 </div>
 
+                                <div
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </div>
+
+                                <div class="week-day-bar">
+                                    <div
+                                        class="week-day-fill"
+                                    ></div>
+                                </div>
                             </div>
 
                             <div
                                 class="week-day"
                                 data-day="wednesday"
                             >
-
-                                <span class="week-day-name">
-                                    WED
-                                </span>
-
-                                <strong class="week-day-progress">
-                                    0%
-                                </strong>
-
-                                <div class="week-day-bar">
-
-                                    <div class="week-day-fill"></div>
-
+                                <div class="week-day-name">
+                                    Ср
                                 </div>
 
+                                <div
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </div>
+
+                                <div class="week-day-bar">
+                                    <div
+                                        class="week-day-fill"
+                                    ></div>
+                                </div>
                             </div>
 
                             <div
                                 class="week-day"
                                 data-day="thursday"
                             >
-
-                                <span class="week-day-name">
-                                    THU
-                                </span>
-
-                                <strong class="week-day-progress">
-                                    0%
-                                </strong>
-
-                                <div class="week-day-bar">
-
-                                    <div class="week-day-fill"></div>
-
+                                <div class="week-day-name">
+                                    Чт
                                 </div>
 
+                                <div
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </div>
+
+                                <div class="week-day-bar">
+                                    <div
+                                        class="week-day-fill"
+                                    ></div>
+                                </div>
                             </div>
 
                             <div
                                 class="week-day"
                                 data-day="friday"
                             >
-
-                                <span class="week-day-name">
-                                    FRI
-                                </span>
-
-                                <strong class="week-day-progress">
-                                    0%
-                                </strong>
-
-                                <div class="week-day-bar">
-
-                                    <div class="week-day-fill"></div>
-
+                                <div class="week-day-name">
+                                    Пт
                                 </div>
 
+                                <div
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </div>
+
+                                <div class="week-day-bar">
+                                    <div
+                                        class="week-day-fill"
+                                    ></div>
+                                </div>
                             </div>
 
                             <div
                                 class="week-day"
                                 data-day="saturday"
                             >
-
-                                <span class="week-day-name">
-                                    SAT
-                                </span>
-
-                                <strong class="week-day-progress">
-                                    0%
-                                </strong>
-
-                                <div class="week-day-bar">
-
-                                    <div class="week-day-fill"></div>
-
+                                <div class="week-day-name">
+                                    Сб
                                 </div>
 
+                                <div
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </div>
+
+                                <div class="week-day-bar">
+                                    <div
+                                        class="week-day-fill"
+                                    ></div>
+                                </div>
                             </div>
 
                             <div
                                 class="week-day"
                                 data-day="sunday"
                             >
-
-                                <span class="week-day-name">
-                                    SUN
-                                </span>
-
-                                <strong class="week-day-progress">
-                                    0%
-                                </strong>
-
-                                <div class="week-day-bar">
-
-                                    <div class="week-day-fill"></div>
-
+                                <div class="week-day-name">
+                                    Вс
                                 </div>
 
+                                <div
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </div>
+
+                                <div class="week-day-bar">
+                                    <div
+                                        class="week-day-fill"
+                                    ></div>
+                                </div>
                             </div>
 
                         </div>
@@ -2580,63 +2434,355 @@
 
                 </section>
 
+
                 <!-- MOTIVATION -->
 
-                <section class="motivation">
+                <section class="section">
 
-                    <div class="motivation-line"></div>
+                    <div class="motivation">
 
-                    <div class="motivation-content">
+                        <div class="motivation-line"></div>
 
-                        <span>
-                            ASCEND PRINCIPLE
-                        </span>
-
-                        <h2>
-                            Discipline beats motivation.
-                        </h2>
-
-                        <p>
-                            Show up today.
-                            Become stronger tomorrow.
-                        </p>
+                        <div class="motivation-content">
+                            Результат строится не одним
+                            большим рывком. Он строится
+                            маленькими действиями,
+                            которые ты повторяешь каждый день.
+                        </div>
 
                     </div>
 
-                    <div class="motivation-line"></div>
-
                 </section>
+
+
+                <div class="footer">
+                    ASCEND © 2026
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 CALENDAR
+            ========================== -->
+
+            <section
+                class="page"
+                id="page-calendar"
+            >
+
+                <h1 class="page-title">
+                    Календарь
+                </h1>
+
+                <p class="page-description">
+                    Твои дни, задачи и уровень выполнения
+                    в одном месте.
+                </p>
+
+                <div class="card placeholder-card">
+
+                    <div class="calendar-header">
+
+                        <div
+                            class="calendar-month"
+                            id="calendarMonth"
+                        >
+                            Сентябрь 2026
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="calendar-grid"
+                        id="calendarGrid"
+                    ></div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 TASKS PAGE
+            ========================== -->
+
+            <section
+                class="page"
+                id="page-tasks"
+            >
+
+                <h1 class="page-title">
+                    Задачи
+                </h1>
+
+                <p class="page-description">
+                    Управляй своими задачами и следи
+                    за выполнением.
+                </p>
+
+                <div class="card placeholder-card">
+
+                    <h3>
+                        Все задачи
+                    </h3>
+
+                    <p>
+                        Полный список задач будет
+                        отображаться здесь.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 ANALYTICS
+            ========================== -->
+
+            <section
+                class="page"
+                id="page-analytics"
+            >
+
+                <h1 class="page-title">
+                    Аналитика
+                </h1>
+
+                <p class="page-description">
+                    Анализируй свою дисциплину,
+                    прогресс и результаты.
+                </p>
+
+                <div class="card placeholder-card">
+
+                    <h3>
+                        Твоя статистика
+                    </h3>
+
+                    <p>
+                        Здесь мы построим полноценную
+                        систему аналитики: день, неделя,
+                        месяц, выполнение задач,
+                        серии и ASCEND Score.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 PROFILE
+            ========================== -->
+
+            <section
+                class="page"
+                id="page-profile"
+            >
+
+                <h1 class="page-title">
+                    Профиль
+                </h1>
+
+                <p class="page-description">
+                    Твой путь развития в ASCEND.
+                </p>
+
+                <div class="card placeholder-card">
+
+                    <h3 id="profileName">
+                        Alex
+                    </h3>
+
+                    <p>
+                        Профиль пользователя.
+                        Здесь позже появится уровень,
+                        достижения, статистика и история.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 SETTINGS
+            ========================== -->
+
+            <section
+                class="page"
+                id="page-settings"
+            >
+
+                <h1 class="page-title">
+                    Настройки
+                </h1>
+
+                <p class="page-description">
+                    Настрой ASCEND под себя.
+                </p>
+
+                <div class="card placeholder-card">
+
+                    <h3>
+                        Настройки системы
+                    </h3>
+
+                    <p>
+                        Здесь появятся настройки профиля,
+                        интерфейса, уведомлений и
+                        персональной системы дисциплины.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =========================
+     ADD TASK MODAL
+========================== -->
+
+<div
+    class="add-task-panel"
+    id="addTaskPanel"
+>
+
+    <div class="task-panel">
+
+        <div class="panel-header">
+
+            <h2>
+                Новая задача
+            </h2>
+
+            <button
+                class="close-button"
+                id="closeTaskPanel"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="taskForm">
+
+            <div class="form-group">
+
+                <label for="taskTitle">
+                    Название задачи
+                </label>
+
+                <input
+                    type="text"
+                    id="taskTitle"
+                    placeholder="Например: Тренировка"
+                    maxlength="100"
+                    required
+                >
 
             </div>
 
-            <!-- FOOTER -->
 
-            <footer class="footer">
+            <div class="form-row">
 
-                <div>
-                    ASCEND
+                <div class="form-group">
+
+                    <label for="taskCategory">
+                        Категория
+                    </label>
+
+                    <select id="taskCategory">
+
+                        <option value="Личное">
+                            Личное
+                        </option>
+
+                        <option value="Работа">
+                            Работа
+                        </option>
+
+                        <option value="Учёба">
+                            Учёба
+                        </option>
+
+                        <option value="Спорт">
+                            Спорт
+                        </option>
+
+                        <option value="Трейдинг">
+                            Трейдинг
+                        </option>
+
+                        <option value="Развитие">
+                            Развитие
+                        </option>
+
+                    </select>
+
                 </div>
 
-                <span>
-                    Become better every day.
-                </span>
 
-            </footer>
+                <div class="form-group">
 
-        </main>
+                    <label for="taskPriority">
+                        Приоритет
+                    </label>
+
+                    <select id="taskPriority">
+
+                        <option value="normal">
+                            Обычный
+                        </option>
+
+                        <option value="high">
+                            Высокий
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    class="secondary-button"
+                    id="cancelTaskButton"
+                    type="button"
+                >
+                    Отмена
+                </button>
+
+                <button
+                    class="primary-button"
+                    type="submit"
+                >
+                    Создать задачу
+                </button>
+
+            </div>
+
+        </form>
 
     </div>
 
-    <!-- MOBILE OVERLAY -->
+</div>
 
-    <div
-        class="mobile-overlay"
-        id="mobileOverlay"
-    ></div>
 
-    <!-- JAVASCRIPT -->
-
-    <script src="script.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
