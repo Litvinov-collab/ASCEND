@@ -2,125 +2,119 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <meta
         name="description"
-        content="ASCEND — a personal productivity and discipline platform."
+        content="ASCEND — become better every day."
     >
 
-    <meta name="theme-color" content="#0a0a0a">
+    <meta
+        name="theme-color"
+        content="#070707"
+    >
 
     <title>ASCEND — Become Better Every Day</title>
 
-    <!--
-        ASCEND
-        Main entry point
-
-        Future structure:
-        /pages/calendar.html
-        /pages/tasks.html
-        /pages/analytics.html
-        /pages/profile.html
-        /pages/settings.html
-    -->
-
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- =========================================
-         APPLICATION
-    ========================================== -->
+    <!-- =====================================================
+         ASCEND APPLICATION
+    ====================================================== -->
 
     <div class="app" id="app">
 
-        <!-- =====================================
+        <!-- =================================================
              SIDEBAR
-        ====================================== -->
+        ================================================== -->
 
         <aside class="sidebar" id="sidebar">
 
-            <!-- Brand -->
-            <div class="brand">
-                <a href="index.html" class="brand-link">
-                    <span class="brand-mark">A</span>
-                    <span class="brand-name">ASCEND</span>
-                </a>
+            <!-- LOGO -->
+
+            <div class="logo">
+                <div class="logo-mark">A</div>
+                <div class="logo-text">ASCEND</div>
             </div>
 
 
-            <!-- Main Navigation -->
-            <nav class="navigation" aria-label="Main navigation">
+            <!-- NAVIGATION -->
 
-                <div class="navigation-section">
+            <nav class="sidebar-nav">
 
-                    <span class="navigation-label">
+                <div class="nav-group">
+
+                    <div class="nav-title">
                         WORKSPACE
-                    </span>
+                    </div>
 
                     <a
-                        href="index.html"
-                        class="nav-item active"
+                        href="#"
+                        class="nav-link active"
                         data-page="dashboard"
                     >
-                        <span class="nav-icon">⌂</span>
-                        <span class="nav-text">Dashboard</span>
+                        <span class="nav-link-icon">⌂</span>
+                        <span>Dashboard</span>
                     </a>
 
                     <a
-                        href="pages/calendar.html"
-                        class="nav-item"
+                        href="#"
+                        class="nav-link"
                         data-page="calendar"
                     >
-                        <span class="nav-icon">□</span>
-                        <span class="nav-text">Calendar</span>
+                        <span class="nav-link-icon">□</span>
+                        <span>Calendar</span>
                     </a>
 
                     <a
-                        href="pages/tasks.html"
-                        class="nav-item"
+                        href="#"
+                        class="nav-link"
                         data-page="tasks"
                     >
-                        <span class="nav-icon">✓</span>
-                        <span class="nav-text">Tasks</span>
+                        <span class="nav-link-icon">✓</span>
+                        <span>Tasks</span>
                     </a>
 
                     <a
-                        href="pages/analytics.html"
-                        class="nav-item"
+                        href="#"
+                        class="nav-link"
                         data-page="analytics"
                     >
-                        <span class="nav-icon">↗</span>
-                        <span class="nav-text">Analytics</span>
+                        <span class="nav-link-icon">↗</span>
+                        <span>Analytics</span>
                     </a>
 
                 </div>
 
 
-                <div class="navigation-section">
+                <div class="nav-group">
 
-                    <span class="navigation-label">
+                    <div class="nav-title">
                         PERSONAL
-                    </span>
+                    </div>
 
                     <a
-                        href="pages/profile.html"
-                        class="nav-item"
+                        href="#"
+                        class="nav-link"
                         data-page="profile"
                     >
-                        <span class="nav-icon">○</span>
-                        <span class="nav-text">Profile</span>
+                        <span class="nav-link-icon">○</span>
+                        <span>Profile</span>
                     </a>
 
                     <a
-                        href="pages/settings.html"
-                        class="nav-item"
+                        href="#"
+                        class="nav-link"
                         data-page="settings"
                     >
-                        <span class="nav-icon">⚙</span>
-                        <span class="nav-text">Settings</span>
+                        <span class="nav-link-icon">⚙</span>
+                        <span>Settings</span>
                     </a>
 
                 </div>
@@ -128,43 +122,54 @@
             </nav>
 
 
-            <!-- Sidebar Bottom -->
+            <!-- SIDEBAR PROGRESS -->
+
             <div class="sidebar-bottom">
 
                 <div class="sidebar-progress">
 
-                    <div class="sidebar-progress-top">
-                        <span>Today's progress</span>
-                        <strong id="sidebarProgress">0%</strong>
+                    <div class="sidebar-progress-header">
+
+                        <span>
+                            TODAY'S PROGRESS
+                        </span>
+
+                        <strong id="sidebarProgress">
+                            0%
+                        </strong>
+
                     </div>
 
-                    <div class="progress-track">
+                    <div class="sidebar-progress-track">
+
                         <div
-                            class="progress-fill"
+                            class="sidebar-progress-fill"
                             id="sidebarProgressFill"
-                            style="width: 0%"
                         ></div>
+
                     </div>
 
                 </div>
 
 
+                <!-- USER -->
+
                 <div class="sidebar-user">
 
-                    <div class="avatar" id="sidebarAvatar">
+                    <div
+                        class="user-avatar"
+                        id="sidebarAvatar"
+                    >
                         A
                     </div>
 
-                    <div class="sidebar-user-info">
+                    <div class="user-info">
 
-                        <span
-                            class="sidebar-user-name"
-                            id="sidebarUserName"
-                        >
+                        <strong id="sidebarUserName">
                             Alex
-                        </span>
+                        </strong>
 
-                        <span class="sidebar-user-handle">
+                        <span>
                             @alex
                         </span>
 
@@ -177,33 +182,35 @@
         </aside>
 
 
-        <!-- =====================================
-             MAIN AREA
-        ====================================== -->
+        <!-- =================================================
+             MAIN
+        ================================================== -->
 
-        <main class="main-content">
+        <main class="main">
 
-            <!-- =================================
-                 TOP BAR
-            ================================== -->
+            <!-- =================================================
+                 TOPBAR
+            ================================================== -->
 
             <header class="topbar">
 
-                <button
-                    class="mobile-menu-button"
-                    id="mobileMenuButton"
-                    type="button"
-                    aria-label="Open menu"
-                >
-                    ☰
-                </button>
-
-
                 <div class="topbar-left">
 
-                    <span class="topbar-date" id="currentDate">
-                        Thursday, September 3
-                    </span>
+                    <button
+                        class="mobile-menu"
+                        id="mobileMenuButton"
+                        type="button"
+                        aria-label="Open menu"
+                    >
+                        ☰
+                    </button>
+
+                    <div
+                        class="current-date"
+                        id="currentDate"
+                    >
+                        Thursday, September 3, 2026
+                    </div>
 
                 </div>
 
@@ -211,19 +218,18 @@
                 <div class="topbar-right">
 
                     <button
-                        class="icon-button"
+                        class="notification-button"
+                        id="notificationButton"
                         type="button"
                         aria-label="Notifications"
                     >
                         ♢
                     </button>
 
-                    <a
-                        href="pages/profile.html"
-                        class="topbar-profile"
-                    >
 
-                        <div class="avatar avatar-small">
+                    <div class="topbar-user">
+
+                        <div class="avatar-small">
                             A
                         </div>
 
@@ -231,69 +237,71 @@
                             Alex
                         </span>
 
-                    </a>
+                    </div>
 
                 </div>
 
             </header>
 
 
-            <!-- =================================
-                 CONTENT
-            ================================== -->
+            <!-- =================================================
+                 PAGE CONTENT
+            ================================================== -->
 
-            <section class="dashboard-content">
+            <div class="page-content">
 
-                <!-- =================================
+
+                <!-- =================================================
                      HERO
-                ================================== -->
+                ================================================== -->
 
-                <section class="hero-section">
+                <section class="hero">
 
                     <div class="hero-content">
 
-                        <span class="eyebrow">
+                        <div class="hero-eyebrow">
                             YOUR JOURNEY
-                        </span>
+                        </div>
 
                         <h1>
-                            Become better<br>
+                            Become better
                             <span>every day.</span>
                         </h1>
 
-                        <p class="hero-description">
-                            Small actions. Consistent discipline.
+                        <p>
+                            Small actions.
+                            Consistent discipline.
                             Real progress.
                         </p>
 
                     </div>
 
 
-                    <!--
-                        FUTURE 3D CHARACTER
-
-                        This container is intentionally empty.
-
-                        Later we will place the animated
-                        ASCEND character here using WebGL /
-                        Three.js.
-
-                        The character will remain behind
-                        the interface across the website.
-                    -->
+                    <!-- CHARACTER -->
 
                     <div
-                        class="character-layer"
-                        id="characterLayer"
+                        class="character"
+                        id="character"
                         aria-hidden="true"
                     >
 
-                        <div class="character-placeholder">
+                        <div class="character-glow"></div>
 
-                            <div class="character-glow"></div>
+                        <div class="character-body">
 
-                            <div class="character-silhouette">
-                                ASCEND
+                            <div class="character-head"></div>
+
+                            <div class="character-torso">
+
+                                <div class="character-line"></div>
+
+                            </div>
+
+                            <div class="character-legs">
+
+                                <div class="character-leg"></div>
+                                <div class="character-leg"></div>
+
                             </div>
 
                         </div>
@@ -303,86 +311,97 @@
                 </section>
 
 
-                <!-- =================================
-                     TODAY OVERVIEW
-                ================================== -->
+                <!-- =================================================
+                     TODAY
+                ================================================== -->
 
-                <section class="today-section">
+                <section class="section">
 
-                    <div class="section-heading">
+                    <div class="section-header">
 
                         <div>
-                            <span class="section-eyebrow">
+
+                            <div class="section-label">
                                 TODAY
-                            </span>
+                            </div>
 
                             <h2>
                                 Your progress
                             </h2>
+
                         </div>
 
-                        <span
-                            class="today-date"
+                        <div
+                            class="section-date"
                             id="todayDate"
                         >
                             Sep 03, 2026
-                        </span>
+                        </div>
 
                     </div>
 
 
-                    <div class="overview-grid">
+                    <!-- STATS -->
 
-                        <!-- Progress Card -->
-                        <article class="progress-card">
+                    <div class="stats-grid">
 
-                            <div class="card-header">
+
+                        <!-- DAILY PROGRESS -->
+
+                        <article class="card daily-progress-card">
+
+                            <div class="card-top">
 
                                 <span class="card-label">
                                     DAILY COMPLETION
                                 </span>
 
-                                <span class="card-status">
+                                <span class="card-badge">
                                     TODAY
                                 </span>
 
                             </div>
 
 
-                            <div class="progress-main">
+                            <div class="daily-progress-content">
 
-                                <div class="progress-circle">
+                                <!-- CIRCLE -->
+
+                                <div class="progress-ring">
 
                                     <svg
-                                        viewBox="0 0 120 120"
-                                        class="progress-svg"
+                                        viewBox="0 0 140 140"
+                                        aria-hidden="true"
                                     >
 
                                         <circle
-                                            class="progress-circle-bg"
-                                            cx="60"
-                                            cy="60"
-                                            r="50"
+                                            class="progress-ring-track"
+                                            cx="70"
+                                            cy="70"
+                                            r="58"
                                         ></circle>
 
                                         <circle
-                                            class="progress-circle-value"
+                                            class="progress-ring-value"
                                             id="dailyProgressCircle"
-                                            cx="60"
-                                            cy="60"
-                                            r="50"
+                                            cx="70"
+                                            cy="70"
+                                            r="58"
                                         ></circle>
 
                                     </svg>
 
-                                    <div class="progress-circle-text">
 
-                                        <strong id="dailyProgress">
+                                    <div class="progress-ring-center">
+
+                                        <strong
+                                            id="dailyProgress"
+                                        >
                                             0%
                                         </strong>
 
                                         <span>
-                                            complete
+                                            COMPLETE
                                         </span>
 
                                     </div>
@@ -390,21 +409,40 @@
                                 </div>
 
 
+                                <!-- INFO -->
+
                                 <div class="progress-info">
 
-                                    <span class="progress-info-number">
-                                        <strong id="completedTasks">
+                                    <div class="progress-number">
+
+                                        <strong
+                                            id="completedTasks"
+                                        >
                                             0
                                         </strong>
-                                        /
-                                        <span id="totalTasks">
-                                            0
-                                        </span>
-                                    </span>
 
-                                    <span class="progress-info-label">
+                                        <span>
+                                            /
+                                        </span>
+
+                                        <strong
+                                            id="totalTasks"
+                                        >
+                                            0
+                                        </strong>
+
+                                    </div>
+
+                                    <div class="progress-info-label">
                                         tasks completed
-                                    </span>
+                                    </div>
+
+                                    <div
+                                        class="progress-message"
+                                        id="progressMessage"
+                                    >
+                                        Start your day.
+                                    </div>
 
                                 </div>
 
@@ -413,49 +451,57 @@
                         </article>
 
 
-                        <!-- Streak Card -->
-                        <article class="stat-card">
+                        <!-- STREAK -->
+
+                        <article class="card stat-card">
 
                             <div class="stat-icon">
                                 ✦
                             </div>
 
-                            <span class="card-label">
+                            <div class="card-label">
                                 CURRENT STREAK
-                            </span>
+                            </div>
 
                             <div class="stat-value">
+
                                 <span id="streakValue">
                                     0
                                 </span>
-                                <small>days</small>
+
+                                <small>
+                                    DAYS
+                                </small>
+
                             </div>
 
-                            <p class="stat-description">
+                            <p>
                                 Keep showing up.
                             </p>
 
                         </article>
 
 
-                        <!-- Score Card -->
-                        <article class="stat-card">
+                        <!-- SCORE -->
+
+                        <article class="card stat-card">
 
                             <div class="stat-icon">
                                 ↑
                             </div>
 
-                            <span class="card-label">
+                            <div class="card-label">
                                 ASCEND SCORE
-                            </span>
-
-                            <div class="stat-value">
-                                <span id="ascendScore">
-                                    0
-                                </span>
                             </div>
 
-                            <p class="stat-description">
+                            <div
+                                class="stat-value"
+                                id="ascendScore"
+                            >
+                                0
+                            </div>
+
+                            <p>
                                 Your overall progress.
                             </p>
 
@@ -466,19 +512,19 @@
                 </section>
 
 
-                <!-- =================================
-                     TASKS
-                ================================== -->
+                <!-- =================================================
+                     TODAY'S TASKS
+                ================================================== -->
 
-                <section class="tasks-section">
+                <section class="section">
 
-                    <div class="section-heading">
+                    <div class="section-header">
 
                         <div>
 
-                            <span class="section-eyebrow">
+                            <div class="section-label">
                                 DAILY SYSTEM
-                            </span>
+                            </div>
 
                             <h2>
                                 Today's tasks
@@ -486,29 +532,32 @@
 
                         </div>
 
-                        <a
-                            href="pages/tasks.html"
-                            class="view-all-link"
+                        <button
+                            class="text-button"
+                            id="addTaskButton"
+                            type="button"
                         >
-                            View all →
-                        </a>
+                            + Add task
+                        </button>
 
                     </div>
 
 
+                    <!-- TASKS -->
+
                     <div
-                        class="tasks-container"
+                        class="tasks-card"
                         id="tasksContainer"
                     >
 
-                        <!--
-                            Tasks will be generated
-                            dynamically by JavaScript.
-                        -->
+                        <!-- EMPTY STATE -->
 
-                        <div class="empty-state">
+                        <div
+                            class="empty-state"
+                            id="emptyState"
+                        >
 
-                            <div class="empty-state-icon">
+                            <div class="empty-icon">
                                 +
                             </div>
 
@@ -517,16 +566,17 @@
                             </h3>
 
                             <p>
-                                Create your first task and
-                                start your journey.
+                                Create your first task
+                                and start your journey.
                             </p>
 
-                            <a
-                                href="pages/tasks.html"
+                            <button
                                 class="primary-button"
+                                id="createTaskButton"
+                                type="button"
                             >
                                 Create task
-                            </a>
+                            </button>
 
                         </div>
 
@@ -535,19 +585,163 @@
                 </section>
 
 
-                <!-- =================================
-                     WEEKLY PROGRESS
-                ================================== -->
+                <!-- =================================================
+                     QUICK ADD TASK
+                ================================================== -->
 
-                <section class="weekly-section">
+                <section
+                    class="add-task-panel"
+                    id="addTaskPanel"
+                    hidden
+                >
 
-                    <div class="section-heading">
+                    <div class="panel-header">
 
                         <div>
 
-                            <span class="section-eyebrow">
+                            <div class="section-label">
+                                DAILY SYSTEM
+                            </div>
+
+                            <h2>
+                                New task
+                            </h2>
+
+                        </div>
+
+                        <button
+                            class="close-button"
+                            id="closeTaskPanel"
+                            type="button"
+                            aria-label="Close"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <form id="taskForm">
+
+                        <div class="form-group">
+
+                            <label for="taskTitle">
+                                Task
+                            </label>
+
+                            <input
+                                type="text"
+                                id="taskTitle"
+                                name="taskTitle"
+                                placeholder="What needs to be done?"
+                                maxlength="100"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="taskCategory">
+                                    Category
+                                </label>
+
+                                <select
+                                    id="taskCategory"
+                                    name="taskCategory"
+                                >
+
+                                    <option value="Personal">
+                                        Personal
+                                    </option>
+
+                                    <option value="Work">
+                                        Work
+                                    </option>
+
+                                    <option value="Health">
+                                        Health
+                                    </option>
+
+                                    <option value="Study">
+                                        Study
+                                    </option>
+
+                                    <option value="Other">
+                                        Other
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="taskPriority">
+                                    Priority
+                                </label>
+
+                                <select
+                                    id="taskPriority"
+                                    name="taskPriority"
+                                >
+
+                                    <option value="normal">
+                                        Normal
+                                    </option>
+
+                                    <option value="high">
+                                        High
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-actions">
+
+                            <button
+                                type="button"
+                                class="secondary-button"
+                                id="cancelTaskButton"
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="primary-button"
+                            >
+                                Add task
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+
+                <!-- =================================================
+                     WEEKLY PROGRESS
+                ================================================== -->
+
+                <section class="section">
+
+                    <div class="section-header">
+
+                        <div>
+
+                            <div class="section-label">
                                 CONSISTENCY
-                            </span>
+                            </div>
 
                             <h2>
                                 This week
@@ -555,53 +749,224 @@
 
                         </div>
 
-                        <a
-                            href="pages/analytics.html"
-                            class="view-all-link"
+                        <button
+                            class="text-button"
+                            id="analyticsButton"
+                            type="button"
                         >
                             Analytics →
-                        </a>
+                        </button>
 
                     </div>
 
 
-                    <div class="week-card">
+                    <div class="card weekly-card">
 
-                        <div class="week-days">
+                        <div class="week-grid">
 
-                            <div class="week-day">
-                                <span>MON</span>
-                                <strong>—</strong>
+
+                            <!-- MONDAY -->
+
+                            <div
+                                class="week-day"
+                                data-day="monday"
+                            >
+
+                                <span class="week-day-name">
+                                    MON
+                                </span>
+
+                                <strong
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </strong>
+
+                                <div class="week-day-bar">
+
+                                    <div
+                                        class="week-day-fill"
+                                        style="width: 0%"
+                                    ></div>
+
+                                </div>
+
                             </div>
 
-                            <div class="week-day">
-                                <span>TUE</span>
-                                <strong>—</strong>
+
+                            <!-- TUESDAY -->
+
+                            <div
+                                class="week-day"
+                                data-day="tuesday"
+                            >
+
+                                <span class="week-day-name">
+                                    TUE
+                                </span>
+
+                                <strong
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </strong>
+
+                                <div class="week-day-bar">
+
+                                    <div
+                                        class="week-day-fill"
+                                        style="width: 0%"
+                                    ></div>
+
+                                </div>
+
                             </div>
 
-                            <div class="week-day">
-                                <span>WED</span>
-                                <strong>—</strong>
+
+                            <!-- WEDNESDAY -->
+
+                            <div
+                                class="week-day"
+                                data-day="wednesday"
+                            >
+
+                                <span class="week-day-name">
+                                    WED
+                                </span>
+
+                                <strong
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </strong>
+
+                                <div class="week-day-bar">
+
+                                    <div
+                                        class="week-day-fill"
+                                        style="width: 0%"
+                                    ></div>
+
+                                </div>
+
                             </div>
 
-                            <div class="week-day active">
-                                <span>THU</span>
-                                <strong id="weekTodayProgress">0%</strong>
+
+                            <!-- THURSDAY -->
+
+                            <div
+                                class="week-day active"
+                                data-day="thursday"
+                            >
+
+                                <span class="week-day-name">
+                                    THU
+                                </span>
+
+                                <strong
+                                    class="week-day-progress"
+                                    id="weekTodayProgress"
+                                >
+                                    0%
+                                </strong>
+
+                                <div class="week-day-bar">
+
+                                    <div
+                                        class="week-day-fill"
+                                        id="weekTodayFill"
+                                        style="width: 0%"
+                                    ></div>
+
+                                </div>
+
                             </div>
 
-                            <div class="week-day">
-                                <span>FRI</span>
-                                <strong>—</strong>
+
+                            <!-- FRIDAY -->
+
+                            <div
+                                class="week-day"
+                                data-day="friday"
+                            >
+
+                                <span class="week-day-name">
+                                    FRI
+                                </span>
+
+                                <strong
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </strong>
+
+                                <div class="week-day-bar">
+
+                                    <div
+                                        class="week-day-fill"
+                                        style="width: 0%"
+                                    ></div>
+
+                                </div>
+
                             </div>
 
-                            <div class="week-day">
-                                <span>SAT</span>
-                                <strong>—</strong>
+
+                            <!-- SATURDAY -->
+
+                            <div
+                                class="week-day"
+                                data-day="saturday"
+                            >
+
+                                <span class="week-day-name">
+                                    SAT
+                                </span>
+
+                                <strong
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </strong>
+
+                                <div class="week-day-bar">
+
+                                    <div
+                                        class="week-day-fill"
+                                        style="width: 0%"
+                                    ></div>
+
+                                </div>
+
                             </div>
 
-                            <div class="week-day">
-                                <span>SUN</span>
-                                <strong>—</strong>
+
+                            <!-- SUNDAY -->
+
+                            <div
+                                class="week-day"
+                                data-day="sunday"
+                            >
+
+                                <span class="week-day-name">
+                                    SUN
+                                </span>
+
+                                <strong
+                                    class="week-day-progress"
+                                >
+                                    0%
+                                </strong>
+
+                                <div class="week-day-bar">
+
+                                    <div
+                                        class="week-day-fill"
+                                        style="width: 0%"
+                                    ></div>
+
+                                </div>
+
                             </div>
 
                         </div>
@@ -611,18 +976,48 @@
                 </section>
 
 
-            </section>
+                <!-- =================================================
+                     MOTIVATION
+                ================================================== -->
+
+                <section class="motivation">
+
+                    <div class="motivation-line"></div>
+
+                    <div class="motivation-content">
+
+                        <span>
+                            ASCEND PRINCIPLE
+                        </span>
+
+                        <h2>
+                            Discipline beats motivation.
+                        </h2>
+
+                        <p>
+                            Show up today.
+                            Become stronger tomorrow.
+                        </p>
+
+                    </div>
+
+                    <div class="motivation-line"></div>
+
+                </section>
 
 
-            <!-- =====================================
+            </div>
+
+
+            <!-- =================================================
                  FOOTER
-            ====================================== -->
+            ================================================== -->
 
             <footer class="footer">
 
-                <span>
+                <div>
                     ASCEND
-                </span>
+                </div>
 
                 <span>
                     Become better every day.
@@ -635,22 +1030,21 @@
     </div>
 
 
-    <!-- =========================================
+    <!-- =====================================================
          MOBILE OVERLAY
-    ========================================== -->
+    ====================================================== -->
 
     <div
         class="mobile-overlay"
         id="mobileOverlay"
-        aria-hidden="true"
     ></div>
 
 
-    <!-- =========================================
+    <!-- =====================================================
          JAVASCRIPT
-    ========================================== -->
+    ====================================================== -->
 
-    <script src="js/app.js"></script>
+    <script src="script.js"></script>
 
 </body>
 </html>
