@@ -1,86 +1,80 @@
-/* =========================================================
-   ASCEND
-   Main JavaScript
-   ========================================================= */
-
 "use strict";
 
-/* =========================================================
-   STORAGE
-   ========================================================= */
+/* =========================================
+   ASCEND
+   Основная логика приложения
+========================================= */
 
-const STORAGE_KEY = "ascend_tasks_v1";
-const USER_KEY = "ascend_user_v1";
-
-/* =========================================================
-   DOM
-   ========================================================= */
-
-const elements = {
-    currentDate: document.getElementById("currentDate"),
-    todayDate: document.getElementById("todayDate"),
-
-    dailyProgress: document.getElementById("dailyProgress"),
-    dailyProgressCircle: document.getElementById("dailyProgressCircle"),
-
-    completedTasks: document.getElementById("completedTasks"),
-    totalTasks: document.getElementById("totalTasks"),
-
-    sidebarProgress: document.getElementById("sidebarProgress"),
-    sidebarProgressFill: document.getElementById("sidebarProgressFill"),
-
-    streakValue: document.getElementById("streakValue"),
-    ascendScore: document.getElementById("ascendScore"),
-
-    progressMessage: document.getElementById("progressMessage"),
-
-    tasksContainer: document.getElementById("tasksContainer"),
-    emptyState: document.getElementById("emptyState"),
-
-    addTaskPanel: document.getElementById("addTaskPanel"),
-
-    addTaskButton: document.getElementById("addTaskButton"),
-    createTaskButton: document.getElementById("createTaskButton"),
-
-    closeTaskPanel: document.getElementById("closeTaskPanel"),
-    cancelTaskButton: document.getElementById("cancelTaskButton"),
-
-    taskForm: document.getElementById("taskForm"),
-    taskTitle: document.getElementById("taskTitle"),
-    taskCategory: document.getElementById("taskCategory"),
-    taskPriority: document.getElementById("taskPriority"),
-
-    analyticsButton: document.getElementById("analyticsButton"),
-    notificationButton: document.getElementById("notificationButton"),
-
-    sidebar: document.getElementById("sidebar"),
-    mobileMenuButton: document.getElementById("mobileMenuButton"),
-    mobileOverlay: document.getElementById("mobileOverlay"),
-
-    sidebarAvatar: document.getElementById("sidebarAvatar"),
-    sidebarUserName: document.getElementById("sidebarUserName"),
-    topbarUsername: document.getElementById("topbarUsername")
-};
-
-/* =========================================================
-   STATE
-   ========================================================= */
+const STORAGE_KEY = "ASCEND_TASKS_V2";
 
 let tasks = [];
-let user = {
-    name: "Alex",
-    username: "alex"
-};
 
-/* =========================================================
-   DATE HELPERS
-   ========================================================= */
+
+/* =========================================
+   DOM
+========================================= */
+
+const $ = (selector) =>
+    document.querySelector(selector);
+
+const $$ = (selector) =>
+    document.querySelectorAll(selector);
+
+
+/* =========================================
+   ЭЛЕМЕНТЫ
+========================================= */
+
+const currentDate = $("#currentDate");
+const todayDate = $("#todayDate");
+
+const dailyProgress = $("#dailyProgress");
+const dailyProgressCircle = $("#dailyProgressCircle");
+
+const completedTasks = $("#completedTasks");
+const totalTasks = $("#totalTasks");
+
+const sidebarProgress = $("#sidebarProgress");
+const sidebarProgressFill = $("#sidebarProgressFill");
+
+const streakValue = $("#streakValue");
+const ascendScore = $("#ascendScore");
+
+const progressMessage = $("#progressMessage");
+
+const tasksContainer = $("#tasksContainer");
+
+const addTaskButton = $("#addTaskButton");
+const createTaskButton = $("#createTaskButton");
+
+const addTaskPanel = $("#addTaskPanel");
+const closeTaskPanel = $("#closeTaskPanel");
+const cancelTaskButton = $("#cancelTaskButton");
+
+const taskForm = $("#taskForm");
+const taskTitle = $("#taskTitle");
+const taskCategory = $("#taskCategory");
+const taskPriority = $("#taskPriority");
+
+const notificationButton = $("#notificationButton");
+const analyticsButton = $("#analyticsButton");
+
+const sidebar = $("#sidebar");
+const mobileMenuButton = $("#mobileMenuButton");
+const mobileOverlay = $("#mobileOverlay");
+
+
+/* =========================================
+   ДАТЫ
+========================================= */
 
 function pad(number) {
     return String(number).padStart(2, "0");
 }
 
+
 function getDateKey(date = new Date()) {
+
     return [
         date.getFullYear(),
         pad(date.getMonth() + 1),
@@ -88,461 +82,333 @@ function getDateKey(date = new Date()) {
     ].join("-");
 }
 
-function parseDateKey(dateKey) {
-    const [year, month, day] = dateKey.split("-").map(Number);
-
-    return new Date(year, month - 1, day);
-}
 
 function getTodayKey() {
     return getDateKey(new Date());
 }
 
-function formatCurrentDate(date = new Date()) {
-    return new Intl.DateTimeFormat("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric"
-    }).format(date);
+
+function formatFullDate(date = new Date()) {
+
+    return new Intl.DateTimeFormat(
+        "ru-RU",
+        {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }
+    ).format(date);
 }
+
 
 function formatShortDate(date = new Date()) {
-    return new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "2-digit",
-        year: "numeric"
-    }).format(date);
+
+    return new Intl.DateTimeFormat(
+        "ru-RU",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }
+    ).format(date);
 }
 
-/* =========================================================
-   STORAGE
-   ========================================================= */
+
+/* =========================================
+   LOCAL STORAGE
+========================================= */
 
 function loadTasks() {
+
     try {
-        const saved = localStorage.getItem(STORAGE_KEY);
+
+        const saved =
+            localStorage.getItem(STORAGE_KEY);
 
         if (!saved) {
+
             tasks = [];
+
             return;
         }
 
-        const parsed = JSON.parse(saved);
+        const parsed =
+            JSON.parse(saved);
 
-        if (Array.isArray(parsed)) {
-            tasks = parsed;
-        } else {
-            tasks = [];
-        }
+        tasks =
+            Array.isArray(parsed)
+                ? parsed
+                : [];
+
     } catch (error) {
-        console.error("ASCEND: Could not load tasks.", error);
+
+        console.error(
+            "Ошибка загрузки задач:",
+            error
+        );
+
         tasks = [];
     }
 }
 
+
 function saveTasks() {
+
     try {
+
         localStorage.setItem(
             STORAGE_KEY,
             JSON.stringify(tasks)
         );
+
     } catch (error) {
-        console.error("ASCEND: Could not save tasks.", error);
+
+        console.error(
+            "Ошибка сохранения задач:",
+            error
+        );
     }
 }
 
-function loadUser() {
-    try {
-        const saved = localStorage.getItem(USER_KEY);
 
-        if (!saved) {
-            return;
-        }
+/* =========================================
+   ДАТА НА ЭКРАНЕ
+========================================= */
 
-        const parsed = JSON.parse(saved);
+function updateDate() {
 
-        if (parsed && typeof parsed === "object") {
-            user = {
-                ...user,
-                ...parsed
-            };
-        }
-    } catch (error) {
-        console.error("ASCEND: Could not load user.", error);
+    const now = new Date();
+
+    if (currentDate) {
+
+        currentDate.textContent =
+            formatFullDate(now);
+    }
+
+    if (todayDate) {
+
+        todayDate.textContent =
+            formatShortDate(now);
     }
 }
 
-/* =========================================================
-   USER
-   ========================================================= */
 
-function updateUserUI() {
-    const name = user.name || "Alex";
-    const username = user.username || "alex";
-
-    if (elements.sidebarUserName) {
-        elements.sidebarUserName.textContent = name;
-    }
-
-    if (elements.topbarUsername) {
-        elements.topbarUsername.textContent = name;
-    }
-
-    if (elements.sidebarAvatar) {
-        elements.sidebarAvatar.textContent =
-            name.charAt(0).toUpperCase();
-    }
-
-    const topbarAvatar = document.querySelector(".avatar-small");
-
-    if (topbarAvatar) {
-        topbarAvatar.textContent =
-            name.charAt(0).toUpperCase();
-    }
-
-    const usernameElement =
-        document.querySelector(".user-info span");
-
-    if (usernameElement) {
-        usernameElement.textContent = `@${username}`;
-    }
-}
-
-/* =========================================================
-   DATE UI
-   ========================================================= */
-
-function updateDateUI() {
-    const today = new Date();
-
-    if (elements.currentDate) {
-        elements.currentDate.textContent =
-            formatCurrentDate(today);
-    }
-
-    if (elements.todayDate) {
-        elements.todayDate.textContent =
-            formatShortDate(today);
-    }
-}
-
-/* =========================================================
-   TASK HELPERS
-   ========================================================= */
+/* =========================================
+   ЗАДАЧИ
+========================================= */
 
 function getTodayTasks() {
-    const todayKey = getTodayKey();
 
-    return tasks.filter(task => task.date === todayKey);
-}
+    const today =
+        getTodayKey();
 
-function getTasksForDate(dateKey) {
-    return tasks.filter(task => task.date === dateKey);
-}
-
-function calculateProgress(taskList) {
-    if (!taskList.length) {
-        return 0;
-    }
-
-    const completed = taskList.filter(
-        task => task.completed
-    ).length;
-
-    return Math.round(
-        (completed / taskList.length) * 100
+    return tasks.filter(
+        task => task.date === today
     );
 }
 
-function createTaskObject(title, category, priority) {
+
+function getTasksForDate(dateKey) {
+
+    return tasks.filter(
+        task => task.date === dateKey
+    );
+}
+
+
+function createTask(
+    title,
+    category,
+    priority
+) {
+
     return {
+
         id:
             Date.now().toString() +
-            Math.random().toString(36).slice(2, 8),
+            Math.random()
+                .toString(36)
+                .substring(2, 8),
 
-        title: title.trim(),
+        title:
+            title.trim(),
 
-        category: category || "Personal",
+        category:
+            category || "Личное",
 
-        priority: priority || "normal",
+        priority:
+            priority || "normal",
 
-        completed: false,
+        completed:
+            false,
 
-        date: getTodayKey(),
+        date:
+            getTodayKey(),
 
-        createdAt: new Date().toISOString()
+        createdAt:
+            new Date().toISOString()
     };
 }
 
-/* =========================================================
-   TASK RENDERING
-   ========================================================= */
 
-function renderTasks() {
-    if (!elements.tasksContainer) {
-        return;
-    }
-
-    const todayTasks = getTodayTasks();
-
-    elements.tasksContainer.innerHTML = "";
-
-    if (todayTasks.length === 0) {
-        elements.tasksContainer.appendChild(
-            createEmptyState()
-        );
-
-        return;
-    }
-
-    todayTasks.forEach(task => {
-        const taskElement = createTaskElement(task);
-
-        elements.tasksContainer.appendChild(taskElement);
-    });
-}
-
-function createEmptyState() {
-    const wrapper = document.createElement("div");
-
-    wrapper.className = "empty-state";
-    wrapper.id = "emptyState";
-
-    wrapper.innerHTML = `
-        <div class="empty-icon">+</div>
-
-        <h3>No tasks yet</h3>
-
-        <p>
-            Create your first task
-            and start your journey.
-        </p>
-
-        <button
-            class="primary-button"
-            id="createTaskButton"
-            type="button"
-        >
-            Create task
-        </button>
-    `;
-
-    const button = wrapper.querySelector(
-        "#createTaskButton"
-    );
-
-    button.addEventListener("click", openTaskPanel);
-
-    return wrapper;
-}
-
-function createTaskElement(task) {
-    const article = document.createElement("article");
-
-    article.className = "task-item";
-
-    if (task.completed) {
-        article.classList.add("completed");
-    }
-
-    article.dataset.id = task.id;
-
-    const checkbox = document.createElement("button");
-
-    checkbox.type = "button";
-    checkbox.className = "task-checkbox";
-
-    checkbox.setAttribute(
-        "aria-label",
-        task.completed
-            ? `Mark "${task.title}" incomplete`
-            : `Complete "${task.title}"`
-    );
-
-    checkbox.setAttribute(
-        "aria-pressed",
-        String(task.completed)
-    );
-
-    checkbox.textContent = task.completed
-        ? "✓"
-        : "";
-
-    checkbox.addEventListener(
-        "click",
-        () => toggleTask(task.id)
-    );
-
-    const content = document.createElement("div");
-
-    content.className = "task-content";
-
-    const title = document.createElement("div");
-
-    title.className = "task-title";
-    title.textContent = task.title;
-
-    const category = document.createElement("div");
-
-    category.className = "task-category";
-
-    category.textContent =
-        task.category +
-        (
-            task.priority === "high"
-                ? " • HIGH PRIORITY"
-                : ""
-        );
-
-    content.appendChild(title);
-    content.appendChild(category);
-
-    const status = document.createElement("div");
-
-    status.className = "task-status";
-
-    status.textContent = task.completed
-        ? "COMPLETED"
-        : "OPEN";
-
-    article.appendChild(checkbox);
-    article.appendChild(content);
-    article.appendChild(status);
-
-    return article;
-}
-
-/* =========================================================
-   ADD TASK
-   ========================================================= */
+/* =========================================
+   ДОБАВЛЕНИЕ ЗАДАЧИ
+========================================= */
 
 function openTaskPanel() {
-    if (!elements.addTaskPanel) {
+
+    if (!addTaskPanel) {
         return;
     }
 
-    elements.addTaskPanel.hidden = false;
+    addTaskPanel.classList.add("active");
 
     setTimeout(() => {
-        if (elements.taskTitle) {
-            elements.taskTitle.focus();
-        }
-    }, 50);
+
+        taskTitle?.focus();
+
+    }, 100);
 }
+
 
 function closeTaskPanel() {
-    if (!elements.addTaskPanel) {
-        return;
-    }
 
-    elements.addTaskPanel.hidden = true;
+    addTaskPanel?.classList.remove(
+        "active"
+    );
 }
 
+
 function handleTaskSubmit(event) {
+
     event.preventDefault();
 
-    if (!elements.taskTitle) {
-        return;
-    }
-
     const title =
-        elements.taskTitle.value.trim();
-
-    const category =
-        elements.taskCategory
-            ? elements.taskCategory.value
-            : "Personal";
-
-    const priority =
-        elements.taskPriority
-            ? elements.taskPriority.value
-            : "normal";
+        taskTitle.value.trim();
 
     if (!title) {
-        elements.taskTitle.focus();
+
+        taskTitle.focus();
+
         return;
     }
 
-    const newTask = createTaskObject(
-        title,
-        category,
-        priority
-    );
+    const newTask =
+        createTask(
+            title,
+            taskCategory.value,
+            taskPriority.value
+        );
 
     tasks.push(newTask);
 
     saveTasks();
 
-    elements.taskForm.reset();
+    taskForm.reset();
 
     closeTaskPanel();
 
     renderAll();
+
+    showToast(
+        "Задача добавлена."
+    );
 }
 
-/* =========================================================
-   TOGGLE TASK
-   ========================================================= */
+
+/* =========================================
+   ПЕРЕКЛЮЧЕНИЕ ЗАДАЧИ
+========================================= */
 
 function toggleTask(taskId) {
-    const task = tasks.find(
-        item => item.id === taskId
-    );
+
+    const task =
+        tasks.find(
+            item => item.id === taskId
+        );
 
     if (!task) {
         return;
     }
 
-    task.completed = !task.completed;
+    task.completed =
+        !task.completed;
 
     saveTasks();
 
     renderAll();
+
+    if (task.completed) {
+
+        showToast(
+            "Задача выполнена."
+        );
+    }
 }
 
-/* =========================================================
-   DAILY PROGRESS
-   ========================================================= */
+
+/* =========================================
+   ПРОГРЕСС
+========================================= */
+
+function calculateProgress(taskList) {
+
+    if (!taskList.length) {
+        return 0;
+    }
+
+    const completed =
+        taskList.filter(
+            task => task.completed
+        ).length;
+
+    return Math.round(
+        completed /
+        taskList.length *
+        100
+    );
+}
+
 
 function updateDailyProgress() {
-    const todayTasks = getTodayTasks();
 
-    const total = todayTasks.length;
+    const todayTasks =
+        getTodayTasks();
 
-    const completed = todayTasks.filter(
-        task => task.completed
-    ).length;
+    const total =
+        todayTasks.length;
+
+    const completed =
+        todayTasks.filter(
+            task => task.completed
+        ).length;
 
     const percentage =
-        calculateProgress(todayTasks);
+        calculateProgress(
+            todayTasks
+        );
 
-    if (elements.completedTasks) {
-        elements.completedTasks.textContent =
-            completed;
-    }
 
-    if (elements.totalTasks) {
-        elements.totalTasks.textContent =
-            total;
-    }
+    completedTasks.textContent =
+        completed;
 
-    if (elements.dailyProgress) {
-        elements.dailyProgress.textContent =
-            `${percentage}%`;
-    }
+    totalTasks.textContent =
+        total;
 
-    if (elements.sidebarProgress) {
-        elements.sidebarProgress.textContent =
-            `${percentage}%`;
-    }
+    dailyProgress.textContent =
+        `${percentage}%`;
 
-    if (elements.sidebarProgressFill) {
-        elements.sidebarProgressFill.style.width =
-            `${percentage}%`;
-    }
+    sidebarProgress.textContent =
+        `${percentage}%`;
 
-    updateProgressCircle(percentage);
+    sidebarProgressFill.style.width =
+        `${percentage}%`;
+
+
+    updateProgressRing(
+        percentage
+    );
 
     updateProgressMessage(
         percentage,
@@ -550,10 +416,10 @@ function updateDailyProgress() {
     );
 }
 
-function updateProgressCircle(percentage) {
-    if (!elements.dailyProgressCircle) {
-        return;
-    }
+
+function updateProgressRing(
+    percentage
+) {
 
     const radius = 58;
 
@@ -562,53 +428,264 @@ function updateProgressCircle(percentage) {
 
     const offset =
         circumference -
-        (percentage / 100) * circumference;
+        percentage /
+        100 *
+        circumference;
 
-    elements.dailyProgressCircle.style.strokeDasharray =
-        `${circumference}`;
+    dailyProgressCircle.style.strokeDasharray =
+        circumference;
 
-    elements.dailyProgressCircle.style.strokeDashoffset =
-        `${offset}`;
+    dailyProgressCircle.style.strokeDashoffset =
+        offset;
 }
+
 
 function updateProgressMessage(
     percentage,
     total
 ) {
-    if (!elements.progressMessage) {
+
+    if (total === 0) {
+
+        progressMessage.textContent =
+            "Создай первую задачу.";
+
         return;
     }
 
-    let message = "Start your day.";
+    if (percentage === 0) {
 
-    if (total === 0) {
-        message = "Create your first task.";
-    } else if (percentage === 0) {
-        message = "Start your day.";
-    } else if (percentage < 25) {
-        message = "One step at a time.";
-    } else if (percentage < 50) {
-        message = "Good start. Keep going.";
-    } else if (percentage < 75) {
-        message = "You're building momentum.";
-    } else if (percentage < 100) {
-        message = "Almost there. Finish strong.";
-    } else {
-        message = "Day complete. You showed up.";
+        progressMessage.textContent =
+            "Начни день. Первый шаг за тобой.";
+
+        return;
     }
 
-    elements.progressMessage.textContent =
-        message;
+    if (percentage < 50) {
+
+        progressMessage.textContent =
+            "Хорошее начало. Продолжай.";
+
+        return;
+    }
+
+    if (percentage < 100) {
+
+        progressMessage.textContent =
+            "Ты близко. Доведи дело до конца.";
+
+        return;
+    }
+
+    progressMessage.textContent =
+        "День выполнен. Ты сделал это.";
 }
 
-/* =========================================================
-   WEEKLY PROGRESS
-   ========================================================= */
 
-function getStartOfWeek(date = new Date()) {
-    const result = new Date(date);
+/* =========================================
+   РЕНДЕР ЗАДАЧ
+========================================= */
 
-    const day = result.getDay();
+function renderTasks() {
+
+    const todayTasks =
+        getTodayTasks();
+
+    tasksContainer.innerHTML = "";
+
+
+    if (!todayTasks.length) {
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "empty-state";
+
+        empty.innerHTML = `
+            <div class="empty-icon">
+                +
+            </div>
+
+            <h3>
+                Пока нет задач
+            </h3>
+
+            <p>
+                Создай первую задачу
+                и начни сегодняшний день.
+            </p>
+
+            <button
+                class="primary-button"
+                type="button"
+                data-empty-create
+            >
+                Создать задачу
+            </button>
+        `;
+
+        tasksContainer.appendChild(
+            empty
+        );
+
+        empty
+            .querySelector(
+                "[data-empty-create]"
+            )
+            .addEventListener(
+                "click",
+                openTaskPanel
+            );
+
+        return;
+    }
+
+
+    todayTasks.forEach(
+        task => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "task-item";
+
+            if (task.completed) {
+
+                item.classList.add(
+                    "completed"
+                );
+            }
+
+
+            const checkbox =
+                document.createElement(
+                    "button"
+                );
+
+            checkbox.type =
+                "button";
+
+            checkbox.className =
+                "task-checkbox";
+
+            checkbox.textContent =
+                task.completed
+                    ? "✓"
+                    : "";
+
+            checkbox.setAttribute(
+                "aria-label",
+                task.completed
+                    ? "Отметить как невыполненную"
+                    : "Отметить как выполненную"
+            );
+
+
+            checkbox.addEventListener(
+                "click",
+                () =>
+                    toggleTask(
+                        task.id
+                    )
+            );
+
+
+            const content =
+                document.createElement(
+                    "div"
+                );
+
+            content.className =
+                "task-content";
+
+
+            const title =
+                document.createElement(
+                    "div"
+                );
+
+            title.className =
+                "task-title";
+
+            title.textContent =
+                task.title;
+
+
+            const category =
+                document.createElement(
+                    "div"
+                );
+
+            category.className =
+                "task-category";
+
+            category.textContent =
+                task.category;
+
+
+            content.appendChild(
+                title
+            );
+
+            content.appendChild(
+                category
+            );
+
+
+            const status =
+                document.createElement(
+                    "div"
+                );
+
+            status.className =
+                "task-status";
+
+            status.textContent =
+                task.completed
+                    ? "ВЫПОЛНЕНО"
+                    : "ОТКРЫТО";
+
+
+            item.appendChild(
+                checkbox
+            );
+
+            item.appendChild(
+                content
+            );
+
+            item.appendChild(
+                status
+            );
+
+
+            tasksContainer.appendChild(
+                item
+            );
+        }
+    );
+}
+
+
+/* =========================================
+   НЕДЕЛЯ
+========================================= */
+
+function getStartOfWeek(
+    date = new Date()
+) {
+
+    const result =
+        new Date(date);
+
+    const day =
+        result.getDay();
 
     const difference =
         day === 0
@@ -616,16 +693,25 @@ function getStartOfWeek(date = new Date()) {
             : 1 - day;
 
     result.setDate(
-        result.getDate() + difference
+        result.getDate() +
+        difference
     );
 
-    result.setHours(0, 0, 0, 0);
+    result.setHours(
+        0,
+        0,
+        0,
+        0
+    );
 
     return result;
 }
 
-function updateWeeklyProgress() {
-    const weekStart = getStartOfWeek();
+
+function updateWeek() {
+
+    const start =
+        getStartOfWeek();
 
     const dayNames = [
         "monday",
@@ -637,73 +723,87 @@ function updateWeeklyProgress() {
         "sunday"
     ];
 
-    document
-        .querySelectorAll(".week-day")
+
+    $$(".week-day")
         .forEach(dayElement => {
 
             const dayName =
                 dayElement.dataset.day;
 
             const index =
-                dayNames.indexOf(dayName);
+                dayNames.indexOf(
+                    dayName
+                );
 
             if (index === -1) {
                 return;
             }
 
+
             const date =
-                new Date(weekStart);
+                new Date(start);
 
             date.setDate(
-                weekStart.getDate() + index
+                start.getDate() +
+                index
             );
+
 
             const dateKey =
                 getDateKey(date);
 
             const dayTasks =
-                getTasksForDate(dateKey);
+                getTasksForDate(
+                    dateKey
+                );
 
             const percentage =
-                calculateProgress(dayTasks);
+                calculateProgress(
+                    dayTasks
+                );
 
-            const progressElement =
+
+            const progress =
                 dayElement.querySelector(
                     ".week-day-progress"
                 );
 
-            const fillElement =
+            const fill =
                 dayElement.querySelector(
                     ".week-day-fill"
                 );
 
-            if (progressElement) {
-                progressElement.textContent =
-                    `${percentage}%`;
-            }
 
-            if (fillElement) {
-                fillElement.style.width =
-                    `${percentage}%`;
-            }
+            progress.textContent =
+                `${percentage}%`;
 
-            dayElement.classList.remove("active");
+            fill.style.width =
+                `${percentage}%`;
 
-            if (dateKey === getTodayKey()) {
-                dayElement.classList.add("active");
-            }
+
+            dayElement.classList.toggle(
+                "active",
+                dateKey ===
+                getTodayKey()
+            );
         });
 }
 
-/* =========================================================
+
+/* =========================================
    STREAK
-   ========================================================= */
+========================================= */
 
-function isDayCompleted(dateKey) {
+function isCompletedDay(
+    dateKey
+) {
+
     const dayTasks =
-        getTasksForDate(dateKey);
+        getTasksForDate(
+            dateKey
+        );
 
-    if (dayTasks.length === 0) {
+    if (!dayTasks.length) {
         return false;
     }
 
@@ -712,244 +812,444 @@ function isDayCompleted(dateKey) {
     );
 }
 
+
 function calculateStreak() {
+
     let streak = 0;
 
-    const today = new Date();
+    const today =
+        new Date();
+
+    let cursor =
+        new Date(today);
+
 
     /*
-       We count consecutive completed days
-       backwards from today.
-
-       If today has no completed day yet,
-       we check yesterday so that an existing
-       streak is not immediately lost at the
-       beginning of a new day.
+       Если сегодняшний день ещё
+       не завершён, смотрим вчера.
     */
 
-    let cursor = new Date(today);
+    if (
+        !isCompletedDay(
+            getDateKey(cursor)
+        )
+    ) {
 
-    if (!isDayCompleted(getDateKey(cursor))) {
         cursor.setDate(
             cursor.getDate() - 1
         );
     }
 
+
     while (
-        isDayCompleted(
+        isCompletedDay(
             getDateKey(cursor)
         )
     ) {
+
         streak++;
 
         cursor.setDate(
             cursor.getDate() - 1
         );
-
-        if (streak > 10000) {
-            break;
-        }
     }
+
 
     return streak;
 }
 
-function updateStreak() {
-    const streak =
-        calculateStreak();
 
-    if (elements.streakValue) {
-        elements.streakValue.textContent =
-            streak;
-    }
+function updateStreak() {
+
+    streakValue.textContent =
+        calculateStreak();
 }
 
-/* =========================================================
+
+/* =========================================
    ASCEND SCORE
-   ========================================================= */
+========================================= */
 
-function calculateAscendScore() {
-    /*
-       Initial scoring system:
+function calculateScore() {
 
-       Every completed task = +10 points.
-
-       Maximum displayed score = 1000.
-
-       We can later replace this with
-       a more advanced scoring system.
-    */
-
-    const completedCount =
+    const completed =
         tasks.filter(
             task => task.completed
         ).length;
 
     return Math.min(
-        completedCount * 10,
+        completed * 10,
         1000
     );
 }
 
-function updateAscendScore() {
-    const score =
-        calculateAscendScore();
 
-    if (elements.ascendScore) {
-        elements.ascendScore.textContent =
-            score;
-    }
+function updateScore() {
+
+    ascendScore.textContent =
+        calculateScore();
 }
 
-/* =========================================================
-   MOBILE MENU
-   ========================================================= */
 
-function openMobileMenu() {
-    if (elements.sidebar) {
-        elements.sidebar.classList.add("open");
-    }
+/* =========================================
+   КАЛЕНДАРЬ
+========================================= */
 
-    if (elements.mobileOverlay) {
-        elements.mobileOverlay.classList.add("active");
-    }
-}
+function renderCalendar() {
 
-function closeMobileMenu() {
-    if (elements.sidebar) {
-        elements.sidebar.classList.remove("open");
-    }
+    const grid =
+        $("#calendarGrid");
 
-    if (elements.mobileOverlay) {
-        elements.mobileOverlay.classList.remove("active");
-    }
-}
+    const monthTitle =
+        $("#calendarMonth");
 
-function toggleMobileMenu() {
-    if (!elements.sidebar) {
+    if (!grid) {
         return;
     }
 
-    const isOpen =
-        elements.sidebar.classList.contains("open");
 
-    if (isOpen) {
+    const now =
+        new Date();
+
+    const year =
+        now.getFullYear();
+
+    const month =
+        now.getMonth();
+
+
+    monthTitle.textContent =
+        new Intl.DateTimeFormat(
+            "ru-RU",
+            {
+                month: "long",
+                year: "numeric"
+            }
+        ).format(now);
+
+
+    grid.innerHTML = "";
+
+
+    const weekdays = [
+        "Пн",
+        "Вт",
+        "Ср",
+        "Чт",
+        "Пт",
+        "Сб",
+        "Вс"
+    ];
+
+
+    weekdays.forEach(
+        day => {
+
+            const element =
+                document.createElement(
+                    "div"
+                );
+
+            element.className =
+                "calendar-weekday";
+
+            element.textContent =
+                day;
+
+            grid.appendChild(
+                element
+            );
+        }
+    );
+
+
+    const firstDay =
+        new Date(
+            year,
+            month,
+            1
+        );
+
+
+    let startDay =
+        firstDay.getDay();
+
+    if (startDay === 0) {
+        startDay = 7;
+    }
+
+    const daysInMonth =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+    for (
+        let i = 1;
+        i < startDay;
+        i++
+    ) {
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "calendar-day empty";
+
+        grid.appendChild(
+            empty
+        );
+    }
+
+
+    for (
+        let day = 1;
+        day <= daysInMonth;
+        day++
+    ) {
+
+        const date =
+            new Date(
+                year,
+                month,
+                day
+            );
+
+        const dateKey =
+            getDateKey(date);
+
+        const dayTasks =
+            getTasksForDate(
+                dateKey
+            );
+
+        const percentage =
+            calculateProgress(
+                dayTasks
+            );
+
+
+        const element =
+            document.createElement(
+                "div"
+            );
+
+        element.className =
+            "calendar-day";
+
+
+        if (
+            dateKey ===
+            getTodayKey()
+        ) {
+
+            element.classList.add(
+                "today"
+            );
+        }
+
+
+        element.innerHTML = `
+            <div class="calendar-day-number">
+                ${day}
+            </div>
+
+            <div class="calendar-day-progress">
+                ${percentage > 0
+                    ? percentage + "%"
+                    : ""}
+            </div>
+        `;
+
+
+        grid.appendChild(
+            element
+        );
+    }
+}
+
+
+/* =========================================
+   НАВИГАЦИЯ
+========================================= */
+
+function setupNavigation() {
+
+    $$(".nav-link")
+        .forEach(link => {
+
+            link.addEventListener(
+                "click",
+                () => {
+
+                    const page =
+                        link.dataset.page;
+
+                    $$(".nav-link")
+                        .forEach(
+                            item =>
+                                item.classList.remove(
+                                    "active"
+                                )
+                        );
+
+                    link.classList.add(
+                        "active"
+                    );
+
+
+                    $$(".page")
+                        .forEach(
+                            section =>
+                                section.classList.remove(
+                                    "active"
+                                )
+                        );
+
+
+                    const target =
+                        $(`#page-${page}`);
+
+
+                    if (target) {
+
+                        target.classList.add(
+                            "active"
+                        );
+                    }
+
+
+                    if (
+                        page ===
+                        "calendar"
+                    ) {
+
+                        renderCalendar();
+                    }
+
+
+                    closeMobileMenu();
+
+                    window.scrollTo(
+                        {
+                            top: 0,
+                            behavior: "smooth"
+                        }
+                    );
+                }
+            );
+        });
+}
+
+
+/* =========================================
+   МОБИЛЬНОЕ МЕНЮ
+========================================= */
+
+function openMobileMenu() {
+
+    sidebar.classList.add(
+        "open"
+    );
+
+    mobileOverlay.classList.add(
+        "active"
+    );
+}
+
+
+function closeMobileMenu() {
+
+    sidebar.classList.remove(
+        "open"
+    );
+
+    mobileOverlay.classList.remove(
+        "active"
+    );
+}
+
+
+function toggleMobileMenu() {
+
+    if (
+        sidebar.classList.contains(
+            "open"
+        )
+    ) {
+
         closeMobileMenu();
+
     } else {
+
         openMobileMenu();
     }
 }
 
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
 
-function setupNavigation() {
-    const links =
-        document.querySelectorAll(".nav-link");
+/* =========================================
+   УВЕДОМЛЕНИЯ
+========================================= */
 
-    links.forEach(link => {
+function showNotification() {
 
-        link.addEventListener("click", event => {
+    const todayTasks =
+        getTodayTasks();
 
-            event.preventDefault();
+    if (!todayTasks.length) {
 
-            links.forEach(item => {
-                item.classList.remove("active");
-            });
+        showToast(
+            "На сегодня задач нет."
+        );
 
-            link.classList.add("active");
+        return;
+    }
 
-            const page =
-                link.dataset.page;
 
-            handleNavigation(page);
+    const remaining =
+        todayTasks.filter(
+            task => !task.completed
+        ).length;
 
-            closeMobileMenu();
-        });
-    });
+
+    if (remaining === 0) {
+
+        showToast(
+            "Все задачи на сегодня выполнены."
+        );
+
+        return;
+    }
+
+
+    showToast(
+        `Осталось задач: ${remaining}`
+    );
 }
 
-function handleNavigation(page) {
-    /*
-       For now ASCEND is a single-page
-       application.
 
-       Future pages can be connected here.
-    */
+/* =========================================
+   TOAST
+========================================= */
 
-    if (page === "dashboard") {
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
+function showToast(message) {
 
-        return;
+    const old =
+        $(".ascend-toast");
+
+    if (old) {
+        old.remove();
     }
 
-    if (page === "calendar") {
-        showTemporaryMessage(
-            "Calendar is coming next."
-        );
-
-        return;
-    }
-
-    if (page === "tasks") {
-        const tasksSection =
-            elements.tasksContainer
-                ?.closest(".section");
-
-        if (tasksSection) {
-            tasksSection.scrollIntoView({
-                behavior: "smooth"
-            });
-        }
-
-        return;
-    }
-
-    if (page === "analytics") {
-        showTemporaryMessage(
-            "Analytics is coming next."
-        );
-
-        return;
-    }
-
-    if (page === "profile") {
-        showTemporaryMessage(
-            "Profile is coming next."
-        );
-
-        return;
-    }
-
-    if (page === "settings") {
-        showTemporaryMessage(
-            "Settings is coming next."
-        );
-
-        return;
-    }
-}
-
-/* =========================================================
-   TEMPORARY NOTIFICATION
-   ========================================================= */
-
-function showTemporaryMessage(message) {
-    const existing =
-        document.querySelector(
-            ".ascend-toast"
-        );
-
-    if (existing) {
-        existing.remove();
-    }
 
     const toast =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     toast.className =
         "ascend-toast";
@@ -957,225 +1257,198 @@ function showTemporaryMessage(message) {
     toast.textContent =
         message;
 
-    toast.style.position = "fixed";
-    toast.style.right = "25px";
-    toast.style.bottom = "25px";
-    toast.style.zIndex = "9999";
-    toast.style.padding = "13px 17px";
-    toast.style.border = "1px solid #303030";
-    toast.style.borderRadius = "10px";
-    toast.style.background = "#151515";
-    toast.style.color = "#ddd";
-    toast.style.fontSize = "12px";
-    toast.style.boxShadow =
-        "0 15px 40px rgba(0,0,0,0.35)";
 
-    document.body.appendChild(toast);
+    document.body.appendChild(
+        toast
+    );
+
 
     setTimeout(() => {
 
-        toast.style.opacity = "0";
+        toast.style.opacity =
+            "0";
+
         toast.style.transition =
             "opacity 0.25s ease";
 
         setTimeout(() => {
+
             toast.remove();
+
         }, 250);
 
     }, 1800);
 }
 
-/* =========================================================
-   NOTIFICATIONS
-   ========================================================= */
 
-function handleNotifications() {
-    const todayTasks =
-        getTodayTasks();
+/* =========================================
+   КНОПКА АНАЛИТИКИ
+========================================= */
 
-    if (todayTasks.length === 0) {
-        showTemporaryMessage(
-            "No tasks for today."
-        );
+function openAnalytics() {
 
-        return;
-    }
+    const analyticsLink =
+        $('.nav-link[data-page="analytics"]');
 
-    const incomplete =
-        todayTasks.filter(
-            task => !task.completed
-        ).length;
+    analyticsLink?.click();
+}
 
-    if (incomplete === 0) {
-        showTemporaryMessage(
-            "All tasks completed. Great work."
-        );
 
-        return;
-    }
+/* =========================================
+   ЗАКРЫТИЕ МОДАЛКИ
+========================================= */
 
-    showTemporaryMessage(
-        `${incomplete} task${
-            incomplete === 1 ? "" : "s"
-        } remaining today.`
+function setupModal() {
+
+    addTaskPanel.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target ===
+                addTaskPanel
+            ) {
+
+                closeTaskPanel();
+            }
+        }
     );
-}
 
-/* =========================================================
-   ANALYTICS BUTTON
-   ========================================================= */
 
-function handleAnalyticsButton() {
-    showTemporaryMessage(
-        "Analytics is coming next."
-    );
-}
-
-/* =========================================================
-   EVENT LISTENERS
-   ========================================================= */
-
-function setupEventListeners() {
-
-    if (elements.addTaskButton) {
-        elements.addTaskButton.addEventListener(
-            "click",
-            openTaskPanel
-        );
-    }
-
-    if (elements.createTaskButton) {
-        elements.createTaskButton.addEventListener(
-            "click",
-            openTaskPanel
-        );
-    }
-
-    if (elements.closeTaskPanel) {
-        elements.closeTaskPanel.addEventListener(
-            "click",
-            closeTaskPanel
-        );
-    }
-
-    if (elements.cancelTaskButton) {
-        elements.cancelTaskButton.addEventListener(
-            "click",
-            closeTaskPanel
-        );
-    }
-
-    if (elements.taskForm) {
-        elements.taskForm.addEventListener(
-            "submit",
-            handleTaskSubmit
-        );
-    }
-
-    if (elements.mobileMenuButton) {
-        elements.mobileMenuButton.addEventListener(
-            "click",
-            toggleMobileMenu
-        );
-    }
-
-    if (elements.mobileOverlay) {
-        elements.mobileOverlay.addEventListener(
-            "click",
-            closeMobileMenu
-        );
-    }
-
-    if (elements.notificationButton) {
-        elements.notificationButton.addEventListener(
-            "click",
-            handleNotifications
-        );
-    }
-
-    if (elements.analyticsButton) {
-        elements.analyticsButton.addEventListener(
-            "click",
-            handleAnalyticsButton
-        );
-    }
-}
-
-/* =========================================================
-   ESCAPE KEY
-   ========================================================= */
-
-function setupKeyboardControls() {
     document.addEventListener(
         "keydown",
         event => {
 
-            if (event.key === "Escape") {
+            if (
+                event.key ===
+                "Escape"
+            ) {
+
                 closeTaskPanel();
+
                 closeMobileMenu();
             }
         }
     );
 }
 
-/* =========================================================
-   RENDER EVERYTHING
-   ========================================================= */
+
+/* =========================================
+   ВСЁ ОБНОВИТЬ
+========================================= */
 
 function renderAll() {
+
+    updateDate();
+
     renderTasks();
 
     updateDailyProgress();
 
-    updateWeeklyProgress();
+    updateWeek();
 
     updateStreak();
 
-    updateAscendScore();
+    updateScore();
 
-    updateDateUI();
-
-    updateUserUI();
+    renderCalendar();
 }
 
-/* =========================================================
-   INITIALIZATION
-   ========================================================= */
+
+/* =========================================
+   EVENTS
+========================================= */
+
+function setupEvents() {
+
+    addTaskButton?.addEventListener(
+        "click",
+        openTaskPanel
+    );
+
+
+    createTaskButton?.addEventListener(
+        "click",
+        openTaskPanel
+    );
+
+
+    closeTaskPanel?.addEventListener(
+        "click",
+        closeTaskPanel
+    );
+
+
+    cancelTaskButton?.addEventListener(
+        "click",
+        closeTaskPanel
+    );
+
+
+    taskForm?.addEventListener(
+        "submit",
+        handleTaskSubmit
+    );
+
+
+    mobileMenuButton?.addEventListener(
+        "click",
+        toggleMobileMenu
+    );
+
+
+    mobileOverlay?.addEventListener(
+        "click",
+        closeMobileMenu
+    );
+
+
+    notificationButton?.addEventListener(
+        "click",
+        showNotification
+    );
+
+
+    analyticsButton?.addEventListener(
+        "click",
+        openAnalytics
+    );
+}
+
+
+/* =========================================
+   START ASCEND
+========================================= */
 
 function init() {
 
     loadTasks();
 
-    loadUser();
-
-    updateDateUI();
-
-    updateUserUI();
-
-    setupEventListeners();
-
     setupNavigation();
 
-    setupKeyboardControls();
+    setupEvents();
+
+    setupModal();
 
     renderAll();
 
     console.log(
-        "ASCEND initialized successfully."
+        "ASCEND запущен."
     );
 }
 
-/* =========================================================
-   START
-   ========================================================= */
 
 if (
-    document.readyState === "loading"
+    document.readyState ===
+    "loading"
 ) {
+
     document.addEventListener(
         "DOMContentLoaded",
         init
     );
+
 } else {
+
     init();
 }
