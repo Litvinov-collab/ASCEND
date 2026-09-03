@@ -1,11 +1,5 @@
-"use strict";
-
-/* =========================================================
-   ASCEND — ОСНОВНАЯ ЛОГИКА
-========================================================= */
-
-const TASKS_KEY = "ASCEND_TASKS_RU_V1";
-const USER_KEY = "ASCEND_USERNAME_RU_V1";
+const TASKS_KEY = "ASCEND_TASKS_RU_V2";
+const USER_KEY = "ASCEND_USERNAME_RU_V2";
 
 let tasks = [];
 let username = "ASCENDER";
@@ -16,9 +10,9 @@ let currentYear = new Date().getFullYear();
 let toastTimer = null;
 
 
-/* =========================================================
-   ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-========================================================= */
+/* ============================
+   HELPERS
+============================ */
 
 function $(selector) {
     return document.querySelector(selector);
@@ -32,8 +26,14 @@ function pad(number) {
     return String(number).padStart(2, "0");
 }
 
-function dateKey(date) {
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+function dateKey(date = new Date()) {
+    return (
+        date.getFullYear() +
+        "-" +
+        pad(date.getMonth() + 1) +
+        "-" +
+        pad(date.getDate())
+    );
 }
 
 function todayKey() {
@@ -41,30 +41,35 @@ function todayKey() {
 }
 
 function parseDate(key) {
-    const [year, month, day] = key.split("-").map(Number);
 
-    return new Date(year, month - 1, day);
+    const [year, month, day] =
+        key.split("-").map(Number);
+
+    return new Date(
+        year,
+        month - 1,
+        day
+    );
 }
 
-function escapeHTML(value) {
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
 }
 
 
-/* =========================================================
-   УВЕДОМЛЕНИЕ
-========================================================= */
+/* ============================
+   TOAST
+============================ */
 
 function toast(message) {
 
     const element = $("#toast");
-
-    if (!element) return;
 
     element.textContent = message;
 
@@ -72,15 +77,18 @@ function toast(message) {
 
     clearTimeout(toastTimer);
 
-    toastTimer = setTimeout(() => {
-        element.classList.remove("show");
-    }, 2200);
+    toastTimer =
+        setTimeout(() => {
+
+            element.classList.remove("show");
+
+        }, 2200);
 }
 
 
-/* =========================================================
-   СОХРАНЕНИЕ
-========================================================= */
+/* ============================
+   STORAGE
+============================ */
 
 function saveTasks() {
 
@@ -94,25 +102,15 @@ function loadTasks() {
 
     try {
 
-        const saved =
+        const stored =
             localStorage.getItem(TASKS_KEY);
 
-        if (!saved) {
-            tasks = [];
-            return;
-        }
-
-        const parsed =
-            JSON.parse(saved);
-
         tasks =
-            Array.isArray(parsed)
-                ? parsed
+            stored
+                ? JSON.parse(stored)
                 : [];
 
-    } catch (error) {
-
-        console.error(error);
+    } catch {
 
         tasks = [];
     }
@@ -128,21 +126,15 @@ function saveUsername() {
 
 function loadUsername() {
 
-    const saved =
-        localStorage.getItem(USER_KEY);
-
-    if (
-        saved &&
-        saved.trim()
-    ) {
-        username = saved.trim();
-    }
+    username =
+        localStorage.getItem(USER_KEY)
+        || "ASCENDER";
 }
 
 
-/* =========================================================
-   СОЗДАНИЕ ЗАДАЧИ
-========================================================= */
+/* ============================
+   TASK CREATION
+============================ */
 
 function createTask(
     title,
@@ -155,13 +147,13 @@ function createTask(
     return {
 
         id:
-            Date.now().toString() +
+            Date.now().toString()
+            +
             Math.random()
                 .toString(36)
                 .slice(2),
 
-        title:
-            title.trim(),
+        title: title.trim(),
 
         category,
 
@@ -171,59 +163,59 @@ function createTask(
 
         days,
 
-        createdAt:
-            todayKey(),
+        createdAt: todayKey(),
 
         completed: {}
-
     };
 }
 
 
-/* =========================================================
-   ДОСТУПНОСТЬ ЗАДАЧИ
-========================================================= */
+/* ============================
+   TASK SCHEDULE
+============================ */
 
-function taskAvailableOn(task, key) {
+function taskAvailableOnDate(
+    task,
+    key
+) {
 
-    if (!task || !task.createdAt) {
-        return false;
-    }
-
-    const targetDate =
+    const target =
         parseDate(key);
 
-    const createdDate =
+    const created =
         parseDate(task.createdAt);
 
-    if (targetDate < createdDate) {
+    if (target < created) {
         return false;
     }
 
     if (task.repeat === "once") {
+
         return key === task.createdAt;
     }
 
     if (task.repeat === "daily") {
+
         return true;
     }
 
     if (task.repeat === "weekdays") {
 
         const day =
-            targetDate.getDay();
+            target.getDay();
 
         return day >= 1 && day <= 5;
     }
 
     if (task.repeat === "custom") {
 
-        const day =
-            targetDate.getDay();
+        const weekday =
+            target.getDay();
 
         return (
-            Array.isArray(task.days) &&
-            task.days.includes(day)
+            Array.isArray(task.days)
+            &&
+            task.days.includes(weekday)
         );
     }
 
@@ -232,15 +224,18 @@ function taskAvailableOn(task, key) {
 
 function tasksForDate(key) {
 
-    return tasks.filter(
-        task => taskAvailableOn(task, key)
+    return tasks.filter(task =>
+        taskAvailableOnDate(
+            task,
+            key
+        )
     );
 }
 
 
-/* =========================================================
-   ПРОГРЕСС
-========================================================= */
+/* ============================
+   PROGRESS
+============================ */
 
 function progressForDate(key) {
 
@@ -260,14 +255,11 @@ function progressForDate(key) {
     }
 
     const completed =
-        list.filter(task => {
-
-            return (
-                task.completed &&
-                task.completed[key] === true
-            );
-
-        }).length;
+        list.filter(task =>
+            task.completed
+            &&
+            task.completed[key] === true
+        ).length;
 
     const percent =
         Math.round(
@@ -282,157 +274,141 @@ function progressForDate(key) {
 }
 
 
-/* =========================================================
-   ВЫПОЛНЕНИЕ ЗАДАЧИ
-========================================================= */
+/* ============================
+   SCORE
+============================ */
 
-function toggleTask(taskId, key) {
+function totalScore() {
 
-    const task =
-        tasks.find(
-            item => item.id === taskId
-        );
+    let score = 0;
 
-    if (!task) return;
+    tasks.forEach(task => {
 
-    if (!task.completed) {
-        task.completed = {};
-    }
-
-    task.completed[key] =
-        task.completed[key] !== true;
-
-    saveTasks();
-
-    renderEverything();
-
-    if (task.completed[key]) {
-        toast("Задача выполнена.");
-    } else {
-        toast("Выполнение отменено.");
-    }
-}
-
-
-/* =========================================================
-   УДАЛЕНИЕ
-========================================================= */
-
-function deleteTask(taskId) {
-
-    const task =
-        tasks.find(
-            item => item.id === taskId
-        );
-
-    if (!task) return;
-
-    tasks =
-        tasks.filter(
-            item => item.id !== taskId
-        );
-
-    saveTasks();
-
-    renderEverything();
-
-    toast("Задача удалена.");
-}
-
-
-/* =========================================================
-   ТЕКСТ ПОВТОРЕНИЯ
-========================================================= */
-
-function repeatText(task) {
-
-    if (task.repeat === "once") {
-        return "Один раз";
-    }
-
-    if (task.repeat === "daily") {
-        return "Каждый день";
-    }
-
-    if (task.repeat === "weekdays") {
-        return "По будням";
-    }
-
-    if (task.repeat === "custom") {
-
-        const names = [
-            "Вс",
-            "Пн",
-            "Вт",
-            "Ср",
-            "Чт",
-            "Пт",
-            "Сб"
-        ];
-
-        if (!Array.isArray(task.days)) {
-            return "Свои дни";
+        if (!task.completed) {
+            return;
         }
 
-        return task.days
-            .sort((a, b) => a - b)
-            .map(day => names[day])
-            .join(", ");
-    }
+        Object.values(
+            task.completed
+        ).forEach(done => {
 
-    return "";
+            if (done) {
+                score += 10;
+            }
+        });
+    });
+
+    return score;
 }
 
 
-/* =========================================================
-   HTML ЗАДАЧИ
-========================================================= */
+/* ============================
+   STREAK
+============================ */
 
-function taskHTML(task, key) {
+function calculateStreak() {
 
-    const completed =
-        task.completed &&
+    let streak = 0;
+
+    const cursor =
+        new Date();
+
+    for (
+        let index = 0;
+        index < 365;
+        index++
+    ) {
+
+        const key =
+            dateKey(cursor);
+
+        const progress =
+            progressForDate(key);
+
+        if (
+            progress.total === 0
+            ||
+            progress.percent < 100
+        ) {
+            break;
+        }
+
+        streak++;
+
+        cursor.setDate(
+            cursor.getDate() - 1
+        );
+    }
+
+    return streak;
+}
+
+
+/* ============================
+   TASK HTML
+============================ */
+
+function taskHTML(
+    task,
+    key
+) {
+
+    const done =
+        task.completed
+        &&
         task.completed[key] === true;
 
+    const repeatNames = {
+
+        once: "Один раз",
+
+        daily: "Каждый день",
+
+        weekdays: "По будням",
+
+        custom: "По выбранным дням"
+    };
+
     return `
-        <div class="task ${completed ? "completed" : ""}">
+
+        <div
+            class="task ${done ? "done" : ""}"
+        >
 
             <button
                 type="button"
                 class="check"
                 data-action="toggle"
-                data-id="${escapeHTML(task.id)}"
-                data-date="${escapeHTML(key)}">
-
-                ${completed ? "✓" : ""}
-
+                data-id="${task.id}"
+                data-date="${key}"
+            >
+                ${done ? "✓" : ""}
             </button>
 
-            <div class="task-content">
+            <div class="task-info">
 
                 <div class="task-title">
                     ${escapeHTML(task.title)}
                 </div>
 
                 <div class="task-meta">
-                    ${escapeHTML(task.category)}
-                    ·
-                    ${escapeHTML(task.priority)}
-                    ·
-                    ${escapeHTML(repeatText(task))}
+                    ${repeatNames[task.repeat] || ""}
                 </div>
 
             </div>
+
+            <span class="category">
+                ${escapeHTML(task.category)}
+            </span>
 
             <button
                 type="button"
                 class="delete"
                 data-action="delete"
-                data-id="${escapeHTML(task.id)}"
-                title="Удалить задачу">
-
+                data-id="${task.id}"
+                title="Удалить"
+            >
                 ×
-
             </button>
 
         </div>
@@ -440,16 +416,11 @@ function taskHTML(task, key) {
 }
 
 
-/* =========================================================
-   ЗАДАЧИ СЕГОДНЯ
-========================================================= */
+/* ============================
+   DASHBOARD
+============================ */
 
-function renderTodayTasks() {
-
-    const container =
-        $("#todayTasks");
-
-    if (!container) return;
+function renderDashboard() {
 
     const key =
         todayKey();
@@ -457,42 +428,301 @@ function renderTodayTasks() {
     const list =
         tasksForDate(key);
 
-    if (list.length === 0) {
+    const progress =
+        progressForDate(key);
 
-        container.innerHTML = `
-            <div class="empty">
-                На сегодня задач нет.
-            </div>
-        `;
+    $("#dailyPercent").textContent =
+        progress.percent + "%";
 
-        return;
-    }
+    $("#taskCount").textContent =
+        progress.completed
+        +
+        " / "
+        +
+        progress.total;
 
-    container.innerHTML =
-        list
-            .map(task =>
-                taskHTML(task, key)
-            )
-            .join("");
+    const streak =
+        calculateStreak();
+
+    $("#streak").textContent =
+        streak
+        +
+        (
+            streak === 1
+                ? " день"
+                : " дней"
+        );
+
+    const score =
+        totalScore();
+
+    $("#score").textContent =
+        score;
+
+    $("#sidebarScore").textContent =
+        "Очки: " + score;
+
+    $("#sidebarPercent").textContent =
+        progress.percent + "%";
+
+    $("#sidebarFill").style
+        .setProperty(
+            "--mini-progress",
+            progress.percent + "%"
+        );
+
+    $("#circleNumber").textContent =
+        progress.percent + "%";
+
+    $("#progressCircle").style
+        .setProperty(
+            "--progress",
+            progress.percent + "%"
+        );
+
+    $("#todayTasks").innerHTML =
+        list.length
+            ? list
+                .map(task =>
+                    taskHTML(
+                        task,
+                        key
+                    )
+                )
+                .join("")
+            : `
+                <div class="empty">
+                    На сегодня задач пока нет.
+                </div>
+            `;
+
+    renderProgressMessage(
+        progress.percent
+    );
+
+    updateCharacter(
+        progress.percent
+    );
 }
 
 
-/* =========================================================
-   ВСЕ ЗАДАЧИ
-========================================================= */
+/* ============================
+   PROGRESS MESSAGE
+============================ */
+
+function renderProgressMessage(
+    percent
+) {
+
+    let title =
+        "Начни свой день.";
+
+    let text =
+        "Первое выполненное действие запускает движение.";
+
+    if (percent === 100) {
+
+        title =
+            "Идеальный день.";
+
+        text =
+            "Ты закрыл всё. Именно так строится дисциплина.";
+
+    } else if (percent >= 75) {
+
+        title =
+            "Почти готово.";
+
+        text =
+            "Осталось немного. Дожми день.";
+
+    } else if (percent >= 50) {
+
+        title =
+            "Хороший темп.";
+
+        text =
+            "Половина позади. Не останавливайся.";
+
+    } else if (percent > 0) {
+
+        title =
+            "Движение началось.";
+
+        text =
+            "Продолжай. Каждый выполненный пункт имеет значение.";
+    }
+
+    $("#progressMessage").innerHTML = `
+
+        <strong>
+            ${title}
+        </strong>
+
+        <p>
+            ${text}
+        </p>
+    `;
+}
+
+
+/* ============================
+   CHARACTER
+============================ */
+
+function updateCharacter(
+    percent
+) {
+
+    const character =
+        $("#character");
+
+    const message =
+        $("#characterMessage");
+
+    character.classList.remove(
+        "state-low",
+        "state-medium",
+        "state-high",
+        "state-perfect"
+    );
+
+    if (percent === 100) {
+
+        character.classList.add(
+            "state-perfect"
+        );
+
+        message.textContent =
+            "Сегодня ты сделал всё. Запомни это состояние.";
+
+    } else if (percent >= 70) {
+
+        character.classList.add(
+            "state-high"
+        );
+
+        message.textContent =
+            "Ты близко. Не останавливайся сейчас.";
+
+    } else if (percent >= 30) {
+
+        character.classList.add(
+            "state-medium"
+        );
+
+        message.textContent =
+            "Темп есть. Продолжай двигаться.";
+
+    } else {
+
+        character.classList.add(
+            "state-low"
+        );
+
+        message.textContent =
+            "Начни день. Сделай первое действие.";
+    }
+}
+
+
+/* ============================
+   TOGGLE TASK
+============================ */
+
+function toggleTask(
+    taskId,
+    key
+) {
+
+    const task =
+        tasks.find(
+            item =>
+                item.id === taskId
+        );
+
+    if (!task) {
+        return;
+    }
+
+    if (!task.completed) {
+
+        task.completed = {};
+    }
+
+    task.completed[key] =
+        !task.completed[key];
+
+    saveTasks();
+
+    renderEverything();
+
+    if (
+        task.completed[key]
+    ) {
+
+        toast(
+            "Задача выполнена. +10 очков"
+        );
+
+    } else {
+
+        toast(
+            "Выполнение отменено."
+        );
+    }
+}
+
+
+/* ============================
+   DELETE
+============================ */
+
+function deleteTask(
+    taskId
+) {
+
+    const task =
+        tasks.find(
+            item =>
+                item.id === taskId
+        );
+
+    if (!task) {
+        return;
+    }
+
+    tasks =
+        tasks.filter(
+            item =>
+                item.id !== taskId
+        );
+
+    saveTasks();
+
+    renderEverything();
+
+    toast(
+        "Задача удалена."
+    );
+}
+
+
+/* ============================
+   ALL TASKS
+============================ */
 
 function renderAllTasks() {
 
     const container =
         $("#allTasks");
 
-    if (!container) return;
-
-    if (tasks.length === 0) {
+    if (!tasks.length) {
 
         container.innerHTML = `
+
             <div class="empty">
-                У тебя пока нет задач.
+                Пока нет ни одной задачи.
             </div>
         `;
 
@@ -505,185 +735,21 @@ function renderAllTasks() {
     container.innerHTML =
         tasks
             .map(task =>
-                taskHTML(task, key)
+                taskHTML(
+                    task,
+                    key
+                )
             )
             .join("");
 }
 
 
-/* =========================================================
-   ГЛАВНАЯ
-========================================================= */
-
-function renderDashboard() {
-
-    const key =
-        todayKey();
-
-    const progress =
-        progressForDate(key);
-
-    $("#dailyPercent").textContent =
-        progress.percent;
-
-    $("#taskCount").textContent =
-        progress.total;
-
-    $("#sidebarPercent").textContent =
-        progress.percent;
-
-    $("#sidebarFill").style.width =
-        `${progress.percent}%`;
-
-    $("#circleNumber").textContent =
-        `${progress.percent}%`;
-
-
-    const circle =
-        $("#progressCircle");
-
-    const degrees =
-        progress.percent * 3.6;
-
-    circle.style.background = `
-        radial-gradient(
-            circle,
-            #101010 63%,
-            transparent 64%
-        ),
-        conic-gradient(
-            white ${degrees}deg,
-            #222 ${degrees}deg
-        )
-    `;
-
-
-    let message =
-        "Начни свой день.";
-
-    if (progress.percent >= 100) {
-
-        message =
-            "Идеальный день. Ты сделал это.";
-
-    } else if (progress.percent >= 75) {
-
-        message =
-            "Почти готово. Дожми.";
-
-    } else if (progress.percent >= 50) {
-
-        message =
-            "Половина позади. Не останавливайся.";
-
-    } else if (progress.percent > 0) {
-
-        message =
-            "Хорошее начало. Продолжай.";
-
-    }
-
-    $("#progressMessage").textContent =
-        message;
-
-    renderTodayTasks();
-}
-
-
-/* =========================================================
-   ОЧКИ
-========================================================= */
-
-function calculateScore() {
-
-    let score = 0;
-
-    tasks.forEach(task => {
-
-        if (!task.completed) return;
-
-        Object.values(
-            task.completed
-        ).forEach(completed => {
-
-            if (completed === true) {
-                score += 10;
-            }
-
-        });
-    });
-
-    return score;
-}
-
-
-/* =========================================================
-   СЕРИЯ
-========================================================= */
-
-function calculateStreak() {
-
-    let streak = 0;
-
-    const current =
-        new Date();
-
-    while (true) {
-
-        const key =
-            dateKey(current);
-
-        const progress =
-            progressForDate(key);
-
-        if (
-            progress.total === 0 ||
-            progress.percent < 100
-        ) {
-            break;
-        }
-
-        streak++;
-
-        current.setDate(
-            current.getDate() - 1
-        );
-    }
-
-    return streak;
-}
-
-
-function renderScore() {
-
-    const score =
-        calculateScore();
-
-    const streak =
-        calculateStreak();
-
-    $("#score").textContent =
-        score;
-
-    $("#streak").textContent =
-        streak;
-
-    $("#sidebarScore").textContent =
-        score;
-
-    $("#profileScore").textContent =
-        score;
-
-    $("#profileStreak").textContent =
-        streak;
-}
-
-
-/* =========================================================
-   КАЛЕНДАРЬ
-========================================================= */
+/* ============================
+   CALENDAR
+============================ */
 
 const monthNames = [
+
     "Январь",
     "Февраль",
     "Март",
@@ -698,23 +764,7 @@ const monthNames = [
     "Декабрь"
 ];
 
-const weekNames = [
-    "Вс",
-    "Пн",
-    "Вт",
-    "Ср",
-    "Чт",
-    "Пт",
-    "Сб"
-];
-
-
-function renderCalendar() {
-
-    const calendar =
-        $("#calendar");
-
-    if (!calendar) return;
+function buildCalendarHTML() {
 
     const firstDay =
         new Date(
@@ -730,35 +780,45 @@ function renderCalendar() {
             0
         ).getDate();
 
-    $("#monthName").textContent =
-        `${monthNames[currentMonth]} ${currentYear}`;
+    let weekday =
+        firstDay.getDay();
 
-    let html = "";
+    weekday =
+        weekday === 0
+            ? 6
+            : weekday - 1;
 
+    const weekdays = [
+        "Пн",
+        "Вт",
+        "Ср",
+        "Чт",
+        "Пт",
+        "Сб",
+        "Вс"
+    ];
 
-    weekNames.forEach(day => {
-
-        html += `
-            <div class="calendar-weekday">
-                ${day}
-            </div>
-        `;
-
-    });
-
+    let html =
+        weekdays
+            .map(day => `
+                <div class="weekday">
+                    ${day}
+                </div>
+            `)
+            .join("");
 
     for (
         let i = 0;
-        i < firstDay.getDay();
+        i < weekday;
         i++
     ) {
 
         html += `
-            <div class="calendar-day empty-day"></div>
+            <div
+                class="calendar-day blank"
+            ></div>
         `;
-
     }
-
 
     for (
         let day = 1;
@@ -782,60 +842,93 @@ function renderCalendar() {
         const isToday =
             key === todayKey();
 
-
         html += `
-            <div
-                class="calendar-day ${isToday ? "today" : ""}"
-                data-calendar="${key}">
 
-                <div class="calendar-day-number">
+            <button
+                type="button"
+                class="
+                    calendar-day
+                    ${isToday ? "today" : ""}
+                "
+                data-calendar-date="${key}"
+            >
+
+                <div class="calendar-number">
                     ${day}
                 </div>
 
-                <div class="calendar-day-percent">
+                <div
+                    class="
+                        calendar-percent
+                        ${
+                            progress.percent === 100
+                                ? "complete"
+                                : ""
+                        }
+                    "
+                >
                     ${
-                        progress.total > 0
+                        progress.total
                             ? progress.percent + "%"
                             : "—"
                     }
                 </div>
 
-            </div>
+            </button>
         `;
     }
 
+    return html;
+}
 
-    calendar.innerHTML =
+function renderCalendar() {
+
+    const name =
+        monthNames[currentMonth]
+        +
+        " "
+        +
+        currentYear;
+
+    $("#monthName").textContent =
+        name;
+
+    $("#monthName2").textContent =
+        name;
+
+    const html =
+        buildCalendarHTML();
+
+    $("#calendar").innerHTML =
+        html;
+
+    $("#calendar2").innerHTML =
         html;
 }
 
 
-/* =========================================================
-   АНАЛИТИКА
-========================================================= */
+/* ============================
+   ANALYTICS
+============================ */
 
-function renderAnalytics() {
+function analyticsData() {
 
-    const percentages = [];
+    const result = [];
 
-    let totalDone = 0;
-
-    let bestPercent = -1;
-
-    let bestDate = null;
-
+    const today =
+        new Date();
 
     for (
-        let i = 29;
-        i >= 0;
-        i--
+        let offset = 29;
+        offset >= 0;
+        offset--
     ) {
 
         const date =
-            new Date();
+            new Date(today);
 
         date.setDate(
-            date.getDate() - i
+            today.getDate() - offset
         );
 
         const key =
@@ -844,144 +937,184 @@ function renderAnalytics() {
         const progress =
             progressForDate(key);
 
-        percentages.push({
+        result.push({
+
             key,
-            percent: progress.percent
+
+            date,
+
+            ...progress
         });
-
-        totalDone +=
-            progress.completed;
-
-
-        if (
-            progress.total > 0 &&
-            progress.percent > bestPercent
-        ) {
-
-            bestPercent =
-                progress.percent;
-
-            bestDate =
-                key;
-        }
     }
 
+    return result;
+}
+
+function renderAnalytics() {
+
+    const data =
+        analyticsData();
 
     const daysWithTasks =
-        percentages.filter(
+        data.filter(
             item =>
-                progressForDate(
-                    item.key
-                ).total > 0
+                item.total > 0
         );
 
+    let average = 0;
 
-    const average =
-        daysWithTasks.length > 0
-            ? Math.round(
+    if (daysWithTasks.length) {
+
+        average =
+            Math.round(
                 daysWithTasks.reduce(
-                    (sum, item) =>
+                    (sum,item) =>
                         sum + item.percent,
                     0
-                ) /
+                )
+                /
                 daysWithTasks.length
-            )
-            : 0;
-
+            );
+    }
 
     $("#average").textContent =
-        `${average}%`;
+        average + "%";
+
+    let best = null;
+
+    daysWithTasks.forEach(item => {
+
+        if (
+            !best
+            ||
+            item.percent > best.percent
+        ) {
+
+            best = item;
+        }
+    });
+
+    $("#bestDay").textContent =
+        best
+            ? (
+                pad(
+                    best.date.getDate()
+                )
+                +
+                "."
+                +
+                pad(
+                    best.date.getMonth() + 1
+                )
+            )
+            : "—";
+
+    const totalDone =
+        tasks.reduce(
+            (total, task) => {
+
+                if (!task.completed) {
+
+                    return total;
+                }
+
+                return (
+                    total
+                    +
+                    Object.values(
+                        task.completed
+                    )
+                    .filter(Boolean)
+                    .length
+                );
+
+            },
+            0
+        );
 
     $("#totalDone").textContent =
         totalDone;
 
+    $("#chart").innerHTML =
+        data
+            .map(item => {
 
-    if (bestDate) {
+                const height =
+                    Math.max(
+                        item.percent,
+                        2
+                    );
 
-        const date =
-            parseDate(bestDate);
+                return `
 
-        $("#bestDay").textContent =
-            `${pad(date.getDate())}.${pad(date.getMonth() + 1)}`;
+                    <div class="chart-column">
 
-    } else {
+                        <div class="bar-holder">
 
-        $("#bestDay").textContent =
-            "—";
-    }
+                            <div
+                                class="bar"
+                                style="
+                                    height:${height}%;
+                                    opacity:${
+                                        item.total
+                                            ? 1
+                                            : .15
+                                    }
+                                "
+                                title="${item.percent}%"
+                            ></div>
 
+                        </div>
 
-    const chart =
-        $("#chart");
+                        <div class="bar-label">
+                            ${pad(item.date.getDate())}
+                        </div>
 
-    chart.innerHTML = "";
-
-
-    percentages.forEach(item => {
-
-        const bar =
-            document.createElement("div");
-
-        bar.className =
-            "chart-bar";
-
-        bar.style.height =
-            `${Math.max(item.percent, 3)}%`;
-
-        bar.title =
-            `${item.key}: ${item.percent}%`;
-
-
-        const label =
-            document.createElement("div");
-
-        label.className =
-            "chart-label";
-
-        label.textContent =
-            item.key.slice(8);
-
-        bar.appendChild(label);
-
-        chart.appendChild(bar);
-
-    });
+                    </div>
+                `;
+            })
+            .join("");
 }
 
 
-/* =========================================================
-   НИК
-========================================================= */
+/* ============================
+   PROFILE
+============================ */
 
-function renderUsername() {
+function renderProfile() {
+
+    const firstLetter =
+        username
+            .trim()
+            .charAt(0)
+            .toUpperCase()
+        || "A";
+
+    $("#avatar").textContent =
+        firstLetter;
 
     $("#profileName").textContent =
-        username;
-
-    $("#characterName").textContent =
         username;
 
     $("#nameInput").value =
         username;
 
+    $("#characterName").textContent =
+        username;
 
-    const first =
-        username
-            .charAt(0)
-            .toUpperCase();
+    $("#profileScore").textContent =
+        totalScore();
 
-    $("#avatar").textContent =
-        first || "A";
+    $("#profileStreak").textContent =
+        calculateStreak();
 }
 
-
-function saveNewUsername() {
-
-    const input =
-        $("#nameInput");
+function saveProfileName() {
 
     const value =
-        input.value.trim();
+        $("#nameInput")
+            .value
+            .trim();
 
     if (!value) {
 
@@ -989,17 +1122,15 @@ function saveNewUsername() {
             "Введите никнейм."
         );
 
-        input.focus();
-
         return;
     }
 
     username =
-        value.slice(0, 24);
+        value.slice(0,24);
 
     saveUsername();
 
-    renderUsername();
+    renderProfile();
 
     toast(
         "Никнейм сохранён."
@@ -1007,197 +1138,95 @@ function saveNewUsername() {
 }
 
 
-/* =========================================================
-   ПЕРСОНАЖ
-========================================================= */
+/* ============================
+   DATE HEADER
+============================ */
 
-function renderCharacter() {
+function renderCurrentDate() {
 
-    const progress =
-        progressForDate(
-            todayKey()
-        );
+    const now =
+        new Date();
 
-    let message =
-        "Сосредоточься.";
+    const weekdays = [
+        "Воскресенье",
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота"
+    ];
 
-    if (progress.percent === 100) {
+    const text =
+        `${now.getDate()} `
+        +
+        `${monthNames[now.getMonth()].toLowerCase()}, `
+        +
+        `${weekdays[now.getDay()]}`;
 
-        message =
-            "Сегодня ты победил.";
-
-    } else if (progress.percent >= 75) {
-
-        message =
-            "Осталось немного. Дожми.";
-
-    } else if (progress.percent >= 50) {
-
-        message =
-            "Не сбавляй темп.";
-
-    } else if (progress.percent > 0) {
-
-        message =
-            "Хорошо. Продолжай.";
-
-    }
-
-    $("#characterMessage").textContent =
-        message;
+    $("#currentDate").textContent =
+        text;
 }
 
 
-/* =========================================================
-   ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ
-========================================================= */
-
-function openPage(page) {
-
-    $$(".page").forEach(
-        item =>
-            item.classList.remove("active")
-    );
-
-    $$(".nav-button").forEach(
-        item =>
-            item.classList.remove("active")
-    );
-
-
-    const target =
-        $(`#page-${page}`);
-
-    const button =
-        document.querySelector(
-            `[data-page="${page}"]`
-        );
-
-
-    if (!target) return;
-
-    target.classList.add("active");
-
-    if (button) {
-        button.classList.add("active");
-    }
-
-
-    $("#sidebar")
-        .classList
-        .remove("open");
-
-
-    if (page === "calendar") {
-        renderCalendar();
-    }
-
-    if (page === "analytics") {
-        renderAnalytics();
-    }
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-}
-
-
-/* =========================================================
-   МОДАЛЬНОЕ ОКНО
-========================================================= */
+/* ============================
+   MODAL
+============================ */
 
 function openModal() {
 
-    const modal =
-        $("#modal");
+    $("#taskForm").reset();
 
-    modal.classList.add("show");
+    $("#days").classList.remove(
+        "visible"
+    );
 
-    $("#taskTitle").value = "";
-
-    $("#category").value =
-        "Дисциплина";
-
-    $("#priority").value =
-        "Обычный";
-
-
-    const once =
-        document.querySelector(
-            'input[name="repeat"][value="once"]'
-        );
-
-    if (once) {
-        once.checked = true;
-    }
-
-
-    $$("#days input")
-        .forEach(
-            checkbox =>
-                checkbox.checked = false
-        );
-
-
-    updateDaysVisibility();
-
+    $("#modal").classList.add(
+        "open"
+    );
 
     setTimeout(() => {
 
         $("#taskTitle").focus();
 
-    }, 50);
+    },100);
 }
-
 
 function closeModal() {
 
-    $("#modal")
-        .classList
-        .remove("show");
+    $("#modal").classList.remove(
+        "open"
+    );
 }
 
+function updateDaysVisibility() {
 
-/* =========================================================
-   ПОВТОРЕНИЕ
-========================================================= */
-
-function getSelectedRepeat() {
-
-    const checked =
+    const selected =
         document.querySelector(
             'input[name="repeat"]:checked'
         );
 
-    return checked
-        ? checked.value
-        : "once";
-}
+    if (
+        selected
+        &&
+        selected.value === "custom"
+    ) {
 
-
-function updateDaysVisibility() {
-
-    const repeat =
-        getSelectedRepeat();
-
-    $("#days")
-        .classList
-        .toggle(
-            "show",
-            repeat === "custom"
+        $("#days").classList.add(
+            "visible"
         );
+
+    } else {
+
+        $("#days").classList.remove(
+            "visible"
+        );
+    }
 }
-
-
-/* =========================================================
-   СОЗДАНИЕ
-========================================================= */
 
 function submitTask(event) {
 
     event.preventDefault();
-
 
     const title =
         $("#taskTitle")
@@ -1213,7 +1242,6 @@ function submitTask(event) {
         return;
     }
 
-
     const category =
         $("#category").value;
 
@@ -1221,25 +1249,21 @@ function submitTask(event) {
         $("#priority").value;
 
     const repeat =
-        getSelectedRepeat();
+        document.querySelector(
+            'input[name="repeat"]:checked'
+        ).value;
 
-
-    let selectedDays = [];
-
+    let days = [];
 
     if (repeat === "custom") {
 
-        selectedDays =
+        days =
             $$("#days input:checked")
-                .map(
-                    input =>
-                        Number(input.value)
+                .map(input =>
+                    Number(input.value)
                 );
 
-
-        if (
-            selectedDays.length === 0
-        ) {
+        if (!days.length) {
 
             toast(
                 "Выберите хотя бы один день."
@@ -1249,16 +1273,14 @@ function submitTask(event) {
         }
     }
 
-
     const task =
         createTask(
             title,
             category,
             priority,
             repeat,
-            selectedDays
+            days
         );
-
 
     tasks.push(task);
 
@@ -1274,18 +1296,84 @@ function submitTask(event) {
 }
 
 
-/* =========================================================
-   СБРОС
-========================================================= */
+/* ============================
+   PAGE NAVIGATION
+============================ */
 
-function resetEverything() {
+function openPage(page) {
+
+    $$(".page")
+        .forEach(item =>
+            item.classList.remove(
+                "active"
+            )
+        );
+
+    $$(".nav-button")
+        .forEach(item =>
+            item.classList.remove(
+                "active"
+            )
+        );
+
+    const target =
+        $(`#page-${page}`);
+
+    const button =
+        document.querySelector(
+            `[data-page="${page}"]`
+        );
+
+    if (!target) {
+        return;
+    }
+
+    target.classList.add(
+        "active"
+    );
+
+    if (button) {
+
+        button.classList.add(
+            "active"
+        );
+    }
+
+    $("#sidebar")
+        .classList
+        .remove("open");
+
+    if (page === "calendar") {
+
+        renderCalendar();
+    }
+
+    if (page === "analytics") {
+
+        renderAnalytics();
+    }
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/* ============================
+   RESET
+============================ */
+
+function resetApp() {
 
     const accepted =
         window.confirm(
             "Удалить ВСЕ задачи и весь прогресс?"
         );
 
-    if (!accepted) return;
+    if (!accepted) {
+        return;
+    }
 
     tasks = [];
 
@@ -1303,58 +1391,50 @@ function resetEverything() {
     renderEverything();
 
     toast(
-        "Все данные удалены."
+        "ASCEND сброшен."
     );
 }
 
 
-/* =========================================================
-   ДАТА
-========================================================= */
+/* ============================
+   RENDER EVERYTHING
+============================ */
 
-function renderCurrentDate() {
+function renderEverything() {
 
-    const formatter =
-        new Intl.DateTimeFormat(
-            "ru-RU",
-            {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric"
-            }
-        );
+    renderCurrentDate();
 
-    $("#currentDate").textContent =
-        formatter.format(
-            new Date()
-        );
+    renderDashboard();
+
+    renderAllTasks();
+
+    renderCalendar();
+
+    renderAnalytics();
+
+    renderProfile();
 }
 
 
-/* =========================================================
-   СОБЫТИЯ
-========================================================= */
+/* ============================
+   EVENTS
+============================ */
 
 function setupEvents() {
-
-    /* Меню */
 
     $$(".nav-button")
         .forEach(button => {
 
             button.addEventListener(
                 "click",
-                () =>
+                () => {
+
                     openPage(
                         button.dataset.page
-                    )
+                    );
+                }
             );
-
         });
-
-
-    /* Добавление */
 
     $("#addTask")
         .addEventListener(
@@ -1368,9 +1448,6 @@ function setupEvents() {
             openModal
         );
 
-
-    /* Модальное окно */
-
     $("#closeModal")
         .addEventListener(
             "click",
@@ -1383,6 +1460,11 @@ function setupEvents() {
             closeModal
         );
 
+    $("#taskForm")
+        .addEventListener(
+            "submit",
+            submitTask
+        );
 
     $("#modal")
         .addEventListener(
@@ -1390,37 +1472,25 @@ function setupEvents() {
             event => {
 
                 if (
-                    event.target ===
-                    $("#modal")
+                    event.target.id
+                    ===
+                    "modal"
                 ) {
+
                     closeModal();
                 }
-
             }
         );
 
+    $$(
+        'input[name="repeat"]'
+    ).forEach(input => {
 
-    $("#taskForm")
-        .addEventListener(
-            "submit",
-            submitTask
+        input.addEventListener(
+            "change",
+            updateDaysVisibility
         );
-
-
-    /* Повторение */
-
-    $$('input[name="repeat"]')
-        .forEach(input => {
-
-            input.addEventListener(
-                "change",
-                updateDaysVisibility
-            );
-
-        });
-
-
-    /* Задачи */
+    });
 
     document.addEventListener(
         "click",
@@ -1441,92 +1511,100 @@ function setupEvents() {
                 return;
             }
 
-
-            const deleteButton =
+            const remove =
                 event.target.closest(
                     '[data-action="delete"]'
                 );
 
-            if (deleteButton) {
+            if (remove) {
 
                 deleteTask(
-                    deleteButton.dataset.id
+                    remove.dataset.id
                 );
 
                 return;
             }
 
-
             const calendarDay =
                 event.target.closest(
-                    "[data-calendar]"
+                    "[data-calendar-date]"
                 );
 
             if (calendarDay) {
 
                 const key =
-                    calendarDay.dataset.calendar;
+                    calendarDay.dataset
+                        .calendarDate;
 
                 const progress =
                     progressForDate(key);
 
                 toast(
-                    `${progress.percent}% выполнено`
+                    progress.total
+                        ? `Прогресс дня: ${progress.percent}%`
+                        : "В этот день задач нет."
                 );
             }
-
         }
     );
 
+    function previousMonth() {
 
-    /* Календарь */
+        currentMonth--;
+
+        if (currentMonth < 0) {
+
+            currentMonth = 11;
+
+            currentYear--;
+        }
+
+        renderCalendar();
+    }
+
+    function nextMonth() {
+
+        currentMonth++;
+
+        if (currentMonth > 11) {
+
+            currentMonth = 0;
+
+            currentYear++;
+        }
+
+        renderCalendar();
+    }
 
     $("#prevMonth")
         .addEventListener(
             "click",
-            () => {
-
-                currentMonth--;
-
-                if (currentMonth < 0) {
-
-                    currentMonth = 11;
-                    currentYear--;
-
-                }
-
-                renderCalendar();
-            }
+            previousMonth
         );
 
+    $("#prevMonth2")
+        .addEventListener(
+            "click",
+            previousMonth
+        );
 
     $("#nextMonth")
         .addEventListener(
             "click",
-            () => {
-
-                currentMonth++;
-
-                if (currentMonth > 11) {
-
-                    currentMonth = 0;
-                    currentYear++;
-
-                }
-
-                renderCalendar();
-            }
+            nextMonth
         );
 
-
-    /* Профиль */
+    $("#nextMonth2")
+        .addEventListener(
+            "click",
+            nextMonth
+        );
 
     $("#saveName")
         .addEventListener(
             "click",
-            saveNewUsername
+            saveProfileName
         );
-
 
     $("#nameInput")
         .addEventListener(
@@ -1537,36 +1615,10 @@ function setupEvents() {
                     event.key === "Enter"
                 ) {
 
-                    event.preventDefault();
-
-                    saveNewUsername();
+                    saveProfileName();
                 }
-
             }
         );
-
-
-    /* Уведомление */
-
-    $("#notification")
-        .addEventListener(
-            "click",
-            () => {
-
-                const progress =
-                    progressForDate(
-                        todayKey()
-                    );
-
-                toast(
-                    `Сегодня выполнено: ${progress.percent}%`
-                );
-
-            }
-        );
-
-
-    /* Мобильное меню */
 
     $("#mobileMenu")
         .addEventListener(
@@ -1576,21 +1628,25 @@ function setupEvents() {
                 $("#sidebar")
                     .classList
                     .toggle("open");
-
             }
         );
 
+    $("#notification")
+        .addEventListener(
+            "click",
+            () => {
 
-    /* Сброс */
+                toast(
+                    "Уведомлений пока нет."
+                );
+            }
+        );
 
     $("#reset")
         .addEventListener(
             "click",
-            resetEverything
+            resetApp
         );
-
-
-    /* ESC */
 
     document.addEventListener(
         "keydown",
@@ -1599,41 +1655,17 @@ function setupEvents() {
             if (
                 event.key === "Escape"
             ) {
+
                 closeModal();
             }
-
         }
     );
 }
 
 
-/* =========================================================
-   ОБНОВЛЕНИЕ ВСЕГО
-========================================================= */
-
-function renderEverything() {
-
-    renderCurrentDate();
-
-    renderDashboard();
-
-    renderScore();
-
-    renderCalendar();
-
-    renderAnalytics();
-
-    renderUsername();
-
-    renderCharacter();
-
-    renderAllTasks();
-}
-
-
-/* =========================================================
-   ЗАПУСК
-========================================================= */
+/* ============================
+   INIT
+============================ */
 
 function init() {
 
@@ -1652,9 +1684,10 @@ function init() {
     );
 }
 
-
 if (
-    document.readyState === "loading"
+    document.readyState
+    ===
+    "loading"
 ) {
 
     document.addEventListener(
