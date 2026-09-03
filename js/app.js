@@ -1,225 +1,750 @@
 /* =========================================================
-   ASCEND — APPLICATION LOGIC
+   ASCEND
+   Main JavaScript
    ========================================================= */
 
 "use strict";
-
 
 /* =========================================================
    STORAGE
    ========================================================= */
 
-const STORAGE_KEY = "ascend_data";
-
-
-const defaultData = {
-    username: "Alex",
-    handle: "alex",
-
-    tasks: [],
-
-    completedDates: {},
-
-    settings: {
-        notifications: true
-    }
-};
-
-
-function loadData() {
-    try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-
-        if (!saved) {
-            return structuredClone(defaultData);
-        }
-
-        const parsed = JSON.parse(saved);
-
-        return {
-            ...structuredClone(defaultData),
-            ...parsed,
-            settings: {
-                ...defaultData.settings,
-                ...(parsed.settings || {})
-            }
-        };
-
-    } catch (error) {
-        console.error("ASCEND: Failed to load data.", error);
-
-        return structuredClone(defaultData);
-    }
-}
-
-
-function saveData() {
-    try {
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(data)
-        );
-    } catch (error) {
-        console.error("ASCEND: Failed to save data.", error);
-    }
-}
-
-
-let data = loadData();
-
+const STORAGE_KEY = "ascend_tasks_v1";
+const USER_KEY = "ascend_user_v1";
 
 /* =========================================================
-   DATE
+   DOM
    ========================================================= */
 
-function getDateKey(date = new Date()) {
-    const year = date.getFullYear();
+const elements = {
+    currentDate: document.getElementById("currentDate"),
+    todayDate: document.getElementById("todayDate"),
 
-    const month = String(
-        date.getMonth() + 1
-    ).padStart(2, "0");
+    dailyProgress: document.getElementById("dailyProgress"),
+    dailyProgressCircle: document.getElementById("dailyProgressCircle"),
 
-    const day = String(
-        date.getDate()
-    ).padStart(2, "0");
+    completedTasks: document.getElementById("completedTasks"),
+    totalTasks: document.getElementById("totalTasks"),
 
-    return `${year}-${month}-${day}`;
+    sidebarProgress: document.getElementById("sidebarProgress"),
+    sidebarProgressFill: document.getElementById("sidebarProgressFill"),
+
+    streakValue: document.getElementById("streakValue"),
+    ascendScore: document.getElementById("ascendScore"),
+
+    progressMessage: document.getElementById("progressMessage"),
+
+    tasksContainer: document.getElementById("tasksContainer"),
+    emptyState: document.getElementById("emptyState"),
+
+    addTaskPanel: document.getElementById("addTaskPanel"),
+
+    addTaskButton: document.getElementById("addTaskButton"),
+    createTaskButton: document.getElementById("createTaskButton"),
+
+    closeTaskPanel: document.getElementById("closeTaskPanel"),
+    cancelTaskButton: document.getElementById("cancelTaskButton"),
+
+    taskForm: document.getElementById("taskForm"),
+    taskTitle: document.getElementById("taskTitle"),
+    taskCategory: document.getElementById("taskCategory"),
+    taskPriority: document.getElementById("taskPriority"),
+
+    analyticsButton: document.getElementById("analyticsButton"),
+    notificationButton: document.getElementById("notificationButton"),
+
+    sidebar: document.getElementById("sidebar"),
+    mobileMenuButton: document.getElementById("mobileMenuButton"),
+    mobileOverlay: document.getElementById("mobileOverlay"),
+
+    sidebarAvatar: document.getElementById("sidebarAvatar"),
+    sidebarUserName: document.getElementById("sidebarUserName"),
+    topbarUsername: document.getElementById("topbarUsername")
+};
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let tasks = [];
+let user = {
+    name: "Alex",
+    username: "alex"
+};
+
+/* =========================================================
+   DATE HELPERS
+   ========================================================= */
+
+function pad(number) {
+    return String(number).padStart(2, "0");
 }
 
+function getDateKey(date = new Date()) {
+    return [
+        date.getFullYear(),
+        pad(date.getMonth() + 1),
+        pad(date.getDate())
+    ].join("-");
+}
+
+function parseDateKey(dateKey) {
+    const [year, month, day] = dateKey.split("-").map(Number);
+
+    return new Date(year, month - 1, day);
+}
 
 function getTodayKey() {
     return getDateKey(new Date());
 }
 
-
-function formatCurrentDate() {
-    const now = new Date();
-
-    return new Intl.DateTimeFormat(
-        "en-US",
-        {
-            weekday: "long",
-            month: "long",
-            day: "numeric"
-        }
-    ).format(now);
+function formatCurrentDate(date = new Date()) {
+    return new Intl.DateTimeFormat("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+    }).format(date);
 }
 
-
-function formatShortDate() {
-    const now = new Date();
-
-    return new Intl.DateTimeFormat(
-        "en-US",
-        {
-            month: "short",
-            day: "2-digit",
-            year: "numeric"
-        }
-    ).format(now);
+function formatShortDate(date = new Date()) {
+    return new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric"
+    }).format(date);
 }
-
 
 /* =========================================================
-   TASKS
+   STORAGE
+   ========================================================= */
+
+function loadTasks() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+
+        if (!saved) {
+            tasks = [];
+            return;
+        }
+
+        const parsed = JSON.parse(saved);
+
+        if (Array.isArray(parsed)) {
+            tasks = parsed;
+        } else {
+            tasks = [];
+        }
+    } catch (error) {
+        console.error("ASCEND: Could not load tasks.", error);
+        tasks = [];
+    }
+}
+
+function saveTasks() {
+    try {
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(tasks)
+        );
+    } catch (error) {
+        console.error("ASCEND: Could not save tasks.", error);
+    }
+}
+
+function loadUser() {
+    try {
+        const saved = localStorage.getItem(USER_KEY);
+
+        if (!saved) {
+            return;
+        }
+
+        const parsed = JSON.parse(saved);
+
+        if (parsed && typeof parsed === "object") {
+            user = {
+                ...user,
+                ...parsed
+            };
+        }
+    } catch (error) {
+        console.error("ASCEND: Could not load user.", error);
+    }
+}
+
+/* =========================================================
+   USER
+   ========================================================= */
+
+function updateUserUI() {
+    const name = user.name || "Alex";
+    const username = user.username || "alex";
+
+    if (elements.sidebarUserName) {
+        elements.sidebarUserName.textContent = name;
+    }
+
+    if (elements.topbarUsername) {
+        elements.topbarUsername.textContent = name;
+    }
+
+    if (elements.sidebarAvatar) {
+        elements.sidebarAvatar.textContent =
+            name.charAt(0).toUpperCase();
+    }
+
+    const topbarAvatar = document.querySelector(".avatar-small");
+
+    if (topbarAvatar) {
+        topbarAvatar.textContent =
+            name.charAt(0).toUpperCase();
+    }
+
+    const usernameElement =
+        document.querySelector(".user-info span");
+
+    if (usernameElement) {
+        usernameElement.textContent = `@${username}`;
+    }
+}
+
+/* =========================================================
+   DATE UI
+   ========================================================= */
+
+function updateDateUI() {
+    const today = new Date();
+
+    if (elements.currentDate) {
+        elements.currentDate.textContent =
+            formatCurrentDate(today);
+    }
+
+    if (elements.todayDate) {
+        elements.todayDate.textContent =
+            formatShortDate(today);
+    }
+}
+
+/* =========================================================
+   TASK HELPERS
    ========================================================= */
 
 function getTodayTasks() {
-    const today = getTodayKey();
+    const todayKey = getTodayKey();
 
-    return data.tasks.filter(task => {
-        if (task.archived) {
-            return false;
-        }
-
-        if (!task.createdAt) {
-            return true;
-        }
-
-        return task.createdAt <= today;
-    });
+    return tasks.filter(task => task.date === todayKey);
 }
 
-
-function getCompletedToday() {
-    const tasks = getTodayTasks();
-
-    return tasks.filter(task => {
-        return task.completed === true;
-    });
+function getTasksForDate(dateKey) {
+    return tasks.filter(task => task.date === dateKey);
 }
 
-
-function calculateDailyProgress() {
-    const tasks = getTodayTasks();
-
-    if (tasks.length === 0) {
+function calculateProgress(taskList) {
+    if (!taskList.length) {
         return 0;
     }
 
-    const completed = tasks.filter(
+    const completed = taskList.filter(
         task => task.completed
     ).length;
 
     return Math.round(
-        (completed / tasks.length) * 100
+        (completed / taskList.length) * 100
     );
 }
 
+function createTaskObject(title, category, priority) {
+    return {
+        id:
+            Date.now().toString() +
+            Math.random().toString(36).slice(2, 8),
 
-function calculateScore() {
-    let score = 0;
+        title: title.trim(),
 
-    /*
-        Every completed task gives points.
-        Later we will create a much more advanced
-        ASCEND Score system.
-    */
+        category: category || "Personal",
 
-    data.tasks.forEach(task => {
-        if (task.completed) {
-            score += 10;
-        }
-    });
+        priority: priority || "normal",
 
-    return score;
+        completed: false,
+
+        date: getTodayKey(),
+
+        createdAt: new Date().toISOString()
+    };
 }
 
+/* =========================================================
+   TASK RENDERING
+   ========================================================= */
+
+function renderTasks() {
+    if (!elements.tasksContainer) {
+        return;
+    }
+
+    const todayTasks = getTodayTasks();
+
+    elements.tasksContainer.innerHTML = "";
+
+    if (todayTasks.length === 0) {
+        elements.tasksContainer.appendChild(
+            createEmptyState()
+        );
+
+        return;
+    }
+
+    todayTasks.forEach(task => {
+        const taskElement = createTaskElement(task);
+
+        elements.tasksContainer.appendChild(taskElement);
+    });
+}
+
+function createEmptyState() {
+    const wrapper = document.createElement("div");
+
+    wrapper.className = "empty-state";
+    wrapper.id = "emptyState";
+
+    wrapper.innerHTML = `
+        <div class="empty-icon">+</div>
+
+        <h3>No tasks yet</h3>
+
+        <p>
+            Create your first task
+            and start your journey.
+        </p>
+
+        <button
+            class="primary-button"
+            id="createTaskButton"
+            type="button"
+        >
+            Create task
+        </button>
+    `;
+
+    const button = wrapper.querySelector(
+        "#createTaskButton"
+    );
+
+    button.addEventListener("click", openTaskPanel);
+
+    return wrapper;
+}
+
+function createTaskElement(task) {
+    const article = document.createElement("article");
+
+    article.className = "task-item";
+
+    if (task.completed) {
+        article.classList.add("completed");
+    }
+
+    article.dataset.id = task.id;
+
+    const checkbox = document.createElement("button");
+
+    checkbox.type = "button";
+    checkbox.className = "task-checkbox";
+
+    checkbox.setAttribute(
+        "aria-label",
+        task.completed
+            ? `Mark "${task.title}" incomplete`
+            : `Complete "${task.title}"`
+    );
+
+    checkbox.setAttribute(
+        "aria-pressed",
+        String(task.completed)
+    );
+
+    checkbox.textContent = task.completed
+        ? "✓"
+        : "";
+
+    checkbox.addEventListener(
+        "click",
+        () => toggleTask(task.id)
+    );
+
+    const content = document.createElement("div");
+
+    content.className = "task-content";
+
+    const title = document.createElement("div");
+
+    title.className = "task-title";
+    title.textContent = task.title;
+
+    const category = document.createElement("div");
+
+    category.className = "task-category";
+
+    category.textContent =
+        task.category +
+        (
+            task.priority === "high"
+                ? " • HIGH PRIORITY"
+                : ""
+        );
+
+    content.appendChild(title);
+    content.appendChild(category);
+
+    const status = document.createElement("div");
+
+    status.className = "task-status";
+
+    status.textContent = task.completed
+        ? "COMPLETED"
+        : "OPEN";
+
+    article.appendChild(checkbox);
+    article.appendChild(content);
+    article.appendChild(status);
+
+    return article;
+}
+
+/* =========================================================
+   ADD TASK
+   ========================================================= */
+
+function openTaskPanel() {
+    if (!elements.addTaskPanel) {
+        return;
+    }
+
+    elements.addTaskPanel.hidden = false;
+
+    setTimeout(() => {
+        if (elements.taskTitle) {
+            elements.taskTitle.focus();
+        }
+    }, 50);
+}
+
+function closeTaskPanel() {
+    if (!elements.addTaskPanel) {
+        return;
+    }
+
+    elements.addTaskPanel.hidden = true;
+}
+
+function handleTaskSubmit(event) {
+    event.preventDefault();
+
+    if (!elements.taskTitle) {
+        return;
+    }
+
+    const title =
+        elements.taskTitle.value.trim();
+
+    const category =
+        elements.taskCategory
+            ? elements.taskCategory.value
+            : "Personal";
+
+    const priority =
+        elements.taskPriority
+            ? elements.taskPriority.value
+            : "normal";
+
+    if (!title) {
+        elements.taskTitle.focus();
+        return;
+    }
+
+    const newTask = createTaskObject(
+        title,
+        category,
+        priority
+    );
+
+    tasks.push(newTask);
+
+    saveTasks();
+
+    elements.taskForm.reset();
+
+    closeTaskPanel();
+
+    renderAll();
+}
+
+/* =========================================================
+   TOGGLE TASK
+   ========================================================= */
+
+function toggleTask(taskId) {
+    const task = tasks.find(
+        item => item.id === taskId
+    );
+
+    if (!task) {
+        return;
+    }
+
+    task.completed = !task.completed;
+
+    saveTasks();
+
+    renderAll();
+}
+
+/* =========================================================
+   DAILY PROGRESS
+   ========================================================= */
+
+function updateDailyProgress() {
+    const todayTasks = getTodayTasks();
+
+    const total = todayTasks.length;
+
+    const completed = todayTasks.filter(
+        task => task.completed
+    ).length;
+
+    const percentage =
+        calculateProgress(todayTasks);
+
+    if (elements.completedTasks) {
+        elements.completedTasks.textContent =
+            completed;
+    }
+
+    if (elements.totalTasks) {
+        elements.totalTasks.textContent =
+            total;
+    }
+
+    if (elements.dailyProgress) {
+        elements.dailyProgress.textContent =
+            `${percentage}%`;
+    }
+
+    if (elements.sidebarProgress) {
+        elements.sidebarProgress.textContent =
+            `${percentage}%`;
+    }
+
+    if (elements.sidebarProgressFill) {
+        elements.sidebarProgressFill.style.width =
+            `${percentage}%`;
+    }
+
+    updateProgressCircle(percentage);
+
+    updateProgressMessage(
+        percentage,
+        total
+    );
+}
+
+function updateProgressCircle(percentage) {
+    if (!elements.dailyProgressCircle) {
+        return;
+    }
+
+    const radius = 58;
+
+    const circumference =
+        2 * Math.PI * radius;
+
+    const offset =
+        circumference -
+        (percentage / 100) * circumference;
+
+    elements.dailyProgressCircle.style.strokeDasharray =
+        `${circumference}`;
+
+    elements.dailyProgressCircle.style.strokeDashoffset =
+        `${offset}`;
+}
+
+function updateProgressMessage(
+    percentage,
+    total
+) {
+    if (!elements.progressMessage) {
+        return;
+    }
+
+    let message = "Start your day.";
+
+    if (total === 0) {
+        message = "Create your first task.";
+    } else if (percentage === 0) {
+        message = "Start your day.";
+    } else if (percentage < 25) {
+        message = "One step at a time.";
+    } else if (percentage < 50) {
+        message = "Good start. Keep going.";
+    } else if (percentage < 75) {
+        message = "You're building momentum.";
+    } else if (percentage < 100) {
+        message = "Almost there. Finish strong.";
+    } else {
+        message = "Day complete. You showed up.";
+    }
+
+    elements.progressMessage.textContent =
+        message;
+}
+
+/* =========================================================
+   WEEKLY PROGRESS
+   ========================================================= */
+
+function getStartOfWeek(date = new Date()) {
+    const result = new Date(date);
+
+    const day = result.getDay();
+
+    const difference =
+        day === 0
+            ? -6
+            : 1 - day;
+
+    result.setDate(
+        result.getDate() + difference
+    );
+
+    result.setHours(0, 0, 0, 0);
+
+    return result;
+}
+
+function updateWeeklyProgress() {
+    const weekStart = getStartOfWeek();
+
+    const dayNames = [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+    ];
+
+    document
+        .querySelectorAll(".week-day")
+        .forEach(dayElement => {
+
+            const dayName =
+                dayElement.dataset.day;
+
+            const index =
+                dayNames.indexOf(dayName);
+
+            if (index === -1) {
+                return;
+            }
+
+            const date =
+                new Date(weekStart);
+
+            date.setDate(
+                weekStart.getDate() + index
+            );
+
+            const dateKey =
+                getDateKey(date);
+
+            const dayTasks =
+                getTasksForDate(dateKey);
+
+            const percentage =
+                calculateProgress(dayTasks);
+
+            const progressElement =
+                dayElement.querySelector(
+                    ".week-day-progress"
+                );
+
+            const fillElement =
+                dayElement.querySelector(
+                    ".week-day-fill"
+                );
+
+            if (progressElement) {
+                progressElement.textContent =
+                    `${percentage}%`;
+            }
+
+            if (fillElement) {
+                fillElement.style.width =
+                    `${percentage}%`;
+            }
+
+            dayElement.classList.remove("active");
+
+            if (dateKey === getTodayKey()) {
+                dayElement.classList.add("active");
+            }
+        });
+}
 
 /* =========================================================
    STREAK
    ========================================================= */
 
-function calculateStreak() {
-    const today = new Date();
+function isDayCompleted(dateKey) {
+    const dayTasks =
+        getTasksForDate(dateKey);
 
+    if (dayTasks.length === 0) {
+        return false;
+    }
+
+    return dayTasks.every(
+        task => task.completed
+    );
+}
+
+function calculateStreak() {
     let streak = 0;
 
+    const today = new Date();
+
     /*
-        Check today first.
-        Then move backwards one day at a time.
+       We count consecutive completed days
+       backwards from today.
+
+       If today has no completed day yet,
+       we check yesterday so that an existing
+       streak is not immediately lost at the
+       beginning of a new day.
     */
 
-    while (true) {
+    let cursor = new Date(today);
 
-        const dateKey = getDateKey(today);
+    if (!isDayCompleted(getDateKey(cursor))) {
+        cursor.setDate(
+            cursor.getDate() - 1
+        );
+    }
 
-        const progress = data.completedDates[dateKey];
+    while (
+        isDayCompleted(
+            getDateKey(cursor)
+        )
+    ) {
+        streak++;
 
-        if (progress && progress > 0) {
-            streak++;
-
-            today.setDate(
-                today.getDate() - 1
-            );
-
-        } else {
-            break;
-        }
-
-        /*
-            Safety limit.
-        */
+        cursor.setDate(
+            cursor.getDate() - 1
+        );
 
         if (streak > 10000) {
             break;
@@ -229,849 +754,428 @@ function calculateStreak() {
     return streak;
 }
 
+function updateStreak() {
+    const streak =
+        calculateStreak();
 
-function updateCompletedDate() {
-    const today = getTodayKey();
-
-    const progress = calculateDailyProgress();
-
-    data.completedDates[today] = progress;
-
-    saveData();
-}
-
-
-/* =========================================================
-   PROGRESS CIRCLE
-   ========================================================= */
-
-function updateProgressCircle(progress) {
-
-    const circle = document.getElementById(
-        "dailyProgressCircle"
-    );
-
-    if (!circle) {
-        return;
-    }
-
-    const circumference = 314;
-
-    const offset =
-        circumference -
-        (progress / 100) * circumference;
-
-    circle.style.strokeDashoffset = offset;
-}
-
-
-/* =========================================================
-   UPDATE DASHBOARD
-   ========================================================= */
-
-function updateDashboard() {
-
-    const tasks = getTodayTasks();
-
-    const completed = getCompletedToday();
-
-    const progress = calculateDailyProgress();
-
-    const streak = calculateStreak();
-
-    const score = calculateScore();
-
-
-    /* Daily progress */
-
-    const dailyProgress =
-        document.getElementById(
-            "dailyProgress"
-        );
-
-    if (dailyProgress) {
-        dailyProgress.textContent =
-            `${progress}%`;
-    }
-
-
-    /* Sidebar progress */
-
-    const sidebarProgress =
-        document.getElementById(
-            "sidebarProgress"
-        );
-
-    if (sidebarProgress) {
-        sidebarProgress.textContent =
-            `${progress}%`;
-    }
-
-
-    const sidebarProgressFill =
-        document.getElementById(
-            "sidebarProgressFill"
-        );
-
-    if (sidebarProgressFill) {
-        sidebarProgressFill.style.width =
-            `${progress}%`;
-    }
-
-
-    /* Tasks */
-
-    const completedTasks =
-        document.getElementById(
-            "completedTasks"
-        );
-
-    if (completedTasks) {
-        completedTasks.textContent =
-            completed.length;
-    }
-
-
-    const totalTasks =
-        document.getElementById(
-            "totalTasks"
-        );
-
-    if (totalTasks) {
-        totalTasks.textContent =
-            tasks.length;
-    }
-
-
-    /* Streak */
-
-    const streakValue =
-        document.getElementById(
-            "streakValue"
-        );
-
-    if (streakValue) {
-        streakValue.textContent =
+    if (elements.streakValue) {
+        elements.streakValue.textContent =
             streak;
     }
+}
 
+/* =========================================================
+   ASCEND SCORE
+   ========================================================= */
 
-    /* ASCEND Score */
+function calculateAscendScore() {
+    /*
+       Initial scoring system:
 
-    const ascendScore =
-        document.getElementById(
-            "ascendScore"
-        );
+       Every completed task = +10 points.
 
-    if (ascendScore) {
-        ascendScore.textContent =
+       Maximum displayed score = 1000.
+
+       We can later replace this with
+       a more advanced scoring system.
+    */
+
+    const completedCount =
+        tasks.filter(
+            task => task.completed
+        ).length;
+
+    return Math.min(
+        completedCount * 10,
+        1000
+    );
+}
+
+function updateAscendScore() {
+    const score =
+        calculateAscendScore();
+
+    if (elements.ascendScore) {
+        elements.ascendScore.textContent =
             score;
     }
-
-
-    /* Weekly today */
-
-    const weekTodayProgress =
-        document.getElementById(
-            "weekTodayProgress"
-        );
-
-    if (weekTodayProgress) {
-        weekTodayProgress.textContent =
-            `${progress}%`;
-    }
-
-
-    updateProgressCircle(progress);
-
-    updateDateUI();
-
-    renderTasks();
 }
-
-
-/* =========================================================
-   DATE UI
-   ========================================================= */
-
-function updateDateUI() {
-
-    const currentDate =
-        document.getElementById(
-            "currentDate"
-        );
-
-    if (currentDate) {
-        currentDate.textContent =
-            formatCurrentDate();
-    }
-
-
-    const todayDate =
-        document.getElementById(
-            "todayDate"
-        );
-
-    if (todayDate) {
-        todayDate.textContent =
-            formatShortDate();
-    }
-}
-
-
-/* =========================================================
-   USER UI
-   ========================================================= */
-
-function updateUserUI() {
-
-    const username =
-        data.username || "Alex";
-
-    const handle =
-        data.handle || "alex";
-
-
-    const sidebarName =
-        document.getElementById(
-            "sidebarUserName"
-        );
-
-    if (sidebarName) {
-        sidebarName.textContent =
-            username;
-    }
-
-
-    const topbarUsername =
-        document.getElementById(
-            "topbarUsername"
-        );
-
-    if (topbarUsername) {
-        topbarUsername.textContent =
-            username;
-    }
-
-
-    const sidebarHandle =
-        document.querySelector(
-            ".sidebar-user-handle"
-        );
-
-    if (sidebarHandle) {
-        sidebarHandle.textContent =
-            `@${handle}`;
-    }
-
-
-    const avatars =
-        document.querySelectorAll(
-            ".avatar"
-        );
-
-    avatars.forEach(avatar => {
-
-        avatar.textContent =
-            username
-                .charAt(0)
-                .toUpperCase();
-
-    });
-}
-
-
-/* =========================================================
-   TASK RENDERING
-   ========================================================= */
-
-function renderTasks() {
-
-    const container =
-        document.getElementById(
-            "tasksContainer"
-        );
-
-    if (!container) {
-        return;
-    }
-
-
-    const tasks = getTodayTasks();
-
-
-    if (tasks.length === 0) {
-
-        container.innerHTML = `
-            <div class="empty-state">
-
-                <div class="empty-state-icon">
-                    +
-                </div>
-
-                <h3>
-                    No tasks yet
-                </h3>
-
-                <p>
-                    Create your first task and
-                    start your journey.
-                </p>
-
-                <a
-                    href="pages/tasks.html"
-                    class="primary-button"
-                >
-                    Create task
-                </a>
-
-            </div>
-        `;
-
-        return;
-    }
-
-
-    container.innerHTML = "";
-
-
-    tasks.slice(0, 6).forEach(task => {
-
-        const element =
-            createTaskElement(task);
-
-        container.appendChild(element);
-
-    });
-}
-
-
-function createTaskElement(task) {
-
-    const item =
-        document.createElement("div");
-
-    item.className =
-        "task-item";
-
-
-    if (task.completed) {
-        item.classList.add("completed");
-    }
-
-
-    item.innerHTML = `
-
-        <button
-            class="task-checkbox"
-            type="button"
-            aria-label="Complete task"
-            data-task-id="${task.id}"
-        >
-            ${task.completed ? "✓" : ""}
-        </button>
-
-        <div class="task-content">
-
-            <span class="task-title">
-                ${escapeHTML(task.title)}
-            </span>
-
-            ${
-                task.category
-                    ? `
-                    <span class="task-category">
-                        ${escapeHTML(task.category)}
-                    </span>
-                    `
-                    : ""
-            }
-
-        </div>
-
-        <span class="task-status">
-            ${
-                task.completed
-                    ? "DONE"
-                    : "TODO"
-            }
-        </span>
-
-    `;
-
-
-    const checkbox =
-        item.querySelector(
-            ".task-checkbox"
-        );
-
-
-    checkbox.addEventListener(
-        "click",
-        () => {
-
-            toggleTask(task.id);
-
-        }
-    );
-
-
-    return item;
-}
-
-
-/* =========================================================
-   TOGGLE TASK
-   ========================================================= */
-
-function toggleTask(taskId) {
-
-    const task =
-        data.tasks.find(
-            item => item.id === taskId
-        );
-
-
-    if (!task) {
-        return;
-    }
-
-
-    task.completed =
-        !task.completed;
-
-
-    /*
-        Save today's progress.
-    */
-
-    updateCompletedDate();
-
-
-    /*
-        Update interface.
-    */
-
-    updateDashboard();
-}
-
-
-/* =========================================================
-   CREATE TASK
-   ========================================================= */
-
-function createTask(
-    title,
-    category = ""
-) {
-
-    if (!title || !title.trim()) {
-        return null;
-    }
-
-
-    const task = {
-
-        id:
-            `${Date.now()}-${Math.random()
-                .toString(36)
-                .substring(2, 9)}`,
-
-        title:
-            title.trim(),
-
-        category:
-            category.trim(),
-
-        createdAt:
-            getTodayKey(),
-
-        completed:
-            false,
-
-        archived:
-            false
-
-    };
-
-
-    data.tasks.push(task);
-
-    saveData();
-
-    updateDashboard();
-
-
-    return task;
-}
-
-
-/* =========================================================
-   DELETE TASK
-   ========================================================= */
-
-function deleteTask(taskId) {
-
-    data.tasks =
-        data.tasks.filter(
-            task => task.id !== taskId
-        );
-
-
-    saveData();
-
-    updateDashboard();
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-   ========================================================= */
-
-function escapeHTML(value) {
-
-    return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-}
-
 
 /* =========================================================
    MOBILE MENU
    ========================================================= */
 
-function setupMobileMenu() {
+function openMobileMenu() {
+    if (elements.sidebar) {
+        elements.sidebar.classList.add("open");
+    }
 
-    const button =
-        document.getElementById(
-            "mobileMenuButton"
-        );
+    if (elements.mobileOverlay) {
+        elements.mobileOverlay.classList.add("active");
+    }
+}
 
-    const sidebar =
-        document.getElementById(
-            "sidebar"
-        );
+function closeMobileMenu() {
+    if (elements.sidebar) {
+        elements.sidebar.classList.remove("open");
+    }
 
-    const overlay =
-        document.getElementById(
-            "mobileOverlay"
-        );
+    if (elements.mobileOverlay) {
+        elements.mobileOverlay.classList.remove("active");
+    }
+}
 
-
-    if (!button || !sidebar || !overlay) {
+function toggleMobileMenu() {
+    if (!elements.sidebar) {
         return;
     }
 
+    const isOpen =
+        elements.sidebar.classList.contains("open");
 
-    function openMenu() {
-
-        sidebar.classList.add(
-            "open"
-        );
-
-        overlay.style.display =
-            "block";
-
-        overlay.setAttribute(
-            "aria-hidden",
-            "false"
-        );
+    if (isOpen) {
+        closeMobileMenu();
+    } else {
+        openMobileMenu();
     }
-
-
-    function closeMenu() {
-
-        sidebar.classList.remove(
-            "open"
-        );
-
-        overlay.style.display =
-            "none";
-
-        overlay.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-    }
-
-
-    button.addEventListener(
-        "click",
-        openMenu
-    );
-
-
-    overlay.addEventListener(
-        "click",
-        closeMenu
-    );
-
-
-    /*
-        Close menu after clicking a link
-        on mobile.
-    */
-
-    document
-        .querySelectorAll(".nav-item")
-        .forEach(link => {
-
-            link.addEventListener(
-                "click",
-                () => {
-
-                    if (
-                        window.innerWidth <= 760
-                    ) {
-                        closeMenu();
-                    }
-
-                }
-            );
-
-        });
-
-
-    window.addEventListener(
-        "resize",
-        () => {
-
-            if (
-                window.innerWidth > 760
-            ) {
-                closeMenu();
-            }
-
-        }
-    );
 }
-
 
 /* =========================================================
    NAVIGATION
    ========================================================= */
 
 function setupNavigation() {
+    const links =
+        document.querySelectorAll(".nav-link");
 
-    const currentPage =
-        getCurrentPage();
+    links.forEach(link => {
 
+        link.addEventListener("click", event => {
 
-    document
-        .querySelectorAll(".nav-item")
-        .forEach(item => {
+            event.preventDefault();
+
+            links.forEach(item => {
+                item.classList.remove("active");
+            });
+
+            link.classList.add("active");
 
             const page =
-                item.dataset.page;
+                link.dataset.page;
 
+            handleNavigation(page);
 
-            if (page === currentPage) {
-
-                document
-                    .querySelectorAll(
-                        ".nav-item"
-                    )
-                    .forEach(
-                        nav =>
-                            nav.classList.remove(
-                                "active"
-                            )
-                    );
-
-
-                item.classList.add(
-                    "active"
-                );
-            }
-
+            closeMobileMenu();
         });
+    });
 }
 
+function handleNavigation(page) {
+    /*
+       For now ASCEND is a single-page
+       application.
 
-function getCurrentPage() {
+       Future pages can be connected here.
+    */
 
-    const path =
-        window.location.pathname;
+    if (page === "dashboard") {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
 
-
-    if (
-        path.endsWith("/") ||
-        path.endsWith("index.html")
-    ) {
-        return "dashboard";
-    }
-
-
-    if (path.includes("calendar")) {
-        return "calendar";
-    }
-
-
-    if (path.includes("tasks")) {
-        return "tasks";
-    }
-
-
-    if (path.includes("analytics")) {
-        return "analytics";
-    }
-
-
-    if (path.includes("profile")) {
-        return "profile";
-    }
-
-
-    if (path.includes("settings")) {
-        return "settings";
-    }
-
-
-    return "dashboard";
-}
-
-
-/* =========================================================
-   DEMO DATA
-   ========================================================= */
-
-/*
-    We start with an empty system.
-
-    To make development easier, this function can
-    create example tasks.
-
-    It is NOT automatically executed.
-*/
-
-function createDemoTasks() {
-
-    if (data.tasks.length > 0) {
         return;
     }
 
-
-    data.tasks = [
-
-        {
-            id: "demo-1",
-            title: "Morning workout",
-            category: "Health",
-            createdAt: getTodayKey(),
-            completed: false,
-            archived: false
-        },
-
-        {
-            id: "demo-2",
-            title: "Study for 60 minutes",
-            category: "Growth",
-            createdAt: getTodayKey(),
-            completed: false,
-            archived: false
-        },
-
-        {
-            id: "demo-3",
-            title: "Work on ASCEND",
-            category: "Work",
-            createdAt: getTodayKey(),
-            completed: false,
-            archived: false
-        }
-
-    ];
-
-
-    saveData();
-
-    updateDashboard();
-}
-
-
-/* =========================================================
-   DEVELOPMENT API
-   ========================================================= */
-
-/*
-    These functions are available from the browser console.
-
-    Example:
-
-        ASCEND.createTask("Read 20 pages");
-
-        ASCEND.createTask(
-            "Workout",
-            "Health"
+    if (page === "calendar") {
+        showTemporaryMessage(
+            "Calendar is coming next."
         );
 
-        ASCEND.deleteTask("task-id");
-
-        ASCEND.demo();
-
-*/
-
-window.ASCEND = {
-
-    createTask,
-
-    deleteTask,
-
-    toggleTask,
-
-    createDemoTasks,
-
-    getData: () => data,
-
-    reset: () => {
-
-        localStorage.removeItem(
-            STORAGE_KEY
-        );
-
-        location.reload();
-
+        return;
     }
 
-};
+    if (page === "tasks") {
+        const tasksSection =
+            elements.tasksContainer
+                ?.closest(".section");
 
+        if (tasksSection) {
+            tasksSection.scrollIntoView({
+                behavior: "smooth"
+            });
+        }
+
+        return;
+    }
+
+    if (page === "analytics") {
+        showTemporaryMessage(
+            "Analytics is coming next."
+        );
+
+        return;
+    }
+
+    if (page === "profile") {
+        showTemporaryMessage(
+            "Profile is coming next."
+        );
+
+        return;
+    }
+
+    if (page === "settings") {
+        showTemporaryMessage(
+            "Settings is coming next."
+        );
+
+        return;
+    }
+}
+
+/* =========================================================
+   TEMPORARY NOTIFICATION
+   ========================================================= */
+
+function showTemporaryMessage(message) {
+    const existing =
+        document.querySelector(
+            ".ascend-toast"
+        );
+
+    if (existing) {
+        existing.remove();
+    }
+
+    const toast =
+        document.createElement("div");
+
+    toast.className =
+        "ascend-toast";
+
+    toast.textContent =
+        message;
+
+    toast.style.position = "fixed";
+    toast.style.right = "25px";
+    toast.style.bottom = "25px";
+    toast.style.zIndex = "9999";
+    toast.style.padding = "13px 17px";
+    toast.style.border = "1px solid #303030";
+    toast.style.borderRadius = "10px";
+    toast.style.background = "#151515";
+    toast.style.color = "#ddd";
+    toast.style.fontSize = "12px";
+    toast.style.boxShadow =
+        "0 15px 40px rgba(0,0,0,0.35)";
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+
+        toast.style.opacity = "0";
+        toast.style.transition =
+            "opacity 0.25s ease";
+
+        setTimeout(() => {
+            toast.remove();
+        }, 250);
+
+    }, 1800);
+}
+
+/* =========================================================
+   NOTIFICATIONS
+   ========================================================= */
+
+function handleNotifications() {
+    const todayTasks =
+        getTodayTasks();
+
+    if (todayTasks.length === 0) {
+        showTemporaryMessage(
+            "No tasks for today."
+        );
+
+        return;
+    }
+
+    const incomplete =
+        todayTasks.filter(
+            task => !task.completed
+        ).length;
+
+    if (incomplete === 0) {
+        showTemporaryMessage(
+            "All tasks completed. Great work."
+        );
+
+        return;
+    }
+
+    showTemporaryMessage(
+        `${incomplete} task${
+            incomplete === 1 ? "" : "s"
+        } remaining today.`
+    );
+}
+
+/* =========================================================
+   ANALYTICS BUTTON
+   ========================================================= */
+
+function handleAnalyticsButton() {
+    showTemporaryMessage(
+        "Analytics is coming next."
+    );
+}
+
+/* =========================================================
+   EVENT LISTENERS
+   ========================================================= */
+
+function setupEventListeners() {
+
+    if (elements.addTaskButton) {
+        elements.addTaskButton.addEventListener(
+            "click",
+            openTaskPanel
+        );
+    }
+
+    if (elements.createTaskButton) {
+        elements.createTaskButton.addEventListener(
+            "click",
+            openTaskPanel
+        );
+    }
+
+    if (elements.closeTaskPanel) {
+        elements.closeTaskPanel.addEventListener(
+            "click",
+            closeTaskPanel
+        );
+    }
+
+    if (elements.cancelTaskButton) {
+        elements.cancelTaskButton.addEventListener(
+            "click",
+            closeTaskPanel
+        );
+    }
+
+    if (elements.taskForm) {
+        elements.taskForm.addEventListener(
+            "submit",
+            handleTaskSubmit
+        );
+    }
+
+    if (elements.mobileMenuButton) {
+        elements.mobileMenuButton.addEventListener(
+            "click",
+            toggleMobileMenu
+        );
+    }
+
+    if (elements.mobileOverlay) {
+        elements.mobileOverlay.addEventListener(
+            "click",
+            closeMobileMenu
+        );
+    }
+
+    if (elements.notificationButton) {
+        elements.notificationButton.addEventListener(
+            "click",
+            handleNotifications
+        );
+    }
+
+    if (elements.analyticsButton) {
+        elements.analyticsButton.addEventListener(
+            "click",
+            handleAnalyticsButton
+        );
+    }
+}
+
+/* =========================================================
+   ESCAPE KEY
+   ========================================================= */
+
+function setupKeyboardControls() {
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key === "Escape") {
+                closeTaskPanel();
+                closeMobileMenu();
+            }
+        }
+    );
+}
+
+/* =========================================================
+   RENDER EVERYTHING
+   ========================================================= */
+
+function renderAll() {
+    renderTasks();
+
+    updateDailyProgress();
+
+    updateWeeklyProgress();
+
+    updateStreak();
+
+    updateAscendScore();
+
+    updateDateUI();
+
+    updateUserUI();
+}
 
 /* =========================================================
    INITIALIZATION
    ========================================================= */
 
-function initASCEND() {
+function init() {
 
-    updateUserUI();
+    loadTasks();
+
+    loadUser();
 
     updateDateUI();
 
-    setupMobileMenu();
+    updateUserUI();
+
+    setupEventListeners();
 
     setupNavigation();
 
-    updateDashboard();
+    setupKeyboardControls();
+
+    renderAll();
 
     console.log(
-        "ASCEND initialized."
+        "ASCEND initialized successfully."
     );
 }
 
+/* =========================================================
+   START
+   ========================================================= */
 
 if (
     document.readyState === "loading"
 ) {
-
     document.addEventListener(
         "DOMContentLoaded",
-        initASCEND
+        init
     );
-
 } else {
-
-    initASCEND();
-
+    init();
 }
