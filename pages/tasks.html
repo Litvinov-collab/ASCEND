@@ -1,1 +1,1654 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="ASCEND Tasks — manage your daily actions and build consistency."
+    >
+
+    <meta
+        name="theme-color"
+        content="#080808"
+    >
+
+    <title>Tasks — ASCEND</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/style.css"
+    >
+
+    <style>
+
+        /* =====================================================
+           TASKS PAGE
+           ===================================================== */
+
+        .tasks-page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 55px 48px 80px;
+        }
+
+
+        /* Page header */
+
+        .tasks-page-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 30px;
+
+            margin-bottom: 45px;
+        }
+
+        .tasks-page-header h1 {
+            margin-top: 5px;
+
+            font-size: clamp(38px, 5vw, 58px);
+            font-weight: 600;
+
+            line-height: 1;
+
+            letter-spacing: -0.055em;
+        }
+
+        .tasks-page-header h1 span {
+            color: var(--text-muted);
+        }
+
+        .tasks-page-description {
+            max-width: 420px;
+
+            margin-top: 15px;
+
+            color: var(--text-secondary);
+
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+
+        /* Date */
+
+        .tasks-date {
+            color: var(--text-muted);
+
+            font-size: 11px;
+
+            white-space: nowrap;
+        }
+
+
+        /* =====================================================
+           SUMMARY
+           ===================================================== */
+
+        .tasks-summary {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 35px;
+        }
+
+        .summary-card {
+            padding: 20px;
+
+            background: rgba(17, 17, 17, 0.8);
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            backdrop-filter: blur(15px);
+        }
+
+        .summary-label {
+            display: block;
+
+            color: var(--text-muted);
+
+            font-size: 8px;
+            font-weight: 700;
+
+            letter-spacing: 0.16em;
+        }
+
+        .summary-value {
+            display: block;
+
+            margin-top: 13px;
+
+            color: var(--text);
+
+            font-size: 30px;
+            font-weight: 500;
+
+            letter-spacing: -0.05em;
+        }
+
+        .summary-subtitle {
+            display: block;
+
+            margin-top: 4px;
+
+            color: var(--text-muted);
+
+            font-size: 9px;
+        }
+
+
+        /* =====================================================
+           ADD TASK
+           ===================================================== */
+
+        .add-task-card {
+            padding: 24px;
+
+            margin-bottom: 35px;
+
+            background: rgba(17, 17, 17, 0.8);
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            backdrop-filter: blur(15px);
+        }
+
+        .add-task-title {
+            margin-bottom: 18px;
+
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .add-task-form {
+            display: grid;
+
+            grid-template-columns: 1fr 180px auto;
+
+            gap: 10px;
+        }
+
+        .task-input,
+        .task-category-input {
+            width: 100%;
+
+            height: 46px;
+
+            padding: 0 14px;
+
+            background: #0b0b0b;
+
+            color: var(--text);
+
+            border: 1px solid var(--border);
+
+            border-radius: 10px;
+
+            outline: none;
+
+            font-size: 11px;
+
+            transition:
+                border-color var(--transition),
+                background var(--transition);
+        }
+
+        .task-input::placeholder,
+        .task-category-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .task-input:focus,
+        .task-category-input:focus {
+            background: #0e0e0e;
+
+            border-color:
+                rgba(255, 255, 255, 0.22);
+        }
+
+        .add-task-button {
+            height: 46px;
+
+            padding: 0 20px;
+
+            background: var(--accent);
+
+            color: #080808;
+
+            border-radius: 10px;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                transform var(--transition),
+                opacity var(--transition);
+        }
+
+        .add-task-button:hover {
+            transform: translateY(-1px);
+
+            opacity: 0.88;
+        }
+
+        .add-task-button:active {
+            transform: translateY(0);
+        }
+
+
+        /* =====================================================
+           TASK LIST
+           ===================================================== */
+
+        .task-list-header {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 15px;
+        }
+
+        .task-list-title {
+            font-size: 18px;
+            font-weight: 600;
+
+            letter-spacing: -0.03em;
+        }
+
+        .task-list-count {
+            color: var(--text-muted);
+
+            font-size: 10px;
+        }
+
+        .task-list {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+
+        /* Individual task */
+
+        .tasks-page .task-item {
+            position: relative;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+            min-height: 68px;
+
+            padding: 12px 16px;
+
+            background:
+                rgba(17, 17, 17, 0.8);
+
+            border: 1px solid var(--border);
+
+            border-radius: 13px;
+
+            transition:
+                background var(--transition),
+                border-color var(--transition),
+                transform var(--transition);
+        }
+
+        .tasks-page .task-item:hover {
+            background: var(--surface-hover);
+
+            border-color:
+                rgba(255, 255, 255, 0.13);
+
+            transform: translateX(2px);
+        }
+
+
+        /* Checkbox */
+
+        .tasks-page .task-checkbox {
+            width: 27px;
+            height: 27px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid
+                rgba(255, 255, 255, 0.16);
+
+            border-radius: 8px;
+
+            color: #080808;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition:
+                background var(--transition),
+                border-color var(--transition),
+                transform var(--transition);
+        }
+
+        .tasks-page .task-checkbox:hover {
+            border-color:
+                rgba(255, 255, 255, 0.4);
+
+            transform: scale(1.04);
+        }
+
+        .tasks-page .task-item.completed
+        .task-checkbox {
+            background: var(--accent);
+
+            border-color: var(--accent);
+        }
+
+
+        /* Task content */
+
+        .tasks-page .task-content {
+            min-width: 0;
+
+            flex: 1;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 5px;
+        }
+
+        .tasks-page .task-title {
+            color: var(--text);
+
+            font-size: 12px;
+            font-weight: 500;
+
+            transition: color var(--transition);
+        }
+
+        .tasks-page .task-category {
+            color: var(--text-muted);
+
+            font-size: 9px;
+        }
+
+        .tasks-page .task-item.completed
+        .task-title {
+            color: var(--text-muted);
+
+            text-decoration: line-through;
+        }
+
+
+        /* Status */
+
+        .tasks-page .task-status {
+            flex-shrink: 0;
+
+            color: var(--text-muted);
+
+            font-size: 8px;
+            font-weight: 700;
+
+            letter-spacing: 0.1em;
+        }
+
+        .tasks-page .task-item.completed
+        .task-status {
+            color: var(--text-secondary);
+        }
+
+
+        /* Delete */
+
+        .task-delete {
+            width: 30px;
+            height: 30px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            color: var(--text-muted);
+
+            border-radius: 7px;
+
+            font-size: 13px;
+
+            cursor: pointer;
+
+            opacity: 0;
+
+            transition:
+                opacity var(--transition),
+                background var(--transition),
+                color var(--transition);
+        }
+
+        .tasks-page .task-item:hover
+        .task-delete {
+            opacity: 1;
+        }
+
+        .task-delete:hover {
+            color: var(--text);
+
+            background:
+                rgba(255, 255, 255, 0.07);
+        }
+
+
+        /* =====================================================
+           EMPTY
+           ===================================================== */
+
+        .tasks-empty {
+            min-height: 250px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+
+            background:
+                rgba(17, 17, 17, 0.65);
+
+            border: 1px dashed
+                rgba(255, 255, 255, 0.1);
+
+            border-radius: var(--radius);
+        }
+
+        .tasks-empty-icon {
+            width: 46px;
+            height: 46px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 15px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 50%;
+
+            color: var(--text-secondary);
+
+            font-size: 20px;
+        }
+
+        .tasks-empty h3 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .tasks-empty p {
+            max-width: 320px;
+
+            margin-top: 8px;
+
+            color: var(--text-muted);
+
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 900px) {
+
+            .tasks-page {
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+
+            .add-task-form {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .add-task-button {
+                grid-column: span 2;
+            }
+        }
+
+
+        @media (max-width: 760px) {
+
+            .tasks-page {
+                padding: 35px 20px 50px;
+            }
+
+            .tasks-page-header {
+                display: block;
+
+                margin-bottom: 35px;
+            }
+
+            .tasks-date {
+                display: block;
+
+                margin-top: 18px;
+            }
+
+            .tasks-summary {
+                grid-template-columns: 1fr;
+
+                gap: 8px;
+            }
+
+            .summary-card {
+                min-height: 110px;
+            }
+
+            .add-task-form {
+                grid-template-columns: 1fr;
+            }
+
+            .add-task-button {
+                grid-column: auto;
+            }
+
+            .tasks-page .task-item {
+                min-height: 64px;
+
+                padding: 10px 12px;
+            }
+
+            .task-delete {
+                opacity: 1;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ====================================================== -->
+
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
+
+        <div class="brand">
+
+            <a
+                href="../index.html"
+                class="brand-link"
+            >
+
+                <span class="brand-mark">
+                    A
+                </span>
+
+                <span class="brand-name">
+                    ASCEND
+                </span>
+
+            </a>
+
+        </div>
+
+
+        <nav
+            class="navigation"
+            aria-label="Main navigation"
+        >
+
+            <div class="navigation-section">
+
+                <span class="navigation-label">
+                    WORKSPACE
+                </span>
+
+
+                <a
+                    href="../index.html"
+                    class="nav-item"
+                    data-page="dashboard"
+                >
+
+                    <span class="nav-icon">
+                        ⌂
+                    </span>
+
+                    <span class="nav-text">
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="calendar.html"
+                    class="nav-item"
+                    data-page="calendar"
+                >
+
+                    <span class="nav-icon">
+                        □
+                    </span>
+
+                    <span class="nav-text">
+                        Calendar
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="tasks.html"
+                    class="nav-item active"
+                    data-page="tasks"
+                >
+
+                    <span class="nav-icon">
+                        ✓
+                    </span>
+
+                    <span class="nav-text">
+                        Tasks
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="analytics.html"
+                    class="nav-item"
+                    data-page="analytics"
+                >
+
+                    <span class="nav-icon">
+                        ↗
+                    </span>
+
+                    <span class="nav-text">
+                        Analytics
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            <div class="navigation-section">
+
+                <span class="navigation-label">
+                    PERSONAL
+                </span>
+
+
+                <a
+                    href="profile.html"
+                    class="nav-item"
+                    data-page="profile"
+                >
+
+                    <span class="nav-icon">
+                        ○
+                    </span>
+
+                    <span class="nav-text">
+                        Profile
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="settings.html"
+                    class="nav-item"
+                    data-page="settings"
+                >
+
+                    <span class="nav-icon">
+                        ⚙
+                    </span>
+
+                    <span class="nav-text">
+                        Settings
+                    </span>
+
+                </a>
+
+            </div>
+
+        </nav>
+
+
+        <!-- Sidebar bottom -->
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-progress">
+
+                <div class="sidebar-progress-top">
+
+                    <span>
+                        Today's progress
+                    </span>
+
+                    <strong id="sidebarProgress">
+                        0%
+                    </strong>
+
+                </div>
+
+
+                <div class="progress-track">
+
+                    <div
+                        class="progress-fill"
+                        id="sidebarProgressFill"
+                        style="width: 0%"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <div class="sidebar-user">
+
+                <div
+                    class="avatar"
+                    id="sidebarAvatar"
+                >
+                    A
+                </div>
+
+
+                <div class="sidebar-user-info">
+
+                    <span
+                        class="sidebar-user-name"
+                        id="sidebarUserName"
+                    >
+                        Alex
+                    </span>
+
+                    <span
+                        class="sidebar-user-handle"
+                    >
+                        @alex
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN
+         ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <button
+                class="mobile-menu-button"
+                id="mobileMenuButton"
+                type="button"
+                aria-label="Open menu"
+            >
+                ☰
+            </button>
+
+
+            <div class="topbar-left">
+
+                <span
+                    class="topbar-date"
+                    id="currentDate"
+                >
+                    Thursday, September 3
+                </span>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <button
+                    class="icon-button"
+                    type="button"
+                    aria-label="Notifications"
+                >
+                    ♢
+                </button>
+
+
+                <a
+                    href="profile.html"
+                    class="topbar-profile"
+                >
+
+                    <div class="avatar avatar-small">
+                        A
+                    </div>
+
+                    <span id="topbarUsername">
+                        Alex
+                    </span>
+
+                </a>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             TASKS CONTENT
+             ================================================== -->
+
+        <section class="tasks-page">
+
+
+            <!-- HEADER -->
+
+            <div class="tasks-page-header">
+
+                <div>
+
+                    <span class="section-eyebrow">
+                        DAILY SYSTEM
+                    </span>
+
+                    <h1>
+                        Your <span>tasks.</span>
+                    </h1>
+
+                    <p class="tasks-page-description">
+                        Turn your intentions into actions.
+                        Complete your tasks and build your
+                        consistency one day at a time.
+                    </p>
+
+                </div>
+
+
+                <span
+                    class="tasks-date"
+                    id="tasksPageDate"
+                >
+                    September 3, 2026
+                </span>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 SUMMARY
+                 ================================================== -->
+
+            <div class="tasks-summary">
+
+
+                <div class="summary-card">
+
+                    <span class="summary-label">
+                        TODAY
+                    </span>
+
+                    <span
+                        class="summary-value"
+                        id="tasksTodayProgress"
+                    >
+                        0%
+                    </span>
+
+                    <span class="summary-subtitle">
+                        completion
+                    </span>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <span class="summary-label">
+                        COMPLETED
+                    </span>
+
+                    <span
+                        class="summary-value"
+                        id="tasksCompletedCount"
+                    >
+                        0
+                    </span>
+
+                    <span class="summary-subtitle">
+                        tasks finished
+                    </span>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <span class="summary-label">
+                        REMAINING
+                    </span>
+
+                    <span
+                        class="summary-value"
+                        id="tasksRemainingCount"
+                    >
+                        0
+                    </span>
+
+                    <span class="summary-subtitle">
+                        tasks left
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ADD TASK
+                 ================================================== -->
+
+            <div class="add-task-card">
+
+                <div class="add-task-title">
+                    Create a new task
+                </div>
+
+
+                <form
+                    class="add-task-form"
+                    id="addTaskForm"
+                >
+
+                    <input
+                        type="text"
+                        id="taskTitleInput"
+                        class="task-input"
+                        placeholder="What needs to be done?"
+                        autocomplete="off"
+                        maxlength="100"
+                        required
+                    >
+
+
+                    <input
+                        type="text"
+                        id="taskCategoryInput"
+                        class="task-category-input"
+                        placeholder="Category (optional)"
+                        autocomplete="off"
+                        maxlength="30"
+                    >
+
+
+                    <button
+                        type="submit"
+                        class="add-task-button"
+                    >
+                        + ADD TASK
+                    </button>
+
+                </form>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 TASK LIST
+                 ================================================== -->
+
+            <div class="task-list-header">
+
+                <h2 class="task-list-title">
+                    Today's tasks
+                </h2>
+
+                <span
+                    class="task-list-count"
+                    id="taskListCount"
+                >
+                    0 tasks
+                </span>
+
+            </div>
+
+
+            <div
+                class="task-list"
+                id="fullTaskList"
+            >
+
+                <!--
+                    Tasks are generated here
+                    by JavaScript.
+                -->
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- FOOTER -->
+
+        <footer class="footer">
+
+            <span>
+                ASCEND
+            </span>
+
+            <span>
+                Become better every day.
+            </span>
+
+        </footer>
+
+
+    </main>
+
+
+</div>
+
+
+
+<!-- MOBILE OVERLAY -->
+
+<div
+    class="mobile-overlay"
+    id="mobileOverlay"
+    aria-hidden="true"
+></div>
+
+
+
+<!-- =========================================================
+     PAGE SCRIPT
+     ========================================================== -->
+
+<script src="../js/app.js"></script>
+
+
+<script>
+
+"use strict";
+
+
+/* =========================================================
+   TASKS PAGE LOGIC
+   ========================================================= */
+
+
+function getASCENDData() {
+
+    return window.ASCEND &&
+        typeof window.ASCEND.getData === "function"
+        ? window.ASCEND.getData()
+        : null;
+}
+
+
+function getTodayKeyLocal() {
+
+    const now = new Date();
+
+    const year =
+        now.getFullYear();
+
+    const month =
+        String(
+            now.getMonth() + 1
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            now.getDate()
+        ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+
+function getTodayTasksFromData() {
+
+    const data =
+        getASCENDData();
+
+    if (!data) {
+        return [];
+    }
+
+    const today =
+        getTodayKeyLocal();
+
+    return data.tasks.filter(task => {
+
+        if (task.archived) {
+            return false;
+        }
+
+        if (!task.createdAt) {
+            return true;
+        }
+
+        return task.createdAt <= today;
+
+    });
+}
+
+
+function updateTasksPage() {
+
+    const tasks =
+        getTodayTasksFromData();
+
+
+    const completed =
+        tasks.filter(
+            task => task.completed
+        );
+
+
+    const remaining =
+        tasks.length -
+        completed.length;
+
+
+    const progress =
+        tasks.length === 0
+            ? 0
+            : Math.round(
+                completed.length /
+                tasks.length *
+                100
+            );
+
+
+    /* Progress */
+
+    const progressElement =
+        document.getElementById(
+            "tasksTodayProgress"
+        );
+
+    if (progressElement) {
+        progressElement.textContent =
+            `${progress}%`;
+    }
+
+
+    /* Completed */
+
+    const completedElement =
+        document.getElementById(
+            "tasksCompletedCount"
+        );
+
+    if (completedElement) {
+        completedElement.textContent =
+            completed.length;
+    }
+
+
+    /* Remaining */
+
+    const remainingElement =
+        document.getElementById(
+            "tasksRemainingCount"
+        );
+
+    if (remainingElement) {
+        remainingElement.textContent =
+            remaining;
+    }
+
+
+    /* List count */
+
+    const countElement =
+        document.getElementById(
+            "taskListCount"
+        );
+
+    if (countElement) {
+
+        countElement.textContent =
+            `${tasks.length} ${
+                tasks.length === 1
+                    ? "task"
+                    : "tasks"
+            }`;
+
+    }
+
+
+    renderFullTaskList(tasks);
+}
+
+
+function renderFullTaskList(tasks) {
+
+    const container =
+        document.getElementById(
+            "fullTaskList"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    if (tasks.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="tasks-empty">
+
+                <div class="tasks-empty-icon">
+                    +
+                </div>
+
+                <h3>
+                    Your day starts here.
+                </h3>
+
+                <p>
+                    Add your first task above
+                    and begin building your
+                    ASCEND streak.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    tasks.forEach(task => {
+
+        const item =
+            document.createElement("div");
+
+
+        item.className =
+            "task-item";
+
+
+        if (task.completed) {
+            item.classList.add(
+                "completed"
+            );
+        }
+
+
+        item.innerHTML = `
+
+            <button
+                class="task-checkbox"
+                type="button"
+                aria-label="Toggle task"
+            >
+                ${
+                    task.completed
+                        ? "✓"
+                        : ""
+                }
+            </button>
+
+
+            <div class="task-content">
+
+                <span class="task-title">
+                    ${escapeTaskHTML(task.title)}
+                </span>
+
+                ${
+                    task.category
+                        ? `
+                            <span class="task-category">
+                                ${escapeTaskHTML(
+                                    task.category
+                                )}
+                            </span>
+                        `
+                        : ""
+                }
+
+            </div>
+
+
+            <span class="task-status">
+
+                ${
+                    task.completed
+                        ? "DONE"
+                        : "TODO"
+                }
+
+            </span>
+
+
+            <button
+                class="task-delete"
+                type="button"
+                aria-label="Delete task"
+            >
+                ×
+            </button>
+
+        `;
+
+
+        const checkbox =
+            item.querySelector(
+                ".task-checkbox"
+            );
+
+
+        const deleteButton =
+            item.querySelector(
+                ".task-delete"
+            );
+
+
+        checkbox.addEventListener(
+            "click",
+            () => {
+
+                if (
+                    window.ASCEND &&
+                    typeof window.ASCEND.toggleTask ===
+                        "function"
+                ) {
+
+                    window.ASCEND.toggleTask(
+                        task.id
+                    );
+
+                    updateTasksPage();
+
+                }
+
+            }
+        );
+
+
+        deleteButton.addEventListener(
+            "click",
+            () => {
+
+                const confirmed =
+                    window.confirm(
+                        "Delete this task?"
+                    );
+
+
+                if (!confirmed) {
+                    return;
+                }
+
+
+                if (
+                    window.ASCEND &&
+                    typeof window.ASCEND.deleteTask ===
+                        "function"
+                ) {
+
+                    window.ASCEND.deleteTask(
+                        task.id
+                    );
+
+                    updateTasksPage();
+
+                }
+
+            }
+        );
+
+
+        container.appendChild(item);
+
+    });
+}
+
+
+function escapeTaskHTML(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+/* =========================================================
+   ADD TASK FORM
+   ========================================================= */
+
+function setupAddTaskForm() {
+
+    const form =
+        document.getElementById(
+            "addTaskForm"
+        );
+
+
+    const titleInput =
+        document.getElementById(
+            "taskTitleInput"
+        );
+
+
+    const categoryInput =
+        document.getElementById(
+            "taskCategoryInput"
+        );
+
+
+    if (
+        !form ||
+        !titleInput ||
+        !categoryInput
+    ) {
+        return;
+    }
+
+
+    form.addEventListener(
+        "submit",
+        event => {
+
+            event.preventDefault();
+
+
+            const title =
+                titleInput.value.trim();
+
+
+            const category =
+                categoryInput.value.trim();
+
+
+            if (!title) {
+                titleInput.focus();
+
+                return;
+            }
+
+
+            if (
+                window.ASCEND &&
+                typeof window.ASCEND.createTask ===
+                    "function"
+            ) {
+
+                window.ASCEND.createTask(
+                    title,
+                    category
+                );
+
+            }
+
+
+            titleInput.value = "";
+
+            categoryInput.value = "";
+
+
+            titleInput.focus();
+
+
+            updateTasksPage();
+
+        }
+    );
+}
+
+
+/* =========================================================
+   PAGE DATE
+   ========================================================= */
+
+function updateTasksDate() {
+
+    const element =
+        document.getElementById(
+            "tasksPageDate"
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    const date =
+        new Date();
+
+
+    element.textContent =
+        new Intl.DateTimeFormat(
+            "en-US",
+            {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+                year: "numeric"
+            }
+        ).format(date);
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+function initTasksPage() {
+
+    setupAddTaskForm();
+
+    updateTasksDate();
+
+    updateTasksPage();
+
+}
+
+
+if (
+    document.readyState === "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initTasksPage
+    );
+
+} else {
+
+    initTasksPage();
+
+}
+
+</script>
+
+</body>
+</html>
+```
 
