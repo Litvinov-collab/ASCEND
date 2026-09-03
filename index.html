@@ -1,1128 +1,2360 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>ASCEND — Дисциплина</title>
-
-<style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-:root {
-    --bg: #070707;
-    --panel: #101010;
-    --panel2: #151515;
-    --border: #252525;
-    --text: #f5f5f5;
-    --muted: #777;
-    --soft: #aaa;
-    --danger: #ff4d4d;
-}
-
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-}
-
-button,
-input,
-select {
-    font: inherit;
-}
-
-button {
-    cursor: pointer;
-}
-
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 240px;
-    background: #0b0b0b;
-    border-right: 1px solid var(--border);
-    padding: 28px 18px;
-    z-index: 100;
-}
-
-.logo {
-    font-size: 25px;
-    font-weight: 900;
-    letter-spacing: 5px;
-    margin-bottom: 45px;
-    padding-left: 12px;
-}
-
-.nav {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-}
-
-.nav-button {
-    width: 100%;
-    border: 0;
-    background: transparent;
-    color: #777;
-    text-align: left;
-    padding: 14px;
-    border-radius: 10px;
-    transition: .2s;
-}
-
-.nav-button:hover {
-    background: #171717;
-    color: white;
-}
-
-.nav-button.active {
-    background: white;
-    color: black;
-    font-weight: 700;
-}
-
-.sidebar-progress {
-    position: absolute;
-    left: 18px;
-    right: 18px;
-    bottom: 25px;
-    padding: 17px;
-    background: #111;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-}
-
-.sidebar-progress-title {
-    color: #777;
-    font-size: 11px;
-    margin-bottom: 8px;
-}
-
-.sidebar-progress-value {
-    font-size: 25px;
-    font-weight: 800;
-}
-
-.progress-line {
-    height: 5px;
-    background: #242424;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 10px;
-}
-
-.progress-line-fill {
-    width: 0;
-    height: 100%;
-    background: white;
-    transition: width .4s;
-}
-
-.sidebar-score {
-    margin-top: 10px;
-    color: #777;
-    font-size: 12px;
-}
-
-.main {
-    margin-left: 240px;
-    margin-right: 310px;
-    min-height: 100vh;
-    padding: 30px;
-}
-
-.topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 35px;
-}
-
-.date {
-    color: #777;
-    font-size: 14px;
-}
-
-.topbar-right {
-    display: flex;
-    gap: 10px;
-}
-
-.icon-button {
-    width: 42px;
-    height: 42px;
-    border: 1px solid var(--border);
-    background: #101010;
-    color: white;
-    border-radius: 10px;
-}
-
-.icon-button:hover {
-    background: white;
-    color: black;
-}
-
-.mobile-menu {
-    display: none;
-}
-
-.page {
-    display: none;
-}
-
-.page.active {
-    display: block;
-}
-
-.page-title {
-    font-size: 38px;
-    font-weight: 800;
-    margin-bottom: 8px;
-}
-
-.page-subtitle {
-    color: #777;
-    margin-bottom: 30px;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-    margin-bottom: 20px;
-}
-
-.stat-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 22px;
-}
-
-.stat-label {
-    color: #777;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.stat-value {
-    font-size: 31px;
-    font-weight: 800;
-    margin-top: 10px;
-}
-
-.section {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 22px;
-    margin-bottom: 20px;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 18px;
-}
-
-.section-title {
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.primary-button {
-    border: 0;
-    background: white;
-    color: black;
-    padding: 12px 17px;
-    border-radius: 9px;
-    font-weight: 700;
-}
-
-.primary-button:hover {
-    opacity: .85;
-}
-
-.secondary-button {
-    border: 1px solid var(--border);
-    background: #151515;
-    color: white;
-    padding: 11px 16px;
-    border-radius: 9px;
-}
-
-.tasks-list {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-}
-
-.task {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    padding: 14px;
-    background: #141414;
-    border: 1px solid #202020;
-    border-radius: 10px;
-}
-
-.task.completed .task-title {
-    text-decoration: line-through;
-    color: #666;
-}
-
-.check {
-    width: 23px;
-    height: 23px;
-    flex-shrink: 0;
-    border: 1px solid #555;
-    border-radius: 6px;
-    background: transparent;
-    color: black;
-}
-
-.task.completed .check {
-    background: white;
-    border-color: white;
-}
-
-.task-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.task-title {
-    font-size: 15px;
-    margin-bottom: 5px;
-}
-
-.task-meta {
-    color: #666;
-    font-size: 11px;
-}
-
-.delete {
-    border: 0;
-    background: transparent;
-    color: #555;
-    font-size: 20px;
-    padding: 5px;
-}
-
-.delete:hover {
-    color: var(--danger);
-}
-
-.empty {
-    text-align: center;
-    padding: 35px 10px;
-    color: #666;
-}
-
-.progress-section {
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 30px;
-    align-items: center;
-}
-
-.progress-circle {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: auto;
-    background:
-        radial-gradient(circle, #101010 63%, transparent 64%),
-        conic-gradient(white 0deg, #222 0deg);
-}
-
-.circle-number {
-    font-size: 34px;
-    font-weight: 900;
-}
-
-.progress-message {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.progress-description {
-    color: #777;
-    line-height: 1.6;
-}
-
-.calendar-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-.month-name {
-    font-size: 23px;
-    font-weight: 800;
-}
-
-.calendar-controls {
-    display: flex;
-    gap: 7px;
-}
-
-.calendar-button {
-    width: 38px;
-    height: 38px;
-    background: #151515;
-    color: white;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-}
-
-.calendar-button:hover {
-    background: white;
-    color: black;
-}
-
-.calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 7px;
-}
-
-.calendar-weekday {
-    color: #555;
-    font-size: 11px;
-    text-align: center;
-    padding: 7px;
-}
-
-.calendar-day {
-    min-height: 85px;
-    background: #131313;
-    border: 1px solid #202020;
-    border-radius: 9px;
-    padding: 9px;
-    cursor: pointer;
-}
-
-.calendar-day:hover {
-    border-color: #555;
-}
-
-.calendar-day.today {
-    border-color: white;
-}
-
-.calendar-day-number {
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.calendar-day-percent {
-    margin-top: 25px;
-    font-size: 18px;
-    font-weight: 800;
-}
-
-.calendar-day.empty-day {
-    opacity: .2;
-    cursor: default;
-}
-
-.analytics-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-}
-
-.analytics-card {
-    background: #141414;
-    border: 1px solid var(--border);
-    padding: 22px;
-    border-radius: 12px;
-}
-
-.analytics-card span {
-    display: block;
-    color: #666;
-    font-size: 12px;
-    margin-bottom: 10px;
-}
-
-.analytics-card strong {
-    font-size: 30px;
-}
-
-.chart {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    height: 230px;
-    margin-top: 25px;
-}
-
-.chart-bar {
-    flex: 1;
-    min-width: 5px;
-    background: white;
-    border-radius: 5px 5px 0 0;
-    position: relative;
-}
-
-.chart-label {
-    position: absolute;
-    bottom: -22px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #555;
-    font-size: 9px;
-}
-
-.profile-box {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 25px;
-}
-
-.avatar {
-    width: 85px;
-    height: 85px;
-    border-radius: 50%;
-    background: white;
-    color: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-    font-weight: 900;
-}
-
-.profile-name {
-    font-size: 27px;
-    font-weight: 800;
-}
-
-.profile-label {
-    color: #666;
-    font-size: 12px;
-    margin-top: 5px;
-}
-
-.input-row {
-    display: flex;
-    gap: 10px;
-}
-
-.input {
-    flex: 1;
-    min-width: 0;
-    padding: 13px;
-    background: #090909;
-    color: white;
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    outline: none;
-}
-
-.form-group {
-    margin-bottom: 17px;
-}
-
-.form-label {
-    display: block;
-    color: #777;
-    font-size: 12px;
-    margin-bottom: 7px;
-}
-
-.danger-button {
-    background: transparent;
-    color: #ff5555;
-    border: 1px solid #552222;
-    padding: 12px 17px;
-    border-radius: 9px;
-}
-
-.character-panel {
-    position: fixed;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 310px;
-    background: #0b0b0b;
-    border-left: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 30px;
-    z-index: 50;
-}
-
-.character {
-    width: 185px;
-    height: 360px;
-    position: relative;
-    margin-bottom: 25px;
-}
-
-.head {
-    position: absolute;
-    width: 115px;
-    height: 125px;
-    border: 3px solid #aaa;
-    border-radius: 50%;
-    top: 0;
-    left: 35px;
-}
-
-.hair {
-    position: absolute;
-    width: 118px;
-    height: 42px;
-    background: #ddd;
-    border-radius: 60px 60px 20px 20px;
-    top: -2px;
-    left: 34px;
-}
-
-.eye {
-    position: absolute;
-    width: 9px;
-    height: 9px;
-    background: white;
-    border-radius: 50%;
-    top: 61px;
-}
-
-.eye.left {
-    left: 63px;
-}
-
-.eye.right {
-    right: 62px;
-}
-
-.body {
-    position: absolute;
-    width: 140px;
-    height: 190px;
-    border: 3px solid #aaa;
-    border-radius: 60px 60px 25px 25px;
-    top: 120px;
-    left: 22px;
-}
-
-.arm {
-    position: absolute;
-    width: 24px;
-    height: 145px;
-    border: 3px solid #888;
-    border-radius: 20px;
-    top: 135px;
-}
-
-.arm.left {
-    left: 2px;
-    transform: rotate(8deg);
-}
-
-.arm.right {
-    right: 2px;
-    transform: rotate(-8deg);
-}
-
-.character-name {
-    font-size: 22px;
-    font-weight: 800;
-    text-align: center;
-}
-
-.character-message {
-    color: #777;
-    font-size: 13px;
-    text-align: center;
-    line-height: 1.6;
-    margin-top: 8px;
-}
-
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.78);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 500;
-    padding: 20px;
-}
-
-.modal.show {
-    display: flex;
-}
-
-.modal-box {
-    width: 100%;
-    max-width: 520px;
-    background: #111;
-    border: 1px solid #2b2b2b;
-    border-radius: 15px;
-    padding: 25px;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 22px;
-}
-
-.modal-title {
-    font-size: 23px;
-    font-weight: 800;
-}
-
-.close {
-    width: 35px;
-    height: 35px;
-    background: transparent;
-    color: #777;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-}
-
-.form-control {
-    width: 100%;
-    padding: 12px;
-    background: #090909;
-    border: 1px solid var(--border);
-    color: white;
-    border-radius: 8px;
-    outline: none;
-}
-
-.repeat-options {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-}
-
-.repeat-option {
-    padding: 11px;
-    border: 1px solid var(--border);
-    background: #0b0b0b;
-    border-radius: 8px;
-    color: #aaa;
-}
-
-.repeat-option input {
-    margin-right: 6px;
-}
-
-.custom-days {
-    display: none;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 7px;
-    margin-top: 10px;
-}
-
-.custom-days.show {
-    display: grid;
-}
-
-.custom-day {
-    padding: 9px;
-    background: #0b0b0b;
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    color: #777;
-    font-size: 11px;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 20px;
-}
-
-.toast {
-    position: fixed;
-    left: 50%;
-    bottom: 25px;
-    transform: translate(-50%, 20px);
-    background: white;
-    color: black;
-    padding: 12px 18px;
-    border-radius: 9px;
-    font-weight: 700;
-    opacity: 0;
-    pointer-events: none;
-    transition: .25s;
-    z-index: 1000;
-}
-
-.toast.show {
-    opacity: 1;
-    transform: translate(-50%, 0);
-}
-
-@media (max-width: 1100px) {
-    .character-panel {
-        display: none;
-    }
-
-    .main {
-        margin-right: 0;
-    }
-
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 750px) {
-    .sidebar {
-        transform: translateX(-100%);
-        transition: .25s;
-    }
-
-    .sidebar.open {
-        transform: translateX(0);
-    }
-
-    .main {
-        margin-left: 0;
-        padding: 20px;
-    }
-
-    .mobile-menu {
-        display: block;
-    }
-
-    .page-title {
-        font-size: 30px;
-    }
-
-    .progress-section {
-        grid-template-columns: 1fr;
-    }
-
-    .analytics-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .calendar-day {
-        min-height: 60px;
-    }
-}
-
-@media (max-width: 500px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .repeat-options {
-        grid-template-columns: 1fr;
-    }
-
-    .input-row {
-        flex-direction: column;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ASCEND</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #06070a;
+            --panel: rgba(15, 17, 23, 0.78);
+            --panel-2: rgba(20, 22, 30, 0.92);
+            --border: rgba(255,255,255,0.09);
+
+            --text: #ffffff;
+            --muted: #8f95a3;
+
+            --accent: #ffffff;
+            --accent-soft: rgba(255,255,255,0.12);
+
+            --purple: #8f82ff;
+            --green: #61ffae;
+            --red: #ff6969;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    circle at 85% 40%,
+                    rgba(105, 94, 255, 0.12),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 45% 10%,
+                    rgba(255,255,255,0.03),
+                    transparent 35%
+                ),
+                #06070a;
+
+            color: var(--text);
+
+            font-family:
+                Inter,
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            overflow-x: hidden;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* ============================
+           APP
+        ============================ */
+
+        .app {
+            display: grid;
+            grid-template-columns: 220px minmax(0, 1fr) 330px;
+
+            min-height: 100vh;
+        }
+
+        /* ============================
+           SIDEBAR
+        ============================ */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            width: 220px;
+
+            padding: 28px 16px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(10,11,15,0.98),
+                    rgba(5,6,8,0.98)
+                );
+
+            border-right: 1px solid var(--border);
+
+            z-index: 40;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 5px;
+
+            margin: 4px 12px 40px;
+        }
+
+        .logo span {
+            opacity: .38;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .nav-button {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+            gap: 13px;
+
+            padding: 13px 14px;
+
+            border-radius: 12px;
+
+            border: 1px solid transparent;
+
+            background: transparent;
+
+            color: #a9aeba;
+
+            text-align: left;
+
+            transition: .25s;
+        }
+
+        .nav-button:hover {
+            color: white;
+
+            background: rgba(255,255,255,.045);
+        }
+
+        .nav-button.active {
+            color: white;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,.12),
+                    rgba(255,255,255,.025)
+                );
+
+            border-color: rgba(255,255,255,.09);
+
+            box-shadow:
+                inset 3px 0 0 white;
+        }
+
+        .nav-icon {
+            width: 25px;
+
+            font-size: 17px;
+
+            text-align: center;
+        }
+
+        /* SIDEBAR PROGRESS */
+
+        .sidebar-progress {
+            margin-top: auto;
+
+            padding: 18px;
+
+            border-radius: 18px;
+
+            border: 1px solid var(--border);
+
+            background: rgba(255,255,255,.025);
+        }
+
+        .sidebar-progress-title {
+            font-size: 13px;
+
+            color: var(--muted);
+
+            margin-bottom: 14px;
+        }
+
+        .mini-circle {
+            width: 90px;
+            height: 90px;
+
+            margin: auto;
+
+            border-radius: 50%;
+
+            display: grid;
+            place-items: center;
+
+            background:
+                conic-gradient(
+                    white var(--mini-progress, 0%),
+                    rgba(255,255,255,.08) 0
+                );
+
+            position: relative;
+        }
+
+        .mini-circle::after {
+            content: "";
+
+            position: absolute;
+
+            width: 72px;
+            height: 72px;
+
+            border-radius: 50%;
+
+            background: #090a0e;
+        }
+
+        .mini-circle span {
+            position: relative;
+
+            z-index: 2;
+
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .sidebar-score {
+            text-align: center;
+
+            margin-top: 14px;
+
+            font-size: 13px;
+
+            color: #b7bbc4;
+        }
+
+        /* ============================
+           MAIN
+        ============================ */
+
+        .main {
+            grid-column: 2;
+
+            min-width: 0;
+
+            padding:
+                30px
+                28px
+                60px;
+
+            margin-left: 220px;
+        }
+
+        .topbar {
+            height: 45px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 24px;
+        }
+
+        .date {
+            color: #a9afbb;
+
+            font-size: 14px;
+        }
+
+        .mobile-menu {
+            display: none;
+
+            width: 42px;
+            height: 42px;
+
+            border-radius: 10px;
+
+            border: 1px solid var(--border);
+
+            color: white;
+
+            background: var(--panel);
+        }
+
+        .notification {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 12px;
+
+            border: 1px solid var(--border);
+
+            background: var(--panel);
+
+            color: white;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: pageFade .35s ease;
+        }
+
+        @keyframes pageFade {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 39px;
+
+            letter-spacing: -1.5px;
+
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            color: var(--muted);
+        }
+
+        /* ============================
+           PANELS
+        ============================ */
+
+        .panel {
+            border: 1px solid var(--border);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.035),
+                    rgba(255,255,255,.012)
+                );
+
+            border-radius: 16px;
+
+            backdrop-filter: blur(15px);
+        }
+
+        /* ============================
+           STATS
+        ============================ */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(120px,1fr));
+
+            gap: 13px;
+
+            margin-bottom: 15px;
+        }
+
+        .stat {
+            min-height: 116px;
+
+            padding: 18px;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .stat-label {
+            color: #a5aab6;
+
+            font-size: 13px;
+
+            margin-bottom: 17px;
+        }
+
+        .stat-value {
+            font-size: 29px;
+            font-weight: 800;
+        }
+
+        .stat-decoration {
+            position: absolute;
+
+            right: 17px;
+            bottom: 17px;
+
+            font-size: 29px;
+
+            opacity: .85;
+        }
+
+        /* ============================
+           DASHBOARD GRID
+        ============================ */
+
+        .dashboard-grid {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.4fr)
+                minmax(260px, .85fr);
+
+            gap: 15px;
+        }
+
+        .tasks-panel {
+            padding: 17px;
+        }
+
+        .panel-header {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 20px;
+
+            margin-bottom: 15px;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 750;
+        }
+
+        .add-button {
+            border: 1px solid var(--border);
+
+            background: rgba(255,255,255,.04);
+
+            color: white;
+
+            padding: 9px 13px;
+
+            border-radius: 9px;
+
+            transition: .2s;
+        }
+
+        .add-button:hover {
+            background: white;
+            color: black;
+        }
+
+        /* ============================
+           TASKS
+        ============================ */
+
+        .tasks-list {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+        .task {
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+            min-height: 48px;
+
+            padding: 7px 10px;
+
+            border-radius: 10px;
+
+            border: 1px solid rgba(255,255,255,.065);
+
+            background: rgba(0,0,0,.16);
+
+            transition: .25s;
+        }
+
+        .task:hover {
+            border-color: rgba(255,255,255,.18);
+
+            background: rgba(255,255,255,.025);
+        }
+
+        .task.done {
+            opacity: .58;
+        }
+
+        .task.done .task-title {
+            text-decoration: line-through;
+        }
+
+        .check {
+            width: 25px;
+            height: 25px;
+
+            flex: 0 0 25px;
+
+            border-radius: 7px;
+
+            border: 1px solid #687080;
+
+            background: transparent;
+
+            color: black;
+
+            display: grid;
+
+            place-items: center;
+        }
+
+        .task.done .check {
+            background: white;
+            border-color: white;
+        }
+
+        .task-info {
+            flex: 1;
+
+            min-width: 0;
+        }
+
+        .task-title {
+            font-size: 14px;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .task-meta {
+            margin-top: 3px;
+
+            font-size: 11px;
+
+            color: #707785;
+        }
+
+        .category {
+            font-size: 10px;
+
+            padding: 5px 8px;
+
+            border-radius: 999px;
+
+            background: rgba(143,130,255,.12);
+
+            color: #c6c0ff;
+        }
+
+        .delete {
+            width: 30px;
+            height: 30px;
+
+            border: none;
+
+            background: transparent;
+
+            color: #666e7b;
+
+            border-radius: 7px;
+        }
+
+        .delete:hover {
+            color: var(--red);
+
+            background: rgba(255,105,105,.08);
+        }
+
+        .empty {
+            padding: 35px 15px;
+
+            text-align: center;
+
+            color: #6f7683;
+        }
+
+        /* ============================
+           PROGRESS CARD
+        ============================ */
+
+        .progress-panel {
+            min-height: 260px;
+
+            padding: 20px;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .progress-content {
+            flex: 1;
+
+            display: flex;
+
+            align-items: center;
+            gap: 24px;
+        }
+
+        .progress-circle {
+            width: 142px;
+            height: 142px;
+
+            flex: 0 0 142px;
+
+            border-radius: 50%;
+
+            background:
+                conic-gradient(
+                    white var(--progress, 0%),
+                    rgba(255,255,255,.075) 0
+                );
+
+            position: relative;
+
+            display: grid;
+            place-items: center;
+
+            filter:
+                drop-shadow(
+                    0 0 15px rgba(255,255,255,.08)
+                );
+        }
+
+        .progress-circle::after {
+            content: "";
+
+            position: absolute;
+
+            width: 113px;
+            height: 113px;
+
+            border-radius: 50%;
+
+            background: #0b0d12;
+        }
+
+        .progress-circle span {
+            position: relative;
+
+            z-index: 3;
+
+            font-size: 30px;
+            font-weight: 900;
+        }
+
+        .progress-message strong {
+            display: block;
+
+            font-size: 19px;
+
+            margin-bottom: 8px;
+        }
+
+        .progress-message p {
+            font-size: 13px;
+
+            color: #8e94a1;
+
+            line-height: 1.5;
+        }
+
+        /* ============================
+           CALENDAR
+        ============================ */
+
+        .calendar-panel {
+            margin-top: 15px;
+
+            padding: 18px;
+        }
+
+        .calendar-controls {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+        .calendar-controls button {
+            width: 36px;
+            height: 36px;
+
+            border-radius: 9px;
+
+            border: 1px solid var(--border);
+
+            background: rgba(255,255,255,.03);
+
+            color: white;
+        }
+
+        .month-name {
+            font-size: 13px;
+
+            color: #c1c5cd;
+
+            margin-right: 7px;
+        }
+
+        .calendar {
+            display: grid;
+
+            grid-template-columns:
+                repeat(7, minmax(0,1fr));
+
+            gap: 6px;
+        }
+
+        .weekday {
+            text-align: center;
+
+            color: #737a87;
+
+            padding: 8px 0;
+
+            font-size: 11px;
+        }
+
+        .calendar-day {
+            min-height: 61px;
+
+            padding: 7px;
+
+            border: 1px solid rgba(255,255,255,.055);
+
+            border-radius: 9px;
+
+            background: rgba(0,0,0,.13);
+
+            transition: .2s;
+
+            position: relative;
+        }
+
+        .calendar-day:not(.blank):hover {
+            border-color: rgba(255,255,255,.25);
+
+            transform: translateY(-1px);
+        }
+
+        .calendar-day.today {
+            border-color: white;
+
+            box-shadow:
+                0 0 15px rgba(255,255,255,.09);
+        }
+
+        .calendar-day.blank {
+            border-color: transparent;
+
+            background: transparent;
+        }
+
+        .calendar-number {
+            font-size: 12px;
+        }
+
+        .calendar-percent {
+            position: absolute;
+
+            bottom: 6px;
+            left: 7px;
+
+            color: #8e95a1;
+
+            font-size: 10px;
+        }
+
+        .calendar-percent.complete {
+            color: var(--green);
+        }
+
+        /* ============================
+           ANALYTICS
+        ============================ */
+
+        .analytics-cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3,1fr);
+
+            gap: 12px;
+
+            margin-bottom: 15px;
+        }
+
+        .analytics-card {
+            padding: 20px;
+        }
+
+        .analytics-card span {
+            color: #818795;
+
+            font-size: 12px;
+        }
+
+        .analytics-card strong {
+            display: block;
+
+            font-size: 30px;
+
+            margin-top: 9px;
+        }
+
+        .chart-panel {
+            padding: 20px;
+        }
+
+        .chart {
+            height: 220px;
+
+            display: flex;
+
+            align-items: flex-end;
+
+            gap: 9px;
+
+            padding-top: 20px;
+        }
+
+        .chart-column {
+            flex: 1;
+
+            height: 100%;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: flex-end;
+
+            gap: 7px;
+        }
+
+        .bar-holder {
+            width: 100%;
+            height: 180px;
+
+            display: flex;
+
+            align-items: flex-end;
+        }
+
+        .bar {
+            width: 100%;
+
+            min-height: 3px;
+
+            border-radius: 6px 6px 2px 2px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    white,
+                    #494f5b
+                );
+        }
+
+        .bar-label {
+            color: #646b78;
+
+            font-size: 9px;
+        }
+
+        /* ============================
+           PROFILE / SETTINGS
+        ============================ */
+
+        .profile-card,
+        .settings-card {
+            max-width: 620px;
+
+            padding: 25px;
+        }
+
+        .profile-top {
+            display: flex;
+
+            align-items: center;
+
+            gap: 18px;
+
+            margin-bottom: 28px;
+        }
+
+        .avatar {
+            width: 75px;
+            height: 75px;
+
+            border-radius: 50%;
+
+            display: grid;
+            place-items: center;
+
+            border: 1px solid rgba(255,255,255,.16);
+
+            background:
+                radial-gradient(
+                    circle,
+                    #242834,
+                    #0a0b0e
+                );
+
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+        .profile-name {
+            font-size: 25px;
+
+            font-weight: 850;
+        }
+
+        .profile-form {
+            display: flex;
+
+            gap: 8px;
+        }
+
+        .input {
+            flex: 1;
+
+            height: 45px;
+
+            border: 1px solid var(--border);
+
+            background: rgba(0,0,0,.22);
+
+            border-radius: 10px;
+
+            color: white;
+
+            padding: 0 13px;
+
+            outline: none;
+        }
+
+        .input:focus {
+            border-color: rgba(255,255,255,.35);
+        }
+
+        .primary {
+            border: none;
+
+            border-radius: 10px;
+
+            padding: 0 17px;
+
+            background: white;
+
+            color: black;
+
+            font-weight: 700;
+        }
+
+        .danger {
+            border: 1px solid rgba(255,95,95,.25);
+
+            background: rgba(255,95,95,.07);
+
+            color: #ff7777;
+
+            border-radius: 10px;
+
+            padding: 12px 16px;
+        }
+
+        /* ============================
+           CHARACTER PANEL
+        ============================ */
+
+        .character-panel {
+            grid-column: 3;
+
+            width: 330px;
+
+            position: fixed;
+
+            right: 0;
+            top: 0;
+            bottom: 0;
+
+            overflow: hidden;
+
+            border-left: 1px solid rgba(255,255,255,.055);
+
+            background:
+                radial-gradient(
+                    circle at 50% 45%,
+                    rgba(111,99,255,.16),
+                    transparent 40%
+                ),
+                linear-gradient(
+                    180deg,
+                    rgba(15,17,24,.5),
+                    rgba(4,5,7,.92)
+                );
+        }
+
+        .character-header {
+            position: absolute;
+
+            top: 30px;
+            left: 25px;
+            right: 25px;
+
+            z-index: 15;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .character-name {
+            font-weight: 800;
+        }
+
+        .character-status {
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            color: #b8bdc7;
+
+            font-size: 11px;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--green);
+
+            box-shadow:
+                0 0 10px var(--green);
+        }
+
+        .character-scene {
+            position: absolute;
+
+            left: 0;
+            right: 0;
+            top: 70px;
+            bottom: 115px;
+
+            perspective: 1000px;
+        }
+
+        .character-glow {
+            position: absolute;
+
+            left: 50%;
+            bottom: 15px;
+
+            width: 230px;
+            height: 40px;
+
+            transform: translateX(-50%);
+
+            border: 2px solid rgba(255,255,255,.7);
+
+            border-radius: 50%;
+
+            filter:
+                blur(.3px)
+                drop-shadow(
+                    0 0 11px rgba(139,130,255,.8)
+                );
+
+            opacity: .85;
+
+            animation:
+                platformGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes platformGlow {
+            0%,
+            100% {
+                opacity: .55;
+                transform:
+                    translateX(-50%)
+                    scale(1);
+            }
+
+            50% {
+                opacity: 1;
+
+                transform:
+                    translateX(-50%)
+                    scale(1.06);
+            }
+        }
+
+        .mist {
+            position: absolute;
+
+            width: 260px;
+            height: 260px;
+
+            bottom: 5px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            background:
+                radial-gradient(
+                    ellipse,
+                    rgba(113,102,255,.17),
+                    transparent 60%
+                );
+
+            filter: blur(25px);
+
+            animation:
+                mist 7s ease-in-out infinite alternate;
+        }
+
+        @keyframes mist {
+            from {
+                transform:
+                    translateX(-55%)
+                    scale(.9);
+            }
+
+            to {
+                transform:
+                    translateX(-45%)
+                    scale(1.15);
+            }
+        }
+
+        /*
+           =============================
+           CSS CHARACTER
+           =============================
+        */
+
+        .character {
+            position: absolute;
+
+            left: 50%;
+            bottom: 28px;
+
+            width: 180px;
+            height: 480px;
+
+            transform:
+                translateX(-50%)
+                rotateY(-7deg);
+
+            transform-style: preserve-3d;
+
+            transform-origin:
+                center
+                bottom;
+
+            animation:
+                breathe 4s ease-in-out infinite,
+                idleTurn 14s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%,
+            100% {
+                margin-bottom: 0;
+            }
+
+            50% {
+                margin-bottom: 5px;
+            }
+        }
+
+        @keyframes idleTurn {
+            0%,
+            18% {
+                transform:
+                    translateX(-50%)
+                    rotateY(-8deg)
+                    rotateZ(0deg);
+            }
+
+            36% {
+                transform:
+                    translateX(-50%)
+                    rotateY(16deg)
+                    rotateZ(.6deg);
+            }
+
+            55% {
+                transform:
+                    translateX(-50%)
+                    rotateY(4deg)
+                    rotateZ(0deg);
+            }
+
+            78% {
+                transform:
+                    translateX(-50%)
+                    rotateY(-18deg)
+                    rotateZ(-.5deg);
+            }
+
+            100% {
+                transform:
+                    translateX(-50%)
+                    rotateY(-8deg)
+                    rotateZ(0deg);
+            }
+        }
+
+        .hood {
+            position: absolute;
+
+            top: 10px;
+            left: 48px;
+
+            width: 88px;
+            height: 105px;
+
+            border-radius:
+                45px
+                45px
+                33px
+                33px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #252833,
+                    #090a0d 62%,
+                    #030304
+                );
+
+            box-shadow:
+                inset 6px 3px 8px rgba(255,255,255,.05),
+                0 10px 25px rgba(0,0,0,.8);
+
+            z-index: 10;
+        }
+
+        .hood::before {
+            content: "";
+
+            position: absolute;
+
+            left: 14px;
+            top: 19px;
+
+            width: 60px;
+            height: 70px;
+
+            border-radius:
+                35px
+                35px
+                28px
+                28px;
+
+            background:
+                radial-gradient(
+                    circle at 50% 35%,
+                    #090a0c,
+                    #000 65%
+                );
+
+            box-shadow:
+                inset 0 0 20px black;
+        }
+
+        .hood::after {
+            content: "";
+
+            position: absolute;
+
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+
+            height: 27px;
+
+            border-radius: 50%;
+
+            background: #090a0c;
+
+            filter: blur(1px);
+        }
+
+        .torso {
+            position: absolute;
+
+            top: 91px;
+            left: 35px;
+
+            width: 112px;
+            height: 185px;
+
+            border-radius:
+                28px
+                28px
+                19px
+                19px;
+
+            background:
+                linear-gradient(
+                    110deg,
+                    #1d2027,
+                    #08090c 68%
+                );
+
+            box-shadow:
+                inset 8px 0 15px rgba(255,255,255,.025),
+                0 20px 30px rgba(0,0,0,.55);
+
+            z-index: 5;
+        }
+
+        .torso::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: 52px;
+
+            width: 2px;
+            height: 120px;
+
+            background:
+                linear-gradient(
+                    #575b64,
+                    transparent
+                );
+
+            opacity: .6;
+        }
+
+        .pocket {
+            position: absolute;
+
+            left: 17px;
+            right: 17px;
+            bottom: 20px;
+
+            height: 48px;
+
+            border-radius:
+                8px
+                8px
+                15px
+                15px;
+
+            border-top:
+                1px solid rgba(255,255,255,.055);
+        }
+
+        .arm {
+            position: absolute;
+
+            top: 104px;
+
+            width: 43px;
+            height: 181px;
+
+            border-radius: 24px;
+
+            background:
+                linear-gradient(
+                    120deg,
+                    #1b1e25,
+                    #060709
+                );
+
+            z-index: 4;
+        }
+
+        .arm.left {
+            left: 14px;
+
+            transform:
+                rotate(9deg);
+        }
+
+        .arm.right {
+            right: 12px;
+
+            transform:
+                rotate(-8deg);
+        }
+
+        .hand {
+            position: absolute;
+
+            width: 32px;
+            height: 32px;
+
+            border-radius: 45%;
+
+            background: #050506;
+
+            bottom: -7px;
+            left: 5px;
+        }
+
+        .legs {
+            position: absolute;
+
+            top: 258px;
+            left: 43px;
+
+            width: 96px;
+            height: 178px;
+
+            z-index: 3;
+        }
+
+        .leg {
+            position: absolute;
+
+            top: 0;
+
+            width: 44px;
+            height: 180px;
+
+            background:
+                linear-gradient(
+                    100deg,
+                    #17191f,
+                    #050607
+                );
+
+            border-radius:
+                13px
+                13px
+                17px
+                17px;
+        }
+
+        .leg.left {
+            left: 0;
+
+            transform:
+                rotate(1.5deg);
+        }
+
+        .leg.right {
+            right: 0;
+
+            transform:
+                rotate(-1.5deg);
+        }
+
+        .shoe {
+            position: absolute;
+
+            bottom: -17px;
+
+            width: 59px;
+            height: 27px;
+
+            border-radius:
+                10px
+                15px
+                6px
+                6px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #14171d,
+                    #030304
+                );
+
+            border-bottom:
+                3px solid #272b34;
+        }
+
+        .leg.left .shoe {
+            left: -10px;
+        }
+
+        .leg.right .shoe {
+            right: -10px;
+        }
+
+        .character-shadow {
+            position: absolute;
+
+            bottom: 17px;
+            left: 50%;
+
+            width: 135px;
+            height: 23px;
+
+            transform: translateX(-50%);
+
+            background: rgba(0,0,0,.85);
+
+            border-radius: 50%;
+
+            filter: blur(11px);
+        }
+
+        /* ENERGY STATES */
+
+        .character.state-low {
+            filter:
+                brightness(.72);
+        }
+
+        .character.state-medium {
+            filter:
+                brightness(.86);
+        }
+
+        .character.state-high {
+            filter:
+                brightness(1.02)
+                drop-shadow(
+                    0 0 9px rgba(255,255,255,.08)
+                );
+        }
+
+        .character.state-perfect {
+            animation:
+                breathe 2.5s ease-in-out infinite,
+                victory 4s ease-in-out infinite;
+        }
+
+        @keyframes victory {
+            0%,
+            100% {
+                transform:
+                    translateX(-50%)
+                    translateY(0)
+                    rotateY(0deg);
+            }
+
+            50% {
+                transform:
+                    translateX(-50%)
+                    translateY(-7px)
+                    rotateY(10deg);
+            }
+        }
+
+        .character-footer {
+            position: absolute;
+
+            left: 22px;
+            right: 22px;
+            bottom: 25px;
+
+            padding: 15px;
+
+            border-radius: 14px;
+
+            border: 1px solid var(--border);
+
+            background:
+                rgba(8,9,13,.76);
+
+            backdrop-filter: blur(15px);
+        }
+
+        .character-footer small {
+            color: #777e8b;
+
+            display: block;
+
+            margin-bottom: 7px;
+        }
+
+        .character-footer p {
+            color: #c5c9d1;
+
+            font-size: 12px;
+
+            line-height: 1.55;
+        }
+
+        /* ============================
+           MODAL
+        ============================ */
+
+        .modal {
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 100;
+
+            background:
+                rgba(0,0,0,.7);
+
+            backdrop-filter: blur(10px);
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-box {
+            width: min(500px,100%);
+
+            padding: 22px;
+
+            border-radius: 18px;
+
+            border: 1px solid rgba(255,255,255,.11);
+
+            background: #0c0e13;
+
+            box-shadow:
+                0 30px 80px rgba(0,0,0,.7);
+        }
+
+        .modal-title {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            width: 33px;
+            height: 33px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+
+            color: white;
+
+            background: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+
+            color: #979daa;
+
+            font-size: 12px;
+
+            margin-bottom: 7px;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 44px;
+
+            border-radius: 9px;
+
+            border: 1px solid var(--border);
+
+            background: #08090c;
+
+            color: white;
+
+            padding: 0 12px;
+
+            outline: none;
+        }
+
+        .repeat-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2,1fr);
+
+            gap: 7px;
+        }
+
+        .radio-option {
+            border: 1px solid var(--border);
+
+            border-radius: 9px;
+
+            padding: 10px;
+
+            color: #aaaeba;
+
+            font-size: 12px;
+        }
+
+        .days {
+            display: none;
+
+            grid-template-columns:
+                repeat(7,1fr);
+
+            gap: 5px;
+
+            margin-top: 10px;
+        }
+
+        .days.visible {
+            display: grid;
+        }
+
+        .day-option {
+            position: relative;
+        }
+
+        .day-option input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .day-option span {
+            height: 35px;
+
+            border-radius: 7px;
+
+            border: 1px solid var(--border);
+
+            display: grid;
+            place-items: center;
+
+            color: #858b97;
+
+            font-size: 11px;
+        }
+
+        .day-option input:checked + span {
+            background: white;
+
+            color: black;
+        }
+
+        .modal-actions {
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 8px;
+
+            margin-top: 20px;
+        }
+
+        .secondary {
+            border: 1px solid var(--border);
+
+            background: transparent;
+
+            color: white;
+
+            padding: 10px 15px;
+
+            border-radius: 9px;
+        }
+
+        /* ============================
+           TOAST
+        ============================ */
+
+        .toast {
+            position: fixed;
+
+            left: 50%;
+            bottom: 25px;
+
+            transform:
+                translate(-50%, 30px);
+
+            padding: 11px 16px;
+
+            border-radius: 10px;
+
+            background: white;
+
+            color: black;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            transition: .3s;
+
+            z-index: 200;
+        }
+
+        .toast.show {
+            opacity: 1;
+
+            transform:
+                translate(-50%,0);
+        }
+
+        /* ============================
+           RESPONSIVE
+        ============================ */
+
+        @media(max-width: 1150px) {
+
+            .app {
+                grid-template-columns:
+                    200px
+                    minmax(0,1fr);
+            }
+
+            .sidebar {
+                width: 200px;
+            }
+
+            .main {
+                margin-left: 200px;
+            }
+
+            .character-panel {
+                display: none;
+            }
+        }
+
+        @media(max-width: 760px) {
+
+            .app {
+                display: block;
+            }
+
+            .sidebar {
+                width: 230px;
+
+                transform:
+                    translateX(-100%);
+
+                transition: .3s;
+            }
+
+            .sidebar.open {
+                transform:
+                    translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+
+                padding: 20px 14px 50px;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .stats {
+                grid-template-columns:
+                    repeat(2,1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .analytics-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 32px;
+            }
+        }
+
+    </style>
 </head>
 
 <body>
 
-<aside class="sidebar" id="sidebar">
+<div class="app">
 
-    <div class="logo">ASCEND</div>
+    <!-- SIDEBAR -->
 
-    <nav class="nav">
+    <aside class="sidebar" id="sidebar">
 
-        <button class="nav-button active" data-page="dashboard">
-            Главная
-        </button>
-
-        <button class="nav-button" data-page="calendar">
-            Календарь
-        </button>
-
-        <button class="nav-button" data-page="tasks">
-            Задачи
-        </button>
-
-        <button class="nav-button" data-page="analytics">
-            Аналитика
-        </button>
-
-        <button class="nav-button" data-page="profile">
-            Профиль
-        </button>
-
-        <button class="nav-button" data-page="settings">
-            Настройки
-        </button>
-
-    </nav>
-
-    <div class="sidebar-progress">
-
-        <div class="sidebar-progress-title">
-            СЕГОДНЯ
+        <div class="logo">
+            ASCEND<span>.</span>
         </div>
 
-        <div class="sidebar-progress-value">
-            <span id="sidebarPercent">0</span>%
-        </div>
+        <nav class="nav">
 
-        <div class="progress-line">
-            <div class="progress-line-fill" id="sidebarFill"></div>
-        </div>
-
-        <div class="sidebar-score">
-            Очки: <span id="sidebarScore">0</span>
-        </div>
-
-    </div>
-
-</aside>
-
-
-<main class="main">
-
-    <div class="topbar">
-
-        <button class="icon-button mobile-menu" id="mobileMenu">
-            ☰
-        </button>
-
-        <div class="date" id="currentDate"></div>
-
-        <div class="topbar-right">
-
-            <button class="icon-button" id="notification">
-                🔔
+            <button
+                class="nav-button active"
+                data-page="dashboard"
+                type="button"
+            >
+                <span class="nav-icon">⌂</span>
+                Главная
             </button>
 
-        </div>
+            <button
+                class="nav-button"
+                data-page="calendar"
+                type="button"
+            >
+                <span class="nav-icon">▣</span>
+                Календарь
+            </button>
 
-    </div>
+            <button
+                class="nav-button"
+                data-page="tasks"
+                type="button"
+            >
+                <span class="nav-icon">✓</span>
+                Задачи
+            </button>
 
+            <button
+                class="nav-button"
+                data-page="analytics"
+                type="button"
+            >
+                <span class="nav-icon">▥</span>
+                Аналитика
+            </button>
 
-    <!-- ГЛАВНАЯ -->
+            <button
+                class="nav-button"
+                data-page="profile"
+                type="button"
+            >
+                <span class="nav-icon">○</span>
+                Профиль
+            </button>
 
-    <section class="page active" id="page-dashboard">
+            <button
+                class="nav-button"
+                data-page="settings"
+                type="button"
+            >
+                <span class="nav-icon">⚙</span>
+                Настройки
+            </button>
 
-        <h1 class="page-title">
-            Главная
-        </h1>
+        </nav>
 
-        <p class="page-subtitle">
-            Строй себя каждый день.
-        </p>
+        <div class="sidebar-progress">
 
-
-        <div class="stats-grid">
-
-            <div class="stat-card">
-                <div class="stat-label">
-                    Прогресс за день
-                </div>
-
-                <div class="stat-value">
-                    <span id="dailyPercent">0</span>%
-                </div>
+            <div class="sidebar-progress-title">
+                Сегодня
             </div>
 
+            <div
+                class="mini-circle"
+                id="sidebarFill"
+            >
+                <span id="sidebarPercent">0%</span>
+            </div>
 
-            <div class="stat-card">
-                <div class="stat-label">
+            <div
+                class="sidebar-score"
+                id="sidebarScore"
+            >
+                Очки: 0
+            </div>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <button
+                class="mobile-menu"
+                id="mobileMenu"
+                type="button"
+            >
+                ☰
+            </button>
+
+            <div
+                class="date"
+                id="currentDate"
+            ></div>
+
+            <button
+                class="notification"
+                id="notification"
+                type="button"
+            >
+                ◉
+            </button>
+
+        </header>
+
+        <!-- DASHBOARD -->
+
+        <section
+            class="page active"
+            id="page-dashboard"
+        >
+
+            <div class="page-header">
+
+                <h1 class="page-title">
+                    Главная
+                </h1>
+
+                <p class="page-subtitle">
+                    Строй себя каждый день.
+                </p>
+
+            </div>
+
+            <div class="stats">
+
+                <div class="stat panel">
+
+                    <div class="stat-label">
+                        Прогресс дня
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="dailyPercent"
+                    >
+                        0%
+                    </div>
+
+                    <div class="stat-decoration">
+                        ◯
+                    </div>
+
+                </div>
+
+                <div class="stat panel">
+
+                    <div class="stat-label">
+                        Задачи
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="taskCount"
+                    >
+                        0 / 0
+                    </div>
+
+                    <div class="stat-decoration">
+                        ✓
+                    </div>
+
+                </div>
+
+                <div class="stat panel">
+
+                    <div class="stat-label">
+                        Серия
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="streak"
+                    >
+                        0 дней
+                    </div>
+
+                    <div class="stat-decoration">
+                        ◇
+                    </div>
+
+                </div>
+
+                <div class="stat panel">
+
+                    <div class="stat-label">
+                        Очки
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="score"
+                    >
+                        0
+                    </div>
+
+                    <div class="stat-decoration">
+                        ★
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="dashboard-grid">
+
+                <div class="tasks-panel panel">
+
+                    <div class="panel-header">
+
+                        <div class="panel-title">
+                            Задачи на сегодня
+                        </div>
+
+                        <button
+                            class="add-button"
+                            id="addTask"
+                            type="button"
+                        >
+                            + Добавить задачу
+                        </button>
+
+                    </div>
+
+                    <div
+                        class="tasks-list"
+                        id="todayTasks"
+                    ></div>
+
+                </div>
+
+                <div class="progress-panel panel">
+
+                    <div class="panel-title">
+                        Прогресс
+                    </div>
+
+                    <div class="progress-content">
+
+                        <div
+                            class="progress-circle"
+                            id="progressCircle"
+                        >
+                            <span id="circleNumber">
+                                0%
+                            </span>
+                        </div>
+
+                        <div
+                            class="progress-message"
+                            id="progressMessage"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="calendar-panel panel">
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+                        Календарь
+                    </div>
+
+                    <div class="calendar-controls">
+
+                        <span
+                            class="month-name"
+                            id="monthName"
+                        ></span>
+
+                        <button
+                            id="prevMonth"
+                            type="button"
+                        >
+                            ‹
+                        </button>
+
+                        <button
+                            id="nextMonth"
+                            type="button"
+                        >
+                            ›
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div
+                    class="calendar"
+                    id="calendar"
+                ></div>
+
+            </div>
+
+        </section>
+
+        <!-- CALENDAR PAGE -->
+
+        <section
+            class="page"
+            id="page-calendar"
+        >
+
+            <div class="page-header">
+
+                <h1 class="page-title">
+                    Календарь
+                </h1>
+
+                <p class="page-subtitle">
+                    Следи за своей дисциплиной каждый день.
+                </p>
+
+            </div>
+
+            <div class="calendar-panel panel">
+
+                <div class="panel-header">
+
+                    <div
+                        class="panel-title"
+                        id="monthName2"
+                    >
+                        Календарь
+                    </div>
+
+                    <div class="calendar-controls">
+
+                        <button
+                            id="prevMonth2"
+                            type="button"
+                        >
+                            ‹
+                        </button>
+
+                        <button
+                            id="nextMonth2"
+                            type="button"
+                        >
+                            ›
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div
+                    class="calendar"
+                    id="calendar2"
+                ></div>
+
+            </div>
+
+        </section>
+
+        <!-- TASKS PAGE -->
+
+        <section
+            class="page"
+            id="page-tasks"
+        >
+
+            <div class="page-header">
+
+                <h1 class="page-title">
                     Задачи
-                </div>
+                </h1>
 
-                <div class="stat-value">
-                    <span id="taskCount">0</span>
-                </div>
-            </div>
-
-
-            <div class="stat-card">
-                <div class="stat-label">
-                    Серия
-                </div>
-
-                <div class="stat-value">
-                    <span id="streak">0</span>
-                </div>
-            </div>
-
-
-            <div class="stat-card">
-                <div class="stat-label">
-                    Очки
-                </div>
-
-                <div class="stat-value">
-                    <span id="score">0</span>
-                </div>
-            </div>
-
-        </div>
-
-
-        <div class="section">
-
-            <div class="section-header">
-
-                <div class="section-title">
-                    Задачи на сегодня
-                </div>
-
-                <button class="primary-button" id="addTask">
-                    + Добавить задачу
-                </button>
+                <p class="page-subtitle">
+                    Система строится из выполненных действий.
+                </p>
 
             </div>
 
-            <div class="tasks-list" id="todayTasks"></div>
+            <div class="tasks-panel panel">
 
-        </div>
+                <div class="panel-header">
 
+                    <div class="panel-title">
+                        Все задачи
+                    </div>
 
-        <div class="section progress-section">
-
-            <div class="progress-circle" id="progressCircle">
-
-                <div class="circle-number" id="circleNumber">
-                    0%
-                </div>
-
-            </div>
-
-            <div>
-
-                <div class="progress-message" id="progressMessage">
-                    Начни свой день.
-                </div>
-
-                <div class="progress-description">
-                    Выполняй задачи и двигайся вперёд.
-                    Каждая выполненная задача увеличивает твой прогресс.
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- КАЛЕНДАРЬ -->
-
-    <section class="page" id="page-calendar">
-
-        <h1 class="page-title">
-            Календарь
-        </h1>
-
-        <p class="page-subtitle">
-            Твоя дисциплина день за днём.
-        </p>
-
-        <div class="section">
-
-            <div class="calendar-head">
-
-                <div class="month-name" id="monthName"></div>
-
-                <div class="calendar-controls">
-
-                    <button class="calendar-button" id="prevMonth">
-                        ‹
-                    </button>
-
-                    <button class="calendar-button" id="nextMonth">
-                        ›
+                    <button
+                        class="add-button"
+                        id="addTask2"
+                        type="button"
+                    >
+                        + Добавить задачу
                     </button>
 
                 </div>
 
-            </div>
-
-            <div class="calendar" id="calendar"></div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ЗАДАЧИ -->
-
-    <section class="page" id="page-tasks">
-
-        <h1 class="page-title">
-            Задачи
-        </h1>
-
-        <p class="page-subtitle">
-            Всё, что тебе нужно выполнить.
-        </p>
-
-        <div class="section">
-
-            <div class="section-header">
-
-                <div class="section-title">
-                    Все задачи
-                </div>
-
-                <button class="primary-button" id="addTask2">
-                    + Добавить задачу
-                </button>
+                <div
+                    class="tasks-list"
+                    id="allTasks"
+                ></div>
 
             </div>
 
-            <div class="tasks-list" id="allTasks"></div>
+        </section>
 
-        </div>
+        <!-- ANALYTICS -->
 
-    </section>
+        <section
+            class="page"
+            id="page-analytics"
+        >
 
+            <div class="page-header">
 
-    <!-- АНАЛИТИКА -->
+                <h1 class="page-title">
+                    Аналитика
+                </h1>
 
-    <section class="page" id="page-analytics">
+                <p class="page-subtitle">
+                    Цифры показывают реальный прогресс.
+                </p>
 
-        <h1 class="page-title">
-            Аналитика
-        </h1>
+            </div>
 
-        <p class="page-subtitle">
-            Измеряй свою дисциплину.
-        </p>
+            <div class="analytics-cards">
 
-        <div class="section">
-
-            <div class="analytics-grid">
-
-                <div class="analytics-card">
+                <div class="analytics-card panel">
 
                     <span>
                         Средний результат
@@ -1134,8 +2366,7 @@ button {
 
                 </div>
 
-
-                <div class="analytics-card">
+                <div class="analytics-card panel">
 
                     <span>
                         Лучший день
@@ -1147,8 +2378,7 @@ button {
 
                 </div>
 
-
-                <div class="analytics-card">
+                <div class="analytics-card panel">
 
                     <span>
                         Выполнено всего
@@ -1162,374 +2392,450 @@ button {
 
             </div>
 
-            <div class="chart" id="chart"></div>
+            <div class="chart-panel panel">
 
-        </div>
-
-    </section>
-
-
-    <!-- ПРОФИЛЬ -->
-
-    <section class="page" id="page-profile">
-
-        <h1 class="page-title">
-            Профиль
-        </h1>
-
-        <p class="page-subtitle">
-            Твоя личность внутри ASCEND.
-        </p>
-
-        <div class="section">
-
-            <div class="profile-box">
-
-                <div class="avatar" id="avatar">
-                    A
+                <div class="panel-title">
+                    Последние 30 дней
                 </div>
 
-                <div>
+                <div
+                    class="chart"
+                    id="chart"
+                ></div>
 
-                    <div class="profile-name" id="profileName">
-                        ASCENDER
+            </div>
+
+        </section>
+
+        <!-- PROFILE -->
+
+        <section
+            class="page"
+            id="page-profile"
+        >
+
+            <div class="page-header">
+
+                <h1 class="page-title">
+                    Профиль
+                </h1>
+
+                <p class="page-subtitle">
+                    Твой путь в ASCEND.
+                </p>
+
+            </div>
+
+            <div class="profile-card panel">
+
+                <div class="profile-top">
+
+                    <div
+                        class="avatar"
+                        id="avatar"
+                    >
+                        A
                     </div>
 
-                    <div class="profile-label">
-                        УЧАСТНИК ASCEND
+                    <div>
+
+                        <div
+                            class="profile-name"
+                            id="profileName"
+                        >
+                            ASCENDER
+                        </div>
+
+                        <div
+                            style="
+                                color:#777e8b;
+                                margin-top:5px;
+                            "
+                        >
+                            Очки:
+                            <span id="profileScore">0</span>
+
+                            ·
+
+                            Серия:
+                            <span id="profileStreak">0</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        Никнейм
+                    </label>
+
+                    <div class="profile-form">
+
+                        <input
+                            class="input"
+                            id="nameInput"
+                            maxlength="24"
+                            placeholder="Введите ник"
+                        >
+
+                        <button
+                            class="primary"
+                            id="saveName"
+                            type="button"
+                        >
+                            Сохранить
+                        </button>
+
                     </div>
 
                 </div>
 
             </div>
 
+        </section>
 
-            <div class="form-group">
+        <!-- SETTINGS -->
 
-                <label class="form-label">
-                    Никнейм
-                </label>
+        <section
+            class="page"
+            id="page-settings"
+        >
 
-                <div class="input-row">
+            <div class="page-header">
 
-                    <input
-                        class="input"
-                        id="nameInput"
-                        type="text"
-                        maxlength="24"
-                        placeholder="Введи свой ник">
+                <h1 class="page-title">
+                    Настройки
+                </h1>
 
-                    <button class="primary-button" id="saveName">
-                        Сохранить
-                    </button>
-
-                </div>
+                <p class="page-subtitle">
+                    Управление твоими данными ASCEND.
+                </p>
 
             </div>
 
+            <div class="settings-card panel">
 
-            <div class="analytics-grid">
-
-                <div class="analytics-card">
-
-                    <span>
-                        Очки
-                    </span>
-
-                    <strong id="profileScore">
-                        0
-                    </strong>
-
+                <div
+                    class="panel-title"
+                    style="margin-bottom:10px"
+                >
+                    Сброс прогресса
                 </div>
 
-                <div class="analytics-card">
+                <p
+                    style="
+                        color:#7e8490;
+                        line-height:1.6;
+                        margin-bottom:20px;
+                    "
+                >
+                    Будут удалены все задачи,
+                    статистика и сохранённый никнейм.
+                </p>
 
-                    <span>
-                        Серия
-                    </span>
-
-                    <strong id="profileStreak">
-                        0
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- НАСТРОЙКИ -->
-
-    <section class="page" id="page-settings">
-
-        <h1 class="page-title">
-            Настройки
-        </h1>
-
-        <p class="page-subtitle">
-            Управление данными ASCEND.
-        </p>
-
-        <div class="section">
-
-            <div class="section-header">
-
-                <div>
-
-                    <div class="section-title">
-                        Сброс данных
-                    </div>
-
-                    <p class="page-subtitle" style="margin:8px 0 0;">
-                        Удалить все задачи и прогресс.
-                    </p>
-
-                </div>
-
-                <button class="danger-button" id="reset">
-                    Сбросить всё
+                <button
+                    class="danger"
+                    id="reset"
+                    type="button"
+                >
+                    Удалить весь прогресс
                 </button>
 
             </div>
 
+        </section>
+
+    </main>
+
+    <!-- CHARACTER -->
+
+    <aside class="character-panel">
+
+        <div class="character-header">
+
+            <div
+                class="character-name"
+                id="characterName"
+            >
+                ASCENDER
+            </div>
+
+            <div class="character-status">
+
+                <span class="status-dot"></span>
+
+                Активен
+
+            </div>
+
         </div>
 
-    </section>
+        <div class="character-scene">
 
-</main>
+            <div class="mist"></div>
 
+            <div class="character-shadow"></div>
 
-<!-- ПЕРСОНАЖ -->
+            <div
+                class="character"
+                id="character"
+            >
 
-<aside class="character-panel">
+                <div class="hood"></div>
 
-    <div class="character">
+                <div class="torso">
 
-        <div class="hair"></div>
+                    <div class="pocket"></div>
 
-        <div class="head">
+                </div>
 
-            <div class="eye left"></div>
-            <div class="eye right"></div>
+                <div class="arm left">
+                    <div class="hand"></div>
+                </div>
+
+                <div class="arm right">
+                    <div class="hand"></div>
+                </div>
+
+                <div class="legs">
+
+                    <div class="leg left">
+                        <div class="shoe"></div>
+                    </div>
+
+                    <div class="leg right">
+                        <div class="shoe"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="character-glow"></div>
 
         </div>
 
-        <div class="body"></div>
+        <div class="character-footer">
 
-        <div class="arm left"></div>
-        <div class="arm right"></div>
+            <small>
+                ASCEND
+            </small>
 
-    </div>
+            <p id="characterMessage">
+                Начни день. Сделай первое действие.
+            </p>
 
-    <div class="character-name" id="characterName">
-        ASCENDER
-    </div>
+        </div>
 
-    <div class="character-message" id="characterMessage">
-        Сосредоточься.
-    </div>
+    </aside>
 
-</aside>
+</div>
 
+<!-- ADD TASK MODAL -->
 
-<!-- ОКНО ДОБАВЛЕНИЯ ЗАДАЧИ -->
-
-<div class="modal" id="modal">
+<div
+    class="modal"
+    id="modal"
+>
 
     <div class="modal-box">
 
-        <div class="modal-header">
+        <div class="modal-title">
 
-            <div class="modal-title">
+            <h2>
                 Новая задача
-            </div>
+            </h2>
 
-            <button type="button" class="close" id="closeModal">
+            <button
+                class="close-modal"
+                id="closeModal"
+                type="button"
+            >
                 ×
             </button>
 
         </div>
 
-
         <form id="taskForm">
 
             <div class="form-group">
 
-                <label class="form-label">
-                    Задача
+                <label>
+                    Название задачи
                 </label>
 
                 <input
                     class="form-control"
                     id="taskTitle"
-                    type="text"
-                    placeholder="Что нужно сделать?"
-                    maxlength="100"
-                    required>
+                    maxlength="60"
+                    required
+                    placeholder="Например: Тренировка"
+                >
 
             </div>
 
-
             <div class="form-group">
 
-                <label class="form-label">
+                <label>
                     Категория
                 </label>
 
-                <select class="form-control" id="category">
-
-                    <option value="Дисциплина">
-                        Дисциплина
-                    </option>
-
-                    <option value="Работа">
-                        Работа
-                    </option>
-
-                    <option value="Учёба">
-                        Учёба
-                    </option>
-
-                    <option value="Спорт">
-                        Спорт
-                    </option>
-
-                    <option value="Личное">
-                        Личное
-                    </option>
-
+                <select
+                    class="form-control"
+                    id="category"
+                >
+                    <option>Дисциплина</option>
+                    <option>Спорт</option>
+                    <option>Работа</option>
+                    <option>Учёба</option>
+                    <option>Личное</option>
+                    <option>Другое</option>
                 </select>
 
             </div>
 
-
             <div class="form-group">
 
-                <label class="form-label">
+                <label>
                     Приоритет
                 </label>
 
-                <select class="form-control" id="priority">
-
-                    <option value="Обычный">
+                <select
+                    class="form-control"
+                    id="priority"
+                >
+                    <option value="normal">
                         Обычный
                     </option>
 
-                    <option value="Высокий">
+                    <option value="high">
                         Высокий
                     </option>
-
-                    <option value="Критический">
-                        Критический
-                    </option>
-
                 </select>
 
             </div>
 
-
             <div class="form-group">
 
-                <label class="form-label">
-                    Повторение
+                <label>
+                    Повтор
                 </label>
 
-                <div class="repeat-options">
+                <div class="repeat-grid">
 
-                    <label class="repeat-option">
+                    <label class="radio-option">
+
                         <input
                             type="radio"
                             name="repeat"
                             value="once"
-                            checked>
+                            checked
+                        >
+
                         Один раз
+
                     </label>
 
-                    <label class="repeat-option">
+                    <label class="radio-option">
+
                         <input
                             type="radio"
                             name="repeat"
-                            value="daily">
+                            value="daily"
+                        >
+
                         Каждый день
+
                     </label>
 
-                    <label class="repeat-option">
+                    <label class="radio-option">
+
                         <input
                             type="radio"
                             name="repeat"
-                            value="weekdays">
-                        По будням
+                            value="weekdays"
+                        >
+
+                        Будни
+
                     </label>
 
-                    <label class="repeat-option">
+                    <label class="radio-option">
+
                         <input
                             type="radio"
                             name="repeat"
-                            value="custom">
+                            value="custom"
+                        >
+
                         Свои дни
+
                     </label>
 
                 </div>
 
+                <div
+                    class="days"
+                    id="days"
+                >
 
-                <div class="custom-days" id="days">
-
-                    <label class="custom-day">
+                    <label class="day-option">
                         <input type="checkbox" value="1">
-                        Пн
+                        <span>Пн</span>
                     </label>
 
-                    <label class="custom-day">
+                    <label class="day-option">
                         <input type="checkbox" value="2">
-                        Вт
+                        <span>Вт</span>
                     </label>
 
-                    <label class="custom-day">
+                    <label class="day-option">
                         <input type="checkbox" value="3">
-                        Ср
+                        <span>Ср</span>
                     </label>
 
-                    <label class="custom-day">
+                    <label class="day-option">
                         <input type="checkbox" value="4">
-                        Чт
+                        <span>Чт</span>
                     </label>
 
-                    <label class="custom-day">
+                    <label class="day-option">
                         <input type="checkbox" value="5">
-                        Пт
+                        <span>Пт</span>
                     </label>
 
-                    <label class="custom-day">
+                    <label class="day-option">
                         <input type="checkbox" value="6">
-                        Сб
+                        <span>Сб</span>
                     </label>
 
-                    <label class="custom-day">
+                    <label class="day-option">
                         <input type="checkbox" value="0">
-                        Вс
+                        <span>Вс</span>
                     </label>
 
                 </div>
 
             </div>
 
-
             <div class="modal-actions">
 
                 <button
+                    class="secondary"
+                    id="cancel"
                     type="button"
-                    class="secondary-button"
-                    id="cancel">
+                >
                     Отмена
                 </button>
 
                 <button
+                    class="primary"
                     type="submit"
-                    class="primary-button">
-                    Создать задачу
+                    style="height:40px"
+                >
+                    Создать
                 </button>
 
             </div>
@@ -1540,9 +2846,10 @@ button {
 
 </div>
 
-
-<div class="toast" id="toast"></div>
-
+<div
+    class="toast"
+    id="toast"
+></div>
 
 <script src="./script.js"></script>
 
