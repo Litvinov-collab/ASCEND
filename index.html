@@ -3015,50 +3015,69 @@ function toast(message){
 
 
 /* =================================
-   STORAGE
+   CLOUD STORAGE
 ================================= */
 
-function saveTasks(){
+async function saveCloudData(){
 
-    localStorage.setItem(
-        TASKS_KEY,
-        JSON.stringify(tasks)
-    );
-}
+    if(!window.ascendCurrentUserId){
+        return;
+    }
 
-function loadTasks(){
+    const { error } = await ascendSupabase
+        .from("ascend_user_data")
+        .upsert({
+            user_id: window.ascendCurrentUserId,
+            username: username,
+            tasks: tasks,
+            updated_at: new Date().toISOString()
+        },{
+            onConflict:"user_id"
+        });
 
-    try{
-
-        const data =
-            localStorage.getItem(
-                TASKS_KEY
-            );
-
-        tasks =
-            data
-            ? JSON.parse(data)
-            : [];
-
-    }catch{
-
-        tasks = [];
+    if(error){
+        console.error("ASCEND sync error:", error);
+        toast("Не удалось сохранить данные в облако.");
     }
 }
 
-function saveUsername(){
-
-    localStorage.setItem(
-        USER_KEY,
-        username
-    );
+function saveTasks(){
+    saveCloudData();
 }
 
-function loadUsername(){
+function saveUsername(){
+    saveCloudData();
+}
 
-    username =
-        localStorage.getItem(USER_KEY)
-        || "ASCENDER";
+function readLegacyLocalData(){
+
+    let legacyTasks = [];
+    let legacyUsername = "ASCENDER";
+
+    try{
+        const rawTasks = localStorage.getItem(TASKS_KEY);
+        if(rawTasks){
+            const parsed = JSON.parse(rawTasks);
+            if(Array.isArray(parsed)){
+                legacyTasks = parsed;
+            }
+        }
+    }catch(error){
+        console.warn("Не удалось прочитать старые задачи:", error);
+    }
+
+    try{
+        legacyUsername =
+            localStorage.getItem(USER_KEY)
+            || "ASCENDER";
+    }catch(error){
+        console.warn("Не удалось прочитать старый ник:", error);
+    }
+
+    return{
+        tasks:legacyTasks,
+        username:legacyUsername
+    };
 }
 
 
@@ -4274,7 +4293,7 @@ function openPage(page){
    RESET
 ================================= */
 
-function resetApp(){
+async function resetApp(){
 
     const accepted =
         confirm(
@@ -4288,13 +4307,7 @@ function resetApp(){
     tasks = [];
     username = "ASCENDER";
 
-    localStorage.removeItem(
-        TASKS_KEY
-    );
-
-    localStorage.removeItem(
-        USER_KEY
-    );
+    await saveCloudData();
 
     renderEverything();
 
@@ -4616,10 +4629,6 @@ function setupEvents(){
 
 function init(){
 
-    loadTasks();
-
-    loadUsername();
-
     setupEvents();
 
     setupCharacterImage();
@@ -4662,6 +4671,8 @@ const ascendSupabase = window.supabase.createClient(
     SUPABASE_PUBLISHABLE_KEY
 );
 
+window.ascendCurrentUserId = null;
+
 function setAuthMessage(message, type = ""){
     const element = document.getElementById("authMessage");
     element.textContent = message || "";
@@ -4678,19 +4689,77 @@ function setAuthMode(mode){
     setAuthMessage("");
 }
 
-function showAscendApp(user){
-    document.getElementById("authScreen").classList.add("hidden");
-    document.body.classList.remove("auth-pending");
-    document.body.classList.add("auth-ready");
+async function loadCloudData(user){
+    window.ascendCurrentUserId = user.id;
 
-    const email = user?.email || "Аккаунт подключён";
-    const accountEmail = document.getElementById("accountEmail");
-    if(accountEmail){
-        accountEmail.textContent = email;
+    const { data, error } = await ascendSupabase
+        .from("ascend_user_data")
+        .select("username,tasks")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+    if(error){
+        console.error("ASCEND load error:", error);
+        throw error;
+    }
+
+    if(data){
+        username = data.username || "ASCENDER";
+        tasks = Array.isArray(data.tasks) ? data.tasks : [];
+        return;
+    }
+
+    // Первый вход этого аккаунта: переносим старые локальные данные,
+    // чтобы текущий прогресс пользователя не пропал.
+    const legacy = readLegacyLocalData();
+    username = legacy.username;
+    tasks = legacy.tasks;
+
+    const { error: createError } = await ascendSupabase
+        .from("ascend_user_data")
+        .insert({
+            user_id:user.id,
+            username:username,
+            tasks:tasks
+        });
+
+    if(createError){
+        console.error("ASCEND create user data error:", createError);
+        throw createError;
     }
 }
 
+async function showAscendApp(user){
+    const email = user?.email || "Аккаунт подключён";
+    const accountEmail = document.getElementById("accountEmail");
+
+    if(accountEmail){
+        accountEmail.textContent = email;
+    }
+
+    try{
+        await loadCloudData(user);
+    }catch(error){
+        showAuthScreen();
+        setAuthMessage(
+            "Аккаунт работает, но таблица данных ASCEND ещё не настроена. Выполни SQL для ascend_user_data в Supabase.",
+            "error"
+        );
+        return;
+    }
+
+    renderEverything();
+
+    document.getElementById("authScreen").classList.add("hidden");
+    document.body.classList.remove("auth-pending");
+    document.body.classList.add("auth-ready");
+}
+
 function showAuthScreen(){
+    window.ascendCurrentUserId = null;
+    tasks = [];
+    username = "ASCENDER";
+
     document.getElementById("authScreen").classList.remove("hidden");
     document.body.classList.add("auth-pending");
     document.body.classList.remove("auth-ready");
@@ -4726,7 +4795,7 @@ async function handleLogin(event){
     }
 
     setAuthMessage("Вход выполнен.", "success");
-    showAscendApp(data.user);
+    await showAscendApp(data.user);
 }
 
 async function handleRegister(event){
@@ -4761,7 +4830,7 @@ async function handleRegister(event){
 
     if(data.session && data.user){
         setAuthMessage("Аккаунт создан.", "success");
-        showAscendApp(data.user);
+        await showAscendApp(data.user);
         return;
     }
 
@@ -4802,16 +4871,16 @@ async function initAuth(){
     }
 
     if(data.session?.user){
-        showAscendApp(data.session.user);
+        await showAscendApp(data.session.user);
     }else{
         showAuthScreen();
     }
 
-    ascendSupabase.auth.onAuthStateChange((event, session)=>{
+    ascendSupabase.auth.onAuthStateChange(async (event, session)=>{
         if(event === "SIGNED_OUT"){
             showAuthScreen();
         }else if(session?.user){
-            showAscendApp(session.user);
+            await showAscendApp(session.user);
         }
     });
 }
