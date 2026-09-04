@@ -1862,10 +1862,235 @@ Fallback отображается,
         min-height:50px;
     }
 }
+
+
+/* =============================
+   SUPABASE AUTH
+============================= */
+
+body.auth-pending .app{
+    visibility:hidden;
+}
+
+body.auth-ready .app{
+    visibility:visible;
+}
+
+.auth-screen{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:22px;
+    background:
+        radial-gradient(circle at 50% 35%,rgba(116,102,255,.16),transparent 34%),
+        #050609;
+}
+
+.auth-screen.hidden{
+    display:none;
+}
+
+.auth-card{
+    width:min(430px,100%);
+    padding:28px;
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:22px;
+    background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018));
+    box-shadow:0 30px 90px rgba(0,0,0,.55);
+    backdrop-filter:blur(18px);
+}
+
+.auth-logo{
+    font-size:30px;
+    font-weight:900;
+    letter-spacing:5px;
+    margin-bottom:8px;
+}
+
+.auth-logo span{
+    opacity:.3;
+}
+
+.auth-subtitle{
+    color:#8f96a2;
+    font-size:13px;
+    line-height:1.5;
+    margin-bottom:22px;
+}
+
+.auth-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+    padding:5px;
+    margin-bottom:20px;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:12px;
+    background:rgba(0,0,0,.16);
+}
+
+.auth-tab{
+    height:40px;
+    border:0;
+    border-radius:9px;
+    background:transparent;
+    color:#858c98;
+    font-weight:700;
+}
+
+.auth-tab.active{
+    background:white;
+    color:black;
+}
+
+.auth-form{
+    display:none;
+}
+
+.auth-form.active{
+    display:block;
+}
+
+.auth-field{
+    margin-bottom:13px;
+}
+
+.auth-field label{
+    display:block;
+    margin-bottom:7px;
+    color:#989eaa;
+    font-size:12px;
+}
+
+.auth-input{
+    width:100%;
+    height:46px;
+    padding:0 13px;
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:10px;
+    background:#08090c;
+    color:white;
+    outline:none;
+}
+
+.auth-input:focus{
+    border-color:rgba(255,255,255,.32);
+}
+
+.auth-submit{
+    width:100%;
+    height:46px;
+    margin-top:5px;
+    border:0;
+    border-radius:10px;
+    background:white;
+    color:black;
+    font-weight:800;
+}
+
+.auth-message{
+    min-height:20px;
+    margin-top:14px;
+    color:#8f96a2;
+    font-size:12px;
+    line-height:1.5;
+}
+
+.auth-message.error{
+    color:#ff7a7a;
+}
+
+.auth-message.success{
+    color:#62ffae;
+}
+
+.account-box{
+    margin-top:15px;
+    padding:16px;
+}
+
+.account-email{
+    margin:8px 0 14px;
+    color:#a7adb8;
+    font-size:13px;
+    word-break:break-all;
+}
+
+.logout-button{
+    height:40px;
+    padding:0 15px;
+    border:1px solid rgba(255,255,255,.11);
+    border-radius:9px;
+    background:rgba(255,255,255,.04);
+    color:white;
+}
+
+.logout-button:hover{
+    background:white;
+    color:black;
+}
+
 </style>
 </head>
 
-<body>
+<body class="auth-pending">
+
+<!-- =================================
+     ASCEND AUTH
+================================= -->
+
+<div class="auth-screen" id="authScreen">
+    <div class="auth-card">
+        <div class="auth-logo">ASCEND<span>.</span></div>
+        <div class="auth-subtitle">
+            Войди в аккаунт или создай новый, чтобы продолжить.
+        </div>
+
+        <div class="auth-tabs">
+            <button class="auth-tab active" id="loginTab" type="button">Вход</button>
+            <button class="auth-tab" id="registerTab" type="button">Регистрация</button>
+        </div>
+
+        <form class="auth-form active" id="loginForm">
+            <div class="auth-field">
+                <label>Email</label>
+                <input class="auth-input" id="loginEmail" type="email" autocomplete="email" required>
+            </div>
+
+            <div class="auth-field">
+                <label>Пароль</label>
+                <input class="auth-input" id="loginPassword" type="password" autocomplete="current-password" minlength="6" required>
+            </div>
+
+            <button class="auth-submit" id="loginSubmit" type="submit">Войти</button>
+        </form>
+
+        <form class="auth-form" id="registerForm">
+            <div class="auth-field">
+                <label>Email</label>
+                <input class="auth-input" id="registerEmail" type="email" autocomplete="email" required>
+            </div>
+
+            <div class="auth-field">
+                <label>Пароль</label>
+                <input class="auth-input" id="registerPassword" type="password" autocomplete="new-password" minlength="6" required>
+            </div>
+
+            <div class="auth-field">
+                <label>Повтори пароль</label>
+                <input class="auth-input" id="registerPasswordRepeat" type="password" autocomplete="new-password" minlength="6" required>
+            </div>
+
+            <button class="auth-submit" id="registerSubmit" type="submit">Создать аккаунт</button>
+        </form>
+
+        <div class="auth-message" id="authMessage"></div>
+    </div>
+</div>
+
 
 <div class="app">
 
@@ -2333,6 +2558,12 @@ Fallback отображается,
 
     </div>
 
+    <div class="account-box panel">
+        <div class="panel-title">Аккаунт ASCEND</div>
+        <div class="account-email" id="accountEmail">—</div>
+        <button class="logout-button" id="logoutButton" type="button">Выйти из аккаунта</button>
+    </div>
+
 </section>
 
 
@@ -2676,6 +2907,8 @@ Fallback отображается,
 
 <div class="toast" id="toast"></div>
 
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
@@ -4413,6 +4646,181 @@ if(document.readyState === "loading"){
     init();
 }
 
+</script>
+
+
+<script>
+/* =================================
+   SUPABASE AUTH
+================================= */
+
+const SUPABASE_URL = "https://bouxgbfiwvvtbmvwfqsm.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ur4yZ9v4xL4U3k7TFZVt4g_T5f6ORkJ";
+
+const ascendSupabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
+
+function setAuthMessage(message, type = ""){
+    const element = document.getElementById("authMessage");
+    element.textContent = message || "";
+    element.className = "auth-message" + (type ? " " + type : "");
+}
+
+function setAuthMode(mode){
+    const login = mode === "login";
+
+    document.getElementById("loginTab").classList.toggle("active", login);
+    document.getElementById("registerTab").classList.toggle("active", !login);
+    document.getElementById("loginForm").classList.toggle("active", login);
+    document.getElementById("registerForm").classList.toggle("active", !login);
+    setAuthMessage("");
+}
+
+function showAscendApp(user){
+    document.getElementById("authScreen").classList.add("hidden");
+    document.body.classList.remove("auth-pending");
+    document.body.classList.add("auth-ready");
+
+    const email = user?.email || "Аккаунт подключён";
+    const accountEmail = document.getElementById("accountEmail");
+    if(accountEmail){
+        accountEmail.textContent = email;
+    }
+}
+
+function showAuthScreen(){
+    document.getElementById("authScreen").classList.remove("hidden");
+    document.body.classList.add("auth-pending");
+    document.body.classList.remove("auth-ready");
+
+    const accountEmail = document.getElementById("accountEmail");
+    if(accountEmail){
+        accountEmail.textContent = "—";
+    }
+}
+
+async function handleLogin(event){
+    event.preventDefault();
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const button = document.getElementById("loginSubmit");
+
+    button.disabled = true;
+    button.textContent = "Входим...";
+    setAuthMessage("Проверяем аккаунт...");
+
+    const { data, error } = await ascendSupabase.auth.signInWithPassword({
+        email,
+        password
+    });
+
+    button.disabled = false;
+    button.textContent = "Войти";
+
+    if(error){
+        setAuthMessage(error.message, "error");
+        return;
+    }
+
+    setAuthMessage("Вход выполнен.", "success");
+    showAscendApp(data.user);
+}
+
+async function handleRegister(event){
+    event.preventDefault();
+
+    const email = document.getElementById("registerEmail").value.trim();
+    const password = document.getElementById("registerPassword").value;
+    const repeat = document.getElementById("registerPasswordRepeat").value;
+    const button = document.getElementById("registerSubmit");
+
+    if(password !== repeat){
+        setAuthMessage("Пароли не совпадают.", "error");
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Создаём...";
+    setAuthMessage("Создаём аккаунт...");
+
+    const { data, error } = await ascendSupabase.auth.signUp({
+        email,
+        password
+    });
+
+    button.disabled = false;
+    button.textContent = "Создать аккаунт";
+
+    if(error){
+        setAuthMessage(error.message, "error");
+        return;
+    }
+
+    if(data.session && data.user){
+        setAuthMessage("Аккаунт создан.", "success");
+        showAscendApp(data.user);
+        return;
+    }
+
+    setAuthMessage(
+        "Аккаунт создан. Если в Supabase включено подтверждение email, открой письмо и подтверди адрес, затем войди.",
+        "success"
+    );
+    setAuthMode("login");
+    document.getElementById("loginEmail").value = email;
+}
+
+async function handleLogout(){
+    const { error } = await ascendSupabase.auth.signOut();
+
+    if(error){
+        toast("Не удалось выйти: " + error.message);
+        return;
+    }
+
+    showAuthScreen();
+    setAuthMode("login");
+    setAuthMessage("Ты вышел из аккаунта.");
+}
+
+async function initAuth(){
+    document.getElementById("loginTab").addEventListener("click", ()=>setAuthMode("login"));
+    document.getElementById("registerTab").addEventListener("click", ()=>setAuthMode("register"));
+    document.getElementById("loginForm").addEventListener("submit", handleLogin);
+    document.getElementById("registerForm").addEventListener("submit", handleRegister);
+    document.getElementById("logoutButton").addEventListener("click", handleLogout);
+
+    const { data, error } = await ascendSupabase.auth.getSession();
+
+    if(error){
+        showAuthScreen();
+        setAuthMessage("Ошибка подключения к аккаунтам: " + error.message, "error");
+        return;
+    }
+
+    if(data.session?.user){
+        showAscendApp(data.session.user);
+    }else{
+        showAuthScreen();
+    }
+
+    ascendSupabase.auth.onAuthStateChange((event, session)=>{
+        if(event === "SIGNED_OUT"){
+            showAuthScreen();
+        }else if(session?.user){
+            showAscendApp(session.user);
+        }
+    });
+}
+
+if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", initAuth);
+}else{
+    initAuth();
+}
 </script>
 
 </body>
