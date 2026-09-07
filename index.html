@@ -739,6 +739,131 @@ button{
 }
 
 /* =============================
+   DAY VIEW
+============================= */
+
+.day-view{
+    margin-top:15px;
+    padding:20px;
+}
+
+.day-view-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    margin-bottom:18px;
+}
+
+.day-view-title-wrap{
+    min-width:0;
+}
+
+.day-view-kicker{
+    color:#737985;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    margin-bottom:6px;
+}
+
+.day-view-title{
+    font-size:25px;
+    font-weight:850;
+    letter-spacing:-.6px;
+}
+
+.day-nav{
+    display:flex;
+    align-items:center;
+    gap:7px;
+}
+
+.day-nav button{
+    height:38px;
+    min-width:38px;
+    padding:0 11px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    background:rgba(255,255,255,.03);
+    color:white;
+}
+
+.day-nav button:hover{
+    background:rgba(255,255,255,.08);
+}
+
+.day-summary{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:16px;
+    align-items:center;
+    margin-bottom:18px;
+    padding:16px;
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:13px;
+    background:rgba(0,0,0,.13);
+}
+
+.day-summary-text strong{
+    display:block;
+    font-size:20px;
+    margin-bottom:5px;
+}
+
+.day-summary-text span{
+    color:#7f8692;
+    font-size:12px;
+}
+
+.day-progress-bar{
+    height:7px;
+    margin-top:12px;
+    overflow:hidden;
+    border-radius:999px;
+    background:rgba(255,255,255,.07);
+}
+
+.day-progress-fill{
+    height:100%;
+    width:var(--day-progress,0%);
+    border-radius:inherit;
+    background:white;
+    transition:.45s ease;
+}
+
+.day-percent{
+    font-size:31px;
+    font-weight:900;
+}
+
+.day-actions{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:12px;
+}
+
+.calendar-day.selected{
+    border-color:rgba(130,116,255,.9);
+    box-shadow:0 0 0 1px rgba(130,116,255,.22),0 0 18px rgba(130,116,255,.10);
+}
+
+@media(max-width:780px){
+    .day-view-header{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .day-summary{
+        grid-template-columns:1fr;
+    }
+
+    .day-percent{
+        font-size:26px;
+    }
+}
+
+/* =============================
    ANALYTICS
 ============================= */
 
@@ -2378,6 +2503,47 @@ body.auth-ready .app{
 
     </div>
 
+    <div class="day-view panel" id="dayView">
+
+        <div class="day-view-header">
+
+            <div class="day-view-title-wrap">
+                <div class="day-view-kicker">Выбранный день</div>
+                <div class="day-view-title" id="selectedDayTitle">Сегодня</div>
+            </div>
+
+            <div class="day-nav">
+                <button id="prevDay" type="button" title="Предыдущий день">‹</button>
+                <button id="todayDay" type="button">Сегодня</button>
+                <button id="nextDay" type="button" title="Следующий день">›</button>
+            </div>
+
+        </div>
+
+        <div class="day-summary">
+
+            <div class="day-summary-text">
+                <strong id="selectedDayCount">0 / 0 выполнено</strong>
+                <span id="selectedDayMessage">На этот день задач пока нет.</span>
+                <div class="day-progress-bar">
+                    <div class="day-progress-fill" id="selectedDayProgressFill"></div>
+                </div>
+            </div>
+
+            <div class="day-percent" id="selectedDayPercent">0%</div>
+
+        </div>
+
+        <div class="day-actions">
+            <button class="add-button" id="addTaskSelectedDay" type="button">
+                + Добавить задачу на этот день
+            </button>
+        </div>
+
+        <div class="tasks-list" id="selectedDayTasks"></div>
+
+    </div>
+
 </section>
 
 
@@ -2925,6 +3091,9 @@ let username = "ASCENDER";
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
 
+let selectedDayKey = todayKey();
+let taskCreateDateKey = todayKey();
+
 let toastTimer = null;
 
 
@@ -3090,7 +3259,8 @@ function createTask(
     category,
     priority,
     repeat,
-    days
+    days,
+    createdAt = todayKey()
 ){
 
     return{
@@ -3114,7 +3284,7 @@ function createTask(
         days,
 
         createdAt:
-            todayKey(),
+            createdAt,
 
         completed:{}
     };
@@ -3782,10 +3952,13 @@ function buildCalendarHTML(){
         const today =
             key === todayKey();
 
+        const selected =
+            key === selectedDayKey;
+
         html +=`
 
             <button
-                class="calendar-day ${today ? "today" : ""}"
+                class="calendar-day ${today ? "today" : ""} ${selected ? "selected" : ""}"
                 data-calendar-date="${key}"
             >
 
@@ -3839,6 +4012,119 @@ function renderCalendar(){
 
     $("#calendar2").innerHTML =
         html;
+}
+
+
+/* =================================
+   SELECTED DAY
+================================= */
+
+function selectedDayLabel(key){
+
+    const date = parseDate(key);
+
+    const weekdays = [
+        "Воскресенье",
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота"
+    ];
+
+    return (
+        date.getDate()
+        + " "
+        + monthNames[date.getMonth()].toLowerCase()
+        + " · "
+        + weekdays[date.getDay()]
+    );
+}
+
+function renderSelectedDay(){
+
+    const container = $("#selectedDayTasks");
+
+    if(!container){
+        return;
+    }
+
+    const list = tasksForDate(selectedDayKey);
+    const progress = progressForDate(selectedDayKey);
+
+    $("#selectedDayTitle").textContent =
+        selectedDayLabel(selectedDayKey);
+
+    $("#selectedDayCount").textContent =
+        progress.completed
+        + " / "
+        + progress.total
+        + " выполнено";
+
+    $("#selectedDayPercent").textContent =
+        progress.percent + "%";
+
+    $("#selectedDayProgressFill").style.setProperty(
+        "--day-progress",
+        progress.percent + "%"
+    );
+
+    let message = "На этот день задач пока нет.";
+
+    if(progress.total){
+        if(progress.percent === 100){
+            message = "День закрыт полностью. Все задачи выполнены.";
+        }else if(progress.percent >= 75){
+            message = "Почти готово. Осталось совсем немного.";
+        }else if(progress.percent >= 50){
+            message = "Хороший темп. Продолжай.";
+        }else if(progress.percent > 0){
+            message = "Движение началось. Закрывай задачи по очереди.";
+        }else{
+            message = "Задачи готовы. Начни с первого действия.";
+        }
+    }
+
+    $("#selectedDayMessage").textContent = message;
+
+    container.innerHTML =
+        list.length
+        ? list.map(task => taskHTML(task, selectedDayKey)).join("")
+        : `<div class="empty">На этот день задач пока нет.</div>`;
+}
+
+function selectCalendarDay(key, openCalendarPage = true){
+
+    selectedDayKey = key;
+
+    const date = parseDate(key);
+    currentMonth = date.getMonth();
+    currentYear = date.getFullYear();
+
+    renderCalendar();
+    renderSelectedDay();
+
+    if(openCalendarPage){
+        openPage("calendar");
+
+        setTimeout(()=>{
+            const dayView = $("#dayView");
+            if(dayView){
+                dayView.scrollIntoView({
+                    behavior:"smooth",
+                    block:"start"
+                });
+            }
+        },80);
+    }
+}
+
+function moveSelectedDay(offset){
+
+    const date = parseDate(selectedDayKey);
+    date.setDate(date.getDate() + offset);
+    selectCalendarDay(dateKey(date), false);
 }
 
 
@@ -4099,7 +4385,9 @@ function renderCurrentDate(){
    MODAL
 ================================= */
 
-function openModal(){
+function openModal(targetDate = todayKey()){
+
+    taskCreateDateKey = targetDate;
 
     $("#taskForm").reset();
 
@@ -4211,7 +4499,8 @@ function submitTask(event){
             category,
             priority,
             repeat,
-            days
+            days,
+            taskCreateDateKey
         )
     );
 
@@ -4369,6 +4658,8 @@ function renderEverything(){
 
     renderCalendar();
 
+    renderSelectedDay();
+
     renderAnalytics();
 
     renderProfile();
@@ -4399,12 +4690,32 @@ function setupEvents(){
 
     $("#addTask").addEventListener(
         "click",
-        openModal
+        ()=>openModal(todayKey())
     );
 
     $("#addTask2").addEventListener(
         "click",
-        openModal
+        ()=>openModal(todayKey())
+    );
+
+    $("#addTaskSelectedDay").addEventListener(
+        "click",
+        ()=>openModal(selectedDayKey)
+    );
+
+    $("#prevDay").addEventListener(
+        "click",
+        ()=>moveSelectedDay(-1)
+    );
+
+    $("#nextDay").addEventListener(
+        "click",
+        ()=>moveSelectedDay(1)
+    );
+
+    $("#todayDay").addEventListener(
+        "click",
+        ()=>selectCalendarDay(todayKey(), false)
     );
 
 
@@ -4492,24 +4803,12 @@ function setupEvents(){
 
             if(calendarDay){
 
-                const progress =
-                    progressForDate(
-                        calendarDay.dataset
-                            .calendarDate
-                    );
-
-                toast(
-
-                    progress.total
-
-                    ? "Прогресс дня: "
-                      +
-                      progress.percent
-                      +
-                      "%"
-
-                    : "В этот день задач нет."
+                selectCalendarDay(
+                    calendarDay.dataset.calendarDate,
+                    true
                 );
+
+                return;
             }
         }
     );
