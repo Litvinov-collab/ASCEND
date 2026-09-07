@@ -2340,6 +2340,112 @@ body.auth-ready .app{
     color:black;
 }
 
+
+
+/* =================================
+   ASCENDER 3D / LEVEL EVOLUTION
+================================= */
+.character-status-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:5px;
+}
+
+.character-rank{
+    color:#eef0ff;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+    opacity:.78;
+}
+
+.ascender-3d{
+    position:absolute;
+    inset:0;
+    z-index:8;
+    cursor:grab;
+    touch-action:pan-y;
+    opacity:0;
+    transition:opacity .45s ease;
+}
+
+.ascender-3d.ready{
+    opacity:1;
+}
+
+.ascender-3d:active{
+    cursor:grabbing;
+}
+
+.ascender-3d canvas{
+    width:100% !important;
+    height:100% !important;
+    display:block;
+    outline:none;
+}
+
+.ascender-3d-loading{
+    position:absolute;
+    left:50%;
+    top:52%;
+    transform:translate(-50%,-50%);
+    color:#8e94a0;
+    font-size:10px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    pointer-events:none;
+}
+
+.character-scene.webgl-ready .real-character{
+    display:none;
+}
+
+.character-scene.webgl-ready .character-shadow{
+    opacity:.45;
+}
+
+.character-scene.webgl-ready .character-platform{
+    opacity:.82;
+}
+
+.character-scene.tier-focused .character-backlight{
+    filter:blur(22px) brightness(1.08);
+}
+
+.character-scene.tier-disciplined .character-backlight{
+    filter:blur(19px) brightness(1.2);
+}
+
+.character-scene.tier-ascended .character-backlight{
+    filter:blur(17px) brightness(1.38);
+}
+
+.character-scene.tier-ascended::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:235px;
+    height:390px;
+    transform:translate(-50%,-51%);
+    border:1px solid rgba(124,111,255,.18);
+    border-radius:50%;
+    box-shadow:0 0 45px rgba(111,96,255,.13), inset 0 0 40px rgba(111,96,255,.05);
+    pointer-events:none;
+    animation:ascenderAura 4s ease-in-out infinite;
+}
+
+@keyframes ascenderAura{
+    0%,100%{opacity:.42; transform:translate(-50%,-51%) scale(.96)}
+    50%{opacity:.9; transform:translate(-50%,-51%) scale(1.035)}
+}
+
+@media (prefers-reduced-motion: reduce){
+    .character-scene.tier-ascended::after{animation:none}
+}
+
 </style>
 </head>
 
@@ -3033,12 +3139,12 @@ body.auth-ready .app{
             ASCENDER
         </div>
 
-        <div class="character-status">
-
-            <span class="status-dot"></span>
-
-            Активен
-
+        <div class="character-status-wrap">
+            <div class="character-rank" id="characterRank">ROOKIE · LVL 1</div>
+            <div class="character-status">
+                <span class="status-dot"></span>
+                Активен
+            </div>
         </div>
 
     </div>
@@ -3057,6 +3163,10 @@ body.auth-ready .app{
         <div class="particle p5"></div>
 
         <div class="character-shadow"></div>
+
+        <div class="ascender-3d" id="ascender3d" aria-label="3D персонаж ASCENDER">
+            <div class="ascender-3d-loading" id="ascender3dLoading">Загрузка 3D...</div>
+        </div>
 
         <div class="real-character state-low" id="character">
 
@@ -3326,6 +3436,7 @@ body.auth-ready .app{
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
 
 <script>
 
@@ -3756,6 +3867,10 @@ function renderXP(){
         info.percent + "%"
     );
     if(profileLevel) profileLevel.textContent = info.level;
+
+    if(typeof updateAscender3DLevel === "function") {
+        updateAscender3DLevel(info.level);
+    }
 }
 
 
@@ -4084,6 +4199,343 @@ function updateCharacter(percent){
 
         message.textContent =
             "Начни день. Сделай первое действие.";
+    }
+}
+
+
+/* =================================
+   ASCENDER TRUE 3D
+================================= */
+let ascender3D = null;
+
+function ascenderTier(level){
+    if(level >= 20) return { key:"ascended", name:"ASCENDED" };
+    if(level >= 10) return { key:"disciplined", name:"DISCIPLINED" };
+    if(level >= 5) return { key:"focused", name:"FOCUSED" };
+    return { key:"rookie", name:"ROOKIE" };
+}
+
+function updateAscender3DLevel(level){
+    const tier = ascenderTier(level || 1);
+    const rank = document.getElementById("characterRank");
+    const sceneEl = document.querySelector(".character-scene");
+
+    if(rank){
+        rank.textContent = tier.name + " · LVL " + (level || 1);
+    }
+
+    if(sceneEl){
+        sceneEl.classList.remove(
+            "tier-rookie",
+            "tier-focused",
+            "tier-disciplined",
+            "tier-ascended"
+        );
+        sceneEl.classList.add("tier-" + tier.key);
+    }
+
+    if(!ascender3D) return;
+
+    ascender3D.watch.visible = level >= 5;
+    ascender3D.chestMark.visible = level >= 10;
+    ascender3D.shoeMarks.forEach(mesh => mesh.visible = level >= 10);
+    ascender3D.halo.visible = level >= 20;
+    ascender3D.shoulderLights.forEach(mesh => mesh.visible = level >= 20);
+
+    const strength = level >= 20 ? 2.25 : level >= 10 ? 1.45 : level >= 5 ? .85 : .35;
+    ascender3D.accentMaterial.emissiveIntensity = strength;
+    ascender3D.accentLight.intensity = level >= 20 ? 2.6 : level >= 10 ? 1.6 : .9;
+}
+
+function initAscender3D(){
+    const mount = document.getElementById("ascender3d");
+    const sceneEl = document.querySelector(".character-scene");
+    const loading = document.getElementById("ascender3dLoading");
+
+    if(!mount || ascender3D) return;
+
+    if(!window.THREE){
+        if(loading) loading.textContent = "3D недоступен";
+        return;
+    }
+
+    try{
+        const THREE = window.THREE;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(31, 1, .1, 100);
+        camera.position.set(0, 1.55, 7.3);
+        camera.lookAt(0, 1.55, 0);
+
+        const renderer = new THREE.WebGLRenderer({
+            alpha:true,
+            antialias:true,
+            powerPreference:"high-performance"
+        });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.8));
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setClearColor(0x000000, 0);
+        mount.appendChild(renderer.domElement);
+
+        const ambient = new THREE.HemisphereLight(0xb8c2ff, 0x11131a, 1.35);
+        scene.add(ambient);
+
+        const key = new THREE.DirectionalLight(0xffffff, 2.25);
+        key.position.set(3.8, 5.8, 5.4);
+        key.castShadow = true;
+        scene.add(key);
+
+        const rim = new THREE.DirectionalLight(0x6f63ff, 2.1);
+        rim.position.set(-4, 3.4, -3);
+        scene.add(rim);
+
+        const accentLight = new THREE.PointLight(0x786cff, 1.0, 7.5, 2);
+        accentLight.position.set(0, 2.0, -1.35);
+        scene.add(accentLight);
+
+        const black = new THREE.MeshStandardMaterial({
+            color:0x08090c,
+            roughness:.72,
+            metalness:.08
+        });
+        const cloth = new THREE.MeshStandardMaterial({
+            color:0x111319,
+            roughness:.9,
+            metalness:.02
+        });
+        const shoe = new THREE.MeshStandardMaterial({
+            color:0x050607,
+            roughness:.5,
+            metalness:.18
+        });
+        const skinDark = new THREE.MeshStandardMaterial({
+            color:0x6e5245,
+            roughness:.82,
+            metalness:0
+        });
+        const accentMaterial = new THREE.MeshStandardMaterial({
+            color:0x7569ff,
+            emissive:0x7569ff,
+            emissiveIntensity:.35,
+            roughness:.38,
+            metalness:.5
+        });
+        const metal = new THREE.MeshStandardMaterial({
+            color:0x242832,
+            roughness:.3,
+            metalness:.85
+        });
+
+        const root = new THREE.Group();
+        root.position.y = -0.45;
+        scene.add(root);
+
+        const body = new THREE.Group();
+        root.add(body);
+
+        function mesh(geometry, material, parent=body){
+            const m = new THREE.Mesh(geometry, material);
+            m.castShadow = true;
+            m.receiveShadow = true;
+            parent.add(m);
+            return m;
+        }
+
+        // Torso / oversized black hoodie.
+        const torso = mesh(new THREE.BoxGeometry(1.48, 1.75, .82, 3, 3, 2), cloth);
+        torso.position.set(0, 2.72, 0);
+        torso.scale.set(1, 1, .95);
+
+        const waist = mesh(new THREE.CylinderGeometry(.58, .66, .34, 16), black);
+        waist.position.set(0, 1.78, 0);
+
+        // Head and hood.
+        const head = mesh(new THREE.SphereGeometry(.43, 24, 20), skinDark);
+        head.position.set(0, 4.08, .08);
+        head.scale.set(.88, 1.05, .9);
+
+        const hood = mesh(new THREE.SphereGeometry(.62, 24, 20, 0, Math.PI * 2, 0, Math.PI * .78), cloth);
+        hood.position.set(0, 4.12, -.12);
+        hood.scale.set(1.03, 1.05, .93);
+        hood.rotation.x = -.09;
+
+        // Crop haircut.
+        const hair = mesh(new THREE.SphereGeometry(.445, 24, 16, 0, Math.PI * 2, 0, Math.PI * .46), black);
+        hair.position.set(0, 4.28, .08);
+        hair.scale.set(.9, .55, .92);
+
+        // Arms.
+        const leftArmPivot = new THREE.Group();
+        const rightArmPivot = new THREE.Group();
+        leftArmPivot.position.set(-.83, 3.28, 0);
+        rightArmPivot.position.set(.83, 3.28, 0);
+        body.add(leftArmPivot, rightArmPivot);
+
+        const armGeo = new THREE.CylinderGeometry(.22, .18, 1.72, 14);
+        const lArm = mesh(armGeo, cloth, leftArmPivot);
+        const rArm = mesh(armGeo, cloth, rightArmPivot);
+        lArm.position.y = -.72;
+        rArm.position.y = -.72;
+        lArm.rotation.z = -.08;
+        rArm.rotation.z = .08;
+
+        const handGeo = new THREE.SphereGeometry(.19, 16, 12);
+        const lHand = mesh(handGeo, skinDark, leftArmPivot);
+        const rHand = mesh(handGeo, skinDark, rightArmPivot);
+        lHand.position.set(-.05, -1.58, 0);
+        rHand.position.set(.05, -1.58, 0);
+
+        // Legs / black track pants.
+        const leftLegPivot = new THREE.Group();
+        const rightLegPivot = new THREE.Group();
+        leftLegPivot.position.set(-.38, 1.65, 0);
+        rightLegPivot.position.set(.38, 1.65, 0);
+        body.add(leftLegPivot, rightLegPivot);
+
+        const legGeo = new THREE.CylinderGeometry(.28, .23, 1.95, 14);
+        const lLeg = mesh(legGeo, black, leftLegPivot);
+        const rLeg = mesh(legGeo, black, rightLegPivot);
+        lLeg.position.y = -.92;
+        rLeg.position.y = -.92;
+
+        // Sneakers.
+        const lShoe = mesh(new THREE.BoxGeometry(.55, .28, .96, 2, 1, 2), shoe, leftLegPivot);
+        const rShoe = mesh(new THREE.BoxGeometry(.55, .28, .96, 2, 1, 2), shoe, rightLegPivot);
+        lShoe.position.set(0, -1.93, .18);
+        rShoe.position.set(0, -1.93, .18);
+
+        // Level 5: watch.
+        const watch = new THREE.Group();
+        rightArmPivot.add(watch);
+        watch.position.set(.02, -1.28, .0);
+        watch.rotation.z = .04;
+        const watchBand = mesh(new THREE.TorusGeometry(.205, .045, 8, 20), metal, watch);
+        watchBand.rotation.x = Math.PI / 2;
+        const watchFace = mesh(new THREE.BoxGeometry(.22, .09, .25), accentMaterial, watch);
+        watchFace.position.z = .18;
+
+        // Level 10: chest insignia and shoe trims.
+        const chestMark = mesh(new THREE.BoxGeometry(.34, .07, .035), accentMaterial);
+        chestMark.position.set(0, 2.92, .43);
+        chestMark.rotation.z = -.22;
+
+        const shoeMarks = [];
+        [lShoe, rShoe].forEach(parent=>{
+            const mark = mesh(new THREE.BoxGeometry(.3, .045, .035), accentMaterial, parent);
+            mark.position.set(0, .02, .49);
+            shoeMarks.push(mark);
+        });
+
+        // Level 20: halo and shoulder emitters.
+        const halo = mesh(new THREE.TorusGeometry(1.42, .018, 8, 72), accentMaterial, root);
+        halo.position.set(0, 2.65, -.55);
+        halo.rotation.x = Math.PI / 2.2;
+
+        const shoulderLights = [];
+        [-1, 1].forEach(side=>{
+            const lightMesh = mesh(new THREE.SphereGeometry(.065, 12, 10), accentMaterial);
+            lightMesh.position.set(.74 * side, 3.42, .36);
+            shoulderLights.push(lightMesh);
+        });
+
+        // Ground shadow plane catches subtle light.
+        const ground = new THREE.Mesh(
+            new THREE.CircleGeometry(1.35, 48),
+            new THREE.ShadowMaterial({color:0x000000, opacity:.34})
+        );
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.42;
+        ground.receiveShadow = true;
+        root.add(ground);
+
+        ascender3D = {
+            scene, camera, renderer, root, body, torso,
+            leftArmPivot, rightArmPivot,
+            leftLegPivot, rightLegPivot,
+            watch, chestMark, shoeMarks, halo, shoulderLights,
+            accentMaterial, accentLight,
+            targetRotation:0,
+            dragRotation:0,
+            dragging:false,
+            pointerX:0,
+            reducedMotion: window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        };
+
+        function resizeAscender3D(){
+            if(!ascender3D) return;
+            const rect = mount.getBoundingClientRect();
+            const w = Math.max(1, rect.width);
+            const h = Math.max(1, rect.height);
+            renderer.setSize(w, h, false);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+        }
+
+        const observer = typeof ResizeObserver !== "undefined"
+            ? new ResizeObserver(resizeAscender3D)
+            : null;
+        if(observer) observer.observe(mount);
+        window.addEventListener("resize", resizeAscender3D, {passive:true});
+        resizeAscender3D();
+
+        mount.addEventListener("pointerdown", event=>{
+            ascender3D.dragging = true;
+            ascender3D.pointerX = event.clientX;
+            if(mount.setPointerCapture) mount.setPointerCapture(event.pointerId);
+        });
+
+        mount.addEventListener("pointermove", event=>{
+            if(!ascender3D || !ascender3D.dragging) return;
+            const dx = event.clientX - ascender3D.pointerX;
+            ascender3D.pointerX = event.clientX;
+            ascender3D.dragRotation += dx * .009;
+        });
+
+        function endDrag(){
+            if(ascender3D) ascender3D.dragging = false;
+        }
+        mount.addEventListener("pointerup", endDrag);
+        mount.addEventListener("pointercancel", endDrag);
+        mount.addEventListener("pointerleave", endDrag);
+
+        const clock = new THREE.Clock();
+        let frame = 0;
+        function animate(){
+            if(!ascender3D) return;
+            frame = requestAnimationFrame(animate);
+            const t = clock.getElapsedTime();
+
+            const idle = ascender3D.reducedMotion ? 0 : Math.sin(t * 1.65);
+            const autoTurn = ascender3D.reducedMotion ? 0 : Math.sin(t * .34) * .36;
+            const target = ascender3D.dragRotation + autoTurn;
+            ascender3D.targetRotation += (target - ascender3D.targetRotation) * .045;
+            root.rotation.y = ascender3D.targetRotation;
+
+            root.position.y = -0.45 + idle * .025;
+            torso.scale.y = 1 + idle * .008;
+            leftArmPivot.rotation.x = idle * .018;
+            rightArmPivot.rotation.x = -idle * .018;
+            leftLegPivot.rotation.x = -idle * .006;
+            rightLegPivot.rotation.x = idle * .006;
+
+            if(halo.visible){
+                halo.rotation.z = t * .22;
+                halo.scale.setScalar(1 + Math.sin(t * 1.2) * .018);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        mount.classList.add("ready");
+        sceneEl && sceneEl.classList.add("webgl-ready");
+        if(loading) loading.remove();
+        updateAscender3DLevel(levelInfo().level);
+        animate();
+
+    }catch(error){
+        console.error("ASCENDER 3D error:", error);
+        if(loading) loading.textContent = "3D недоступен";
     }
 }
 
@@ -5434,6 +5886,8 @@ function init(){
     setupEvents();
 
     setupCharacterImage();
+
+    initAscender3D();
 
     updateDaysVisibility();
 
