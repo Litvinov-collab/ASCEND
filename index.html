@@ -864,6 +864,55 @@ button{
 }
 
 /* =============================
+   XP / LEVELS
+============================= */
+
+.xp-panel{
+    margin-top:15px;
+    padding:18px;
+}
+
+.xp-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    margin-bottom:12px;
+}
+
+.xp-level{
+    font-size:18px;
+    font-weight:800;
+}
+
+.xp-text{
+    color:#a7adb8;
+    font-size:12px;
+}
+
+.xp-track{
+    width:100%;
+    height:10px;
+    overflow:hidden;
+    border-radius:999px;
+    background:rgba(255,255,255,.07);
+}
+
+.xp-fill{
+    height:100%;
+    width:var(--xp-progress,0%);
+    border-radius:inherit;
+    background:white;
+    transition:.45s ease;
+}
+
+.xp-hint{
+    margin-top:9px;
+    color:#757c89;
+    font-size:11px;
+}
+
+/* =============================
    ANALYTICS
 ============================= */
 
@@ -2368,11 +2417,11 @@ body.auth-ready .app{
         <div class="stat panel">
 
             <div class="stat-label">
-                Очки
+                Уровень
             </div>
 
             <div class="stat-value" id="score">
-                0
+                1
             </div>
 
             <div class="stat-icon">
@@ -2381,6 +2430,17 @@ body.auth-ready .app{
 
         </div>
 
+    </div>
+
+    <div class="xp-panel panel">
+        <div class="xp-top">
+            <div class="xp-level" id="xpLevel">Уровень 1</div>
+            <div class="xp-text" id="xpText">0 / 100 XP</div>
+        </div>
+        <div class="xp-track">
+            <div class="xp-fill" id="xpFill"></div>
+        </div>
+        <div class="xp-hint" id="xpHint">Выполняй задачи, чтобы повышать уровень.</div>
     </div>
 
 
@@ -2685,7 +2745,12 @@ body.auth-ready .app{
 
                 <div class="profile-meta">
 
-                    Очки:
+                    Уровень:
+                    <span id="profileLevel">1</span>
+
+                    ·
+
+                    XP:
                     <span id="profileScore">0</span>
 
                     ·
@@ -2697,6 +2762,16 @@ body.auth-ready .app{
 
             </div>
 
+        </div>
+
+        <div class="xp-panel panel" style="margin:0 0 20px;padding:16px;">
+            <div class="xp-top">
+                <div class="xp-level" id="profileXpLevel">Уровень 1</div>
+                <div class="xp-text" id="profileXpText">0 / 100 XP</div>
+            </div>
+            <div class="xp-track">
+                <div class="xp-fill" id="profileXpFill"></div>
+            </div>
         </div>
 
         <div class="form-group">
@@ -3399,12 +3474,12 @@ function progressForDate(key){
 
 
 /* =================================
-   SCORE
+   XP / LEVELS
 ================================= */
 
-function totalScore(){
+function totalXP(){
 
-    let score = 0;
+    let xp = 0;
 
     tasks.forEach(task=>{
 
@@ -3417,12 +3492,94 @@ function totalScore(){
         ).forEach(done=>{
 
             if(done){
-                score += 10;
+                xp += 10;
             }
         });
     });
 
-    return score;
+    return xp;
+}
+
+function totalScore(){
+    return totalXP();
+}
+
+function levelInfo(){
+
+    const xp = totalXP();
+
+    let level = 1;
+    let currentLevelStart = 0;
+    let nextLevelXP = 100;
+
+    while(xp >= nextLevelXP){
+        level++;
+        currentLevelStart = nextLevelXP;
+        nextLevelXP += level * 100;
+    }
+
+    const xpIntoLevel = xp - currentLevelStart;
+    const xpNeeded = nextLevelXP - currentLevelStart;
+    const percent = Math.min(
+        100,
+        Math.round(
+            xpIntoLevel / xpNeeded * 100
+        )
+    );
+
+    return{
+        xp,
+        level,
+        xpIntoLevel,
+        xpNeeded,
+        nextLevelXP,
+        percent
+    };
+}
+
+function renderXP(){
+
+    const info = levelInfo();
+
+    const levelText = "Уровень " + info.level;
+    const progressText =
+        info.xpIntoLevel
+        + " / "
+        + info.xpNeeded
+        + " XP";
+
+    const xpLevel = $("#xpLevel");
+    const xpText = $("#xpText");
+    const xpFill = $("#xpFill");
+    const xpHint = $("#xpHint");
+
+    if(xpLevel) xpLevel.textContent = levelText;
+    if(xpText) xpText.textContent = progressText;
+    if(xpFill) xpFill.style.setProperty(
+        "--xp-progress",
+        info.percent + "%"
+    );
+    if(xpHint){
+        xpHint.textContent =
+            "До уровня "
+            + (info.level + 1)
+            + " осталось "
+            + (info.xpNeeded - info.xpIntoLevel)
+            + " XP";
+    }
+
+    const profileXpLevel = $("#profileXpLevel");
+    const profileXpText = $("#profileXpText");
+    const profileXpFill = $("#profileXpFill");
+    const profileLevel = $("#profileLevel");
+
+    if(profileXpLevel) profileXpLevel.textContent = levelText;
+    if(profileXpText) profileXpText.textContent = progressText;
+    if(profileXpFill) profileXpFill.style.setProperty(
+        "--xp-progress",
+        info.percent + "%"
+    );
+    if(profileLevel) profileLevel.textContent = info.level;
 }
 
 
@@ -3614,8 +3771,8 @@ function renderDashboard(){
     const progress =
         progressForDate(key);
 
-    const score =
-        totalScore();
+    const xpInfo =
+        levelInfo();
 
     const streak =
         calculateStreak();
@@ -3640,10 +3797,14 @@ function renderDashboard(){
         );
 
     $("#score").textContent =
-        score;
+        xpInfo.level;
 
     $("#sidebarScore").textContent =
-        "Очки: " + score;
+        "Ур. "
+        + xpInfo.level
+        + " · "
+        + xpInfo.xp
+        + " XP";
 
     $("#sidebarPercent").textContent =
         progress.percent + "%";
@@ -3660,6 +3821,8 @@ function renderDashboard(){
 
     $("#circleNumber").textContent =
         progress.percent + "%";
+
+    renderXP();
 
     $("#todayTasks").innerHTML =
         list.length
@@ -4307,7 +4470,9 @@ function renderProfile(){
         username;
 
     $("#profileScore").textContent =
-        totalScore();
+        totalXP();
+
+    renderXP();
 
     $("#profileStreak").textContent =
         calculateStreak();
