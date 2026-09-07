@@ -913,6 +913,139 @@ button{
 }
 
 /* =============================
+   ACHIEVEMENTS
+============================= */
+
+.achievements-summary{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-bottom:15px;
+}
+
+.achievement-summary-card{
+    padding:18px;
+}
+
+.achievement-summary-card span{
+    display:block;
+    color:#818794;
+    font-size:12px;
+}
+
+.achievement-summary-card strong{
+    display:block;
+    margin-top:8px;
+    font-size:28px;
+}
+
+.achievements-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+}
+
+.achievement-card{
+    position:relative;
+    overflow:hidden;
+    padding:18px;
+    min-height:180px;
+    transition:.2s ease;
+}
+
+.achievement-card.unlocked{
+    border-color:rgba(255,255,255,.18);
+}
+
+.achievement-card.locked{
+    opacity:.62;
+}
+
+.achievement-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:14px;
+}
+
+.achievement-icon{
+    width:46px;
+    height:46px;
+    flex:0 0 46px;
+    display:grid;
+    place-items:center;
+    border-radius:14px;
+    background:rgba(255,255,255,.07);
+    font-size:22px;
+}
+
+.achievement-status{
+    padding:6px 9px;
+    border-radius:999px;
+    background:rgba(255,255,255,.06);
+    color:#8f96a3;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+}
+
+.achievement-card.unlocked .achievement-status{
+    background:rgba(255,255,255,.12);
+    color:#fff;
+}
+
+.achievement-name{
+    margin-top:16px;
+    font-size:17px;
+    font-weight:800;
+}
+
+.achievement-description{
+    margin-top:7px;
+    color:#8b919d;
+    font-size:12px;
+    line-height:1.55;
+}
+
+.achievement-progress-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:16px;
+    color:#747b87;
+    font-size:11px;
+}
+
+.achievement-progress{
+    height:7px;
+    margin-top:8px;
+    overflow:hidden;
+    border-radius:999px;
+    background:rgba(255,255,255,.06);
+}
+
+.achievement-progress-fill{
+    height:100%;
+    border-radius:inherit;
+    background:white;
+    transition:.35s ease;
+}
+
+@media(max-width:900px){
+    .achievements-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:650px){
+    .achievements-summary{
+        grid-template-columns:1fr;
+    }
+}
+
+/* =============================
    ANALYTICS
 ============================= */
 
@@ -2298,6 +2431,11 @@ body.auth-ready .app{
             Аналитика
         </button>
 
+        <button class="nav-button" data-page="achievements">
+            <span class="nav-icon">◇</span>
+            Достижения
+        </button>
+
         <button class="nav-button" data-page="profile">
             <span class="nav-icon">○</span>
             Профиль
@@ -2709,6 +2847,44 @@ body.auth-ready .app{
         <div class="chart" id="chart"></div>
 
     </div>
+
+</section>
+
+
+<!-- ACHIEVEMENTS -->
+
+<section class="page" id="page-achievements">
+
+    <div class="page-header">
+
+        <h1 class="page-title">
+            Достижения
+        </h1>
+
+        <p class="page-subtitle">
+            Награды за реальную дисциплину и прогресс.
+        </p>
+
+    </div>
+
+    <div class="achievements-summary">
+        <div class="achievement-summary-card panel">
+            <span>Открыто</span>
+            <strong id="achievementsUnlocked">0 / 6</strong>
+        </div>
+
+        <div class="achievement-summary-card panel">
+            <span>Идеальных дней</span>
+            <strong id="achievementPerfectDays">0</strong>
+        </div>
+
+        <div class="achievement-summary-card panel">
+            <span>Лучшая серия</span>
+            <strong id="achievementBestStreak">0 дней</strong>
+        </div>
+    </div>
+
+    <div class="achievements-grid" id="achievementsGrid"></div>
 
 </section>
 
@@ -3584,6 +3760,162 @@ function renderXP(){
 
 
 /* =================================
+   ACHIEVEMENTS
+================================= */
+
+function achievementStats(){
+
+    const completed = tasks.reduce(
+        (sum,task)=>
+            sum + Object.values(task.completed || {}).filter(Boolean).length,
+        0
+    );
+
+    let perfectDays = 0;
+    let bestStreak = 0;
+    let currentStreak = 0;
+
+    if(tasks.length){
+
+        const createdDates = tasks
+            .map(task=>task.createdAt)
+            .filter(Boolean)
+            .sort();
+
+        if(createdDates.length){
+
+            const cursor = parseDate(createdDates[0]);
+            const today = parseDate(todayKey());
+
+            while(cursor <= today){
+
+                const progress = progressForDate(dateKey(cursor));
+
+                if(progress.total > 0 && progress.percent === 100){
+                    perfectDays++;
+                    currentStreak++;
+                    bestStreak = Math.max(bestStreak,currentStreak);
+                }else{
+                    currentStreak = 0;
+                }
+
+                cursor.setDate(cursor.getDate()+1);
+            }
+        }
+    }
+
+    const level = levelInfo();
+
+    return{
+        completed,
+        perfectDays,
+        bestStreak,
+        xp:level.xp,
+        level:level.level
+    };
+}
+
+function achievementDefinitions(stats){
+
+    return[
+        {
+            id:"first-step",
+            icon:"✓",
+            name:"Первый шаг",
+            description:"Выполни первую задачу в ASCEND.",
+            current:stats.completed,
+            target:1
+        },
+        {
+            id:"ten-done",
+            icon:"⚡",
+            name:"Режим включён",
+            description:"Выполни 10 задач. Дисциплина начинает становиться системой.",
+            current:stats.completed,
+            target:10
+        },
+        {
+            id:"perfect-day",
+            icon:"100",
+            name:"Идеальный день",
+            description:"Закрой 100% задач хотя бы в одном активном дне.",
+            current:stats.perfectDays,
+            target:1
+        },
+        {
+            id:"iron-week",
+            icon:"7",
+            name:"Железная неделя",
+            description:"Собери серию из 7 идеальных дней подряд.",
+            current:stats.bestStreak,
+            target:7
+        },
+        {
+            id:"hundred",
+            icon:"★",
+            name:"Сотня",
+            description:"Выполни 100 задач за всё время.",
+            current:stats.completed,
+            target:100
+        },
+        {
+            id:"level-five",
+            icon:"V",
+            name:"Уровень V",
+            description:"Дойди до 5 уровня ASCEND.",
+            current:stats.level,
+            target:5
+        }
+    ];
+}
+
+function renderAchievements(){
+
+    const grid = $("#achievementsGrid");
+
+    if(!grid){
+        return;
+    }
+
+    const stats = achievementStats();
+    const achievements = achievementDefinitions(stats);
+    const unlocked = achievements.filter(item=>item.current >= item.target).length;
+
+    $("#achievementsUnlocked").textContent = unlocked + " / " + achievements.length;
+    $("#achievementPerfectDays").textContent = stats.perfectDays;
+    $("#achievementBestStreak").textContent = stats.bestStreak + (stats.bestStreak === 1 ? " день" : " дней");
+
+    grid.innerHTML = achievements.map(item=>{
+
+        const isUnlocked = item.current >= item.target;
+        const shownCurrent = Math.min(item.current,item.target);
+        const percent = Math.min(100,Math.round(shownCurrent / item.target * 100));
+
+        return `
+            <div class="achievement-card panel ${isUnlocked ? "unlocked" : "locked"}">
+                <div class="achievement-top">
+                    <div class="achievement-icon">${item.icon}</div>
+                    <div class="achievement-status">${isUnlocked ? "Открыто" : "Закрыто"}</div>
+                </div>
+
+                <div class="achievement-name">${item.name}</div>
+                <div class="achievement-description">${item.description}</div>
+
+                <div class="achievement-progress-row">
+                    <span>${isUnlocked ? "Выполнено" : "Прогресс"}</span>
+                    <strong>${shownCurrent} / ${item.target}</strong>
+                </div>
+
+                <div class="achievement-progress">
+                    <div class="achievement-progress-fill" style="width:${percent}%"></div>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+
+/* =================================
    STREAK
 ================================= */
 
@@ -3945,7 +4277,7 @@ function toggleTask(
     if(task.completed[key]){
 
         toast(
-            "Задача выполнена. +10 очков"
+            "Задача выполнена. +10 XP"
         );
 
     }else{
@@ -4736,6 +5068,10 @@ function openPage(page){
         renderAnalytics();
     }
 
+    if(page === "achievements"){
+        renderAchievements();
+    }
+
     window.scrollTo({
         top:0,
         behavior:"smooth"
@@ -4826,6 +5162,8 @@ function renderEverything(){
     renderSelectedDay();
 
     renderAnalytics();
+
+    renderAchievements();
 
     renderProfile();
 }
