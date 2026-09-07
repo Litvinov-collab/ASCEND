@@ -2446,6 +2446,59 @@ body.auth-ready .app{
     .character-scene.tier-ascended::after{animation:none}
 }
 
+/* =================================
+   CHARACTER FIX — original ASCENDER
+   ================================= */
+.character-scene{
+    perspective:1000px;
+    overflow:hidden;
+}
+
+.real-character{
+    width:230px;
+    height:440px;
+    bottom:34px;
+    transform-origin:center 88%;
+    will-change:transform;
+    animation:
+        characterIdle 4.8s ease-in-out infinite,
+        characterTurn 18s ease-in-out infinite;
+}
+
+.character-image{
+    max-width:100%;
+    max-height:100%;
+}
+
+.character-platform{
+    width:205px;
+}
+
+.character-shadow{
+    width:135px;
+}
+
+@keyframes characterIdle{
+    0%,100%{margin-bottom:0}
+    50%{margin-bottom:4px}
+}
+
+@keyframes characterTurn{
+    0%,100%{transform:translateX(-50%) rotateY(-5deg) rotateZ(0deg) scale(1)}
+    25%{transform:translateX(-50%) rotateY(8deg) rotateZ(.25deg) scale(1.012)}
+    50%{transform:translateX(-50%) rotateY(2deg) rotateZ(0deg) scale(1.006)}
+    75%{transform:translateX(-50%) rotateY(-9deg) rotateZ(-.25deg) scale(1.012)}
+}
+
+@media (max-width:1200px){
+    .real-character{width:205px;height:395px;bottom:38px}
+    .character-platform{width:185px}
+}
+
+@media (prefers-reduced-motion: reduce){
+    .real-character{animation:none;transform:translateX(-50%) rotateY(-4deg)}
+}
+
 </style>
 </head>
 
@@ -3164,10 +3217,6 @@ body.auth-ready .app{
 
         <div class="character-shadow"></div>
 
-        <div class="ascender-3d" id="ascender3d" aria-label="3D персонаж ASCENDER">
-            <div class="ascender-3d-loading" id="ascender3dLoading">Загрузка 3D...</div>
-        </div>
-
         <div class="real-character state-low" id="character">
 
             <img
@@ -3436,7 +3485,6 @@ body.auth-ready .app{
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
 
 <script>
 
@@ -5887,7 +5935,6 @@ function init(){
 
     setupCharacterImage();
 
-    initAscender3D();
 
     updateDaysVisibility();
 
