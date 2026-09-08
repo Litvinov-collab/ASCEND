@@ -2499,6 +2499,125 @@ body.auth-ready .app{
     .real-character{animation:none;transform:translateX(-50%) rotateY(-4deg)}
 }
 
+
+/* =================================
+   ASCENDER ATTRIBUTES
+================================= */
+
+.attributes-panel{
+    margin:0 0 20px;
+    padding:18px;
+}
+
+.attributes-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:15px;
+    margin-bottom:16px;
+}
+
+.attributes-header p{
+    margin-top:5px;
+    color:#777e8b;
+    font-size:12px;
+    line-height:1.45;
+}
+
+.attributes-total{
+    flex:0 0 auto;
+    padding:7px 10px;
+    border:1px solid var(--border);
+    border-radius:999px;
+    background:rgba(255,255,255,.035);
+    color:#b8bec9;
+    font-size:11px;
+    font-weight:800;
+}
+
+.attributes-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+}
+
+.attribute-card{
+    padding:14px;
+    border:1px solid rgba(255,255,255,.065);
+    border-radius:13px;
+    background:rgba(0,0,0,.14);
+}
+
+.attribute-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.attribute-name{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-width:0;
+    font-size:13px;
+    font-weight:800;
+}
+
+.attribute-icon{
+    width:28px;
+    height:28px;
+    flex:0 0 28px;
+    display:grid;
+    place-items:center;
+    border-radius:8px;
+    background:rgba(255,255,255,.055);
+    color:#dfe2e8;
+    font-size:12px;
+}
+
+.attribute-level{
+    color:#fff;
+    font-size:12px;
+    font-weight:900;
+}
+
+.attribute-track{
+    height:7px;
+    overflow:hidden;
+    border-radius:999px;
+    background:rgba(255,255,255,.07);
+}
+
+.attribute-fill{
+    height:100%;
+    width:0;
+    border-radius:inherit;
+    background:white;
+    transition:.45s ease;
+}
+
+.attribute-meta{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:7px;
+    color:#747b87;
+    font-size:10px;
+}
+
+@media(max-width:650px){
+    .attributes-grid{
+        grid-template-columns:1fr;
+    }
+
+    .attributes-header{
+        flex-direction:column;
+    }
+}
+
 </style>
 
 <style>
@@ -3123,6 +3242,18 @@ body.auth-ready .app{
             </div>
         </div>
 
+        <div class="attributes-panel panel">
+            <div class="attributes-header">
+                <div>
+                    <div class="panel-title">Характеристики ASCENDER</div>
+                    <p>Каждая выполненная задача развивает тебя. Характеристики считаются по реальным выполненным задачам.</p>
+                </div>
+                <div class="attributes-total" id="attributesTotal">0 XP характеристик</div>
+            </div>
+
+            <div class="attributes-grid" id="attributesGrid"></div>
+        </div>
+
         <div class="form-group">
 
             <label>
@@ -3338,6 +3469,10 @@ body.auth-ready .app{
 
                 <option>
                     Личное
+                </option>
+
+                <option>
+                    Финансы / Трейдинг
                 </option>
 
                 <option>
@@ -5290,6 +5425,213 @@ function renderAnalytics(){
 }
 
 
+
+/* =================================
+   ASCENDER ATTRIBUTES
+================================= */
+
+const ATTRIBUTE_DEFINITIONS = [
+    { id:"discipline", name:"Дисциплина", icon:"⚡" },
+    { id:"focus",      name:"Фокус",       icon:"◈" },
+    { id:"strength",   name:"Сила",        icon:"◆" },
+    { id:"knowledge",  name:"Знания",      icon:"◇" },
+    { id:"finance",    name:"Финансы",     icon:"$" }
+];
+
+function attributeXPByTask(task){
+
+    const category =
+        String(task.category || "")
+            .trim()
+            .toLowerCase();
+
+    const result = {
+        discipline:5,
+        focus:0,
+        strength:0,
+        knowledge:0,
+        finance:0
+    };
+
+    if(category.includes("спорт")){
+        result.strength += 10;
+    }
+    else if(
+        category.includes("работ")
+        || category.includes("проект")
+    ){
+        result.focus += 10;
+    }
+    else if(
+        category.includes("уч")
+        || category.includes("знан")
+    ){
+        result.knowledge += 10;
+    }
+    else if(
+        category.includes("финанс")
+        || category.includes("трейд")
+    ){
+        result.finance += 10;
+    }
+    else if(category.includes("дисцип")){
+        result.discipline += 10;
+    }
+    else if(category.includes("лич")){
+        result.focus += 5;
+    }
+    else{
+        result.focus += 5;
+    }
+
+    return result;
+}
+
+function calculateAttributes(){
+
+    const totals = {
+        discipline:0,
+        focus:0,
+        strength:0,
+        knowledge:0,
+        finance:0
+    };
+
+    tasks.forEach(task=>{
+
+        if(!task.completed){
+            return;
+        }
+
+        const gains =
+            attributeXPByTask(task);
+
+        Object.entries(
+            task.completed
+        ).forEach(([key,done])=>{
+
+            if(!done){
+                return;
+            }
+
+            if(!taskAvailableOnDate(task,key)){
+                return;
+            }
+
+            Object.keys(totals).forEach(
+                attribute=>{
+                    totals[attribute] +=
+                        gains[attribute] || 0;
+                }
+            );
+        });
+    });
+
+    return totals;
+}
+
+function attributeLevelInfo(xp){
+
+    const xpPerLevel = 100;
+
+    const level =
+        Math.floor(xp / xpPerLevel) + 1;
+
+    const xpIntoLevel =
+        xp % xpPerLevel;
+
+    const percent =
+        Math.min(
+            100,
+            Math.round(
+                xpIntoLevel / xpPerLevel * 100
+            )
+        );
+
+    return{
+        level,
+        xp,
+        xpIntoLevel,
+        xpNeeded:xpPerLevel,
+        percent
+    };
+}
+
+function renderAttributes(){
+
+    const grid =
+        $("#attributesGrid");
+
+    if(!grid){
+        return;
+    }
+
+    const totals =
+        calculateAttributes();
+
+    const totalAttributeXP =
+        Object.values(totals)
+            .reduce(
+                (sum,value)=>sum + value,
+                0
+            );
+
+    const totalElement =
+        $("#attributesTotal");
+
+    if(totalElement){
+        totalElement.textContent =
+            totalAttributeXP
+            + " XP характеристик";
+    }
+
+    grid.innerHTML =
+        ATTRIBUTE_DEFINITIONS
+            .map(attribute=>{
+
+                const info =
+                    attributeLevelInfo(
+                        totals[attribute.id] || 0
+                    );
+
+                return `
+                    <div class="attribute-card">
+                        <div class="attribute-top">
+                            <div class="attribute-name">
+                                <span class="attribute-icon">
+                                    ${attribute.icon}
+                                </span>
+                                <span>
+                                    ${attribute.name}
+                                </span>
+                            </div>
+
+                            <div class="attribute-level">
+                                LVL ${info.level}
+                            </div>
+                        </div>
+
+                        <div class="attribute-track">
+                            <div
+                                class="attribute-fill"
+                                style="width:${info.percent}%"
+                            ></div>
+                        </div>
+
+                        <div class="attribute-meta">
+                            <span>
+                                ${info.xpIntoLevel} / ${info.xpNeeded} XP
+                            </span>
+                            <span>
+                                Всего: ${info.xp}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            })
+            .join("");
+}
+
 /* =================================
    PROFILE
 ================================= */
@@ -5322,6 +5664,8 @@ function renderProfile(){
 
     $("#profileStreak").textContent =
         calculateStreak();
+
+    renderAttributes();
 }
 
 
