@@ -544,6 +544,21 @@ button{
     background:rgba(255,90,90,.08);
 }
 
+.edit{
+    width:30px;
+    height:30px;
+    border:none;
+    border-radius:7px;
+    background:transparent;
+    color:#7d8490;
+    transition:.2s;
+}
+
+.edit:hover{
+    color:white;
+    background:rgba(255,255,255,.08);
+}
+
 .empty{
     padding:36px 15px;
 
@@ -3654,6 +3669,7 @@ let selectedDayKey = todayKey();
 let taskCreateDateKey = todayKey();
 
 let toastTimer = null;
+let editingTaskId = null;
 
 
 /* =================================
@@ -4330,6 +4346,16 @@ function taskHTML(
             </span>
 
             <button
+                    class="edit"
+                    data-action="edit"
+                    data-id="${task.id}"
+                    title="Редактировать"
+                    type="button"
+                >
+                    ✎
+                </button>
+
+                <button
                 class="delete"
                 data-action="delete"
                 data-id="${task.id}"
@@ -4937,6 +4963,110 @@ function toggleTask(
     }
 }
 
+
+
+/* =================================
+   EDIT TASK
+================================= */
+
+function openEditTask(taskId){
+
+    const task =
+        tasks.find(
+            item => item.id === taskId
+        );
+
+    if(!task){
+        return;
+    }
+
+    editingTaskId = taskId;
+    taskCreateDateKey = task.createdAt || todayKey();
+
+    $("#taskTitle").value = task.title || "";
+    $("#taskCategory").value = task.category || "Другое";
+    $("#taskPriority").value = task.priority || "Средний";
+
+    const repeatRadio =
+        document.querySelector(
+            `input[name="repeat"][value="${task.repeat || "once"}"]`
+        );
+
+    if(repeatRadio){
+        repeatRadio.checked = true;
+    }
+
+    $$(".day-option input").forEach(input=>{
+        input.checked =
+            Array.isArray(task.days)
+            && task.days.includes(
+                Number(input.value)
+            );
+    });
+
+    updateDaysVisibility();
+
+    const modalTitle =
+        $("#modal .modal-title h2")
+        || $("#modal .modal-title h3")
+        || $("#modal .modal-title strong");
+
+    if(modalTitle){
+        modalTitle.dataset.originalText =
+            modalTitle.dataset.originalText
+            || modalTitle.textContent;
+
+        modalTitle.textContent =
+            "Редактировать задачу";
+    }
+
+    const submitButton =
+        $('#taskForm button[type="submit"]');
+
+    if(submitButton){
+        submitButton.dataset.originalText =
+            submitButton.dataset.originalText
+            || submitButton.textContent;
+
+        submitButton.textContent =
+            "Сохранить";
+    }
+
+    $("#modal").classList.add("open");
+
+    setTimeout(()=>{
+        $("#taskTitle").focus();
+    },50);
+}
+
+function resetEditMode(){
+
+    editingTaskId = null;
+
+    const modalTitle =
+        $("#modal .modal-title h2")
+        || $("#modal .modal-title h3")
+        || $("#modal .modal-title strong");
+
+    if(
+        modalTitle
+        && modalTitle.dataset.originalText
+    ){
+        modalTitle.textContent =
+            modalTitle.dataset.originalText;
+    }
+
+    const submitButton =
+        $('#taskForm button[type="submit"]');
+
+    if(
+        submitButton
+        && submitButton.dataset.originalText
+    ){
+        submitButton.textContent =
+            submitButton.dataset.originalText;
+    }
+}
 
 /* =================================
    DELETE TASK
@@ -5742,6 +5872,8 @@ function renderCurrentDate(){
 
 function openModal(targetDate = todayKey()){
 
+    resetEditMode();
+
     taskCreateDateKey = targetDate;
 
     $("#taskForm").reset();
@@ -5845,6 +5977,40 @@ function submitTask(event){
 
             return;
         }
+    }
+
+    if(editingTaskId){
+
+        const task =
+            tasks.find(
+                item => item.id === editingTaskId
+            );
+
+        if(task){
+            task.title = title.trim();
+            task.category = category;
+            task.priority = priority;
+            task.repeat = repeat;
+            task.days = days;
+
+            /* История выполнения сохраняется. */
+            if(!task.completed){
+                task.completed = {};
+            }
+        }
+
+        saveTasks();
+
+        closeModal();
+        resetEditMode();
+
+        renderEverything();
+
+        toast(
+            "Задача обновлена."
+        );
+
+        return;
     }
 
     tasks.push(
@@ -6136,6 +6302,21 @@ function setupEvents(){
                 toggleTask(
                     toggle.dataset.id,
                     toggle.dataset.date
+                );
+
+                return;
+            }
+
+
+            const edit =
+                event.target.closest(
+                    '[data-action="edit"]'
+                );
+
+            if(edit){
+
+                openEditTask(
+                    edit.dataset.id
                 );
 
                 return;
