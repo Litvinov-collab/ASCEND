@@ -525,6 +525,10 @@ button{
 }
 
 .delete{
+    position:relative;
+    z-index:3;
+    pointer-events:auto;
+    flex:0 0 30px;
     width:30px;
     height:30px;
 
@@ -545,6 +549,10 @@ button{
 }
 
 .edit{
+    position:relative;
+    z-index:3;
+    pointer-events:auto;
+    flex:0 0 30px;
     width:30px;
     height:30px;
     border:none;
@@ -4984,8 +4992,8 @@ function openEditTask(taskId){
     taskCreateDateKey = task.createdAt || todayKey();
 
     $("#taskTitle").value = task.title || "";
-    $("#taskCategory").value = task.category || "Другое";
-    $("#taskPriority").value = task.priority || "Средний";
+    $("#category").value = task.category || "Другое";
+    $("#priority").value = task.priority || "normal";
 
     const repeatRadio =
         document.querySelector(
