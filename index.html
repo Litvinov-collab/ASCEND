@@ -4327,10 +4327,21 @@ function renderDiscipline(){
 }
 
 function toggleDiscipline(ruleId,key){
+    const before = disciplineProgress(key).percent;
+    const beforeBonus = disciplineXPForPercent(before);
     const entry = disciplineEntry(key);
     entry[ruleId] = !entry[ruleId];
+    const after = disciplineProgress(key).percent;
+    const afterBonus = disciplineXPForPercent(after);
+
     saveCloudData();
-    renderDiscipline();
+    renderEverything();
+
+    if(afterBonus > beforeBonus){
+        toast(`Строгая дисциплина: ${after}% · +${afterBonus - beforeBonus} XP`);
+    }else if(afterBonus < beforeBonus){
+        toast(`Дисциплина снижена до ${after}%. Бонус XP пересчитан.`);
+    }
 }
 
 function moveDisciplineDay(offset){
@@ -4344,27 +4355,34 @@ function moveDisciplineDay(offset){
    XP / LEVELS
 ================================= */
 
-function totalXP(){
-
+function taskXP(){
     let xp = 0;
-
     tasks.forEach(task=>{
-
-        if(!task.completed){
-            return;
-        }
-
-        Object.values(
-            task.completed
-        ).forEach(done=>{
-
-            if(done){
-                xp += 10;
-            }
+        if(!task.completed) return;
+        Object.values(task.completed).forEach(done=>{
+            if(done) xp += 10;
         });
     });
-
     return xp;
+}
+
+function disciplineXPForPercent(percent){
+    // Бонус начисляется один раз за итоговый процент конкретного дня.
+    // 85–89% = +10 XP, 90–99% = +20 XP, 100% = +35 XP.
+    if(percent === 100) return 35;
+    if(percent >= 90) return 20;
+    if(percent >= 85) return 10;
+    return 0;
+}
+
+function totalDisciplineXP(){
+    return Object.keys(disciplineLog || {}).reduce((sum,key)=>{
+        return sum + disciplineXPForPercent(disciplineProgress(key).percent);
+    },0);
+}
+
+function totalXP(){
+    return taskXP() + totalDisciplineXP();
 }
 
 function totalScore(){
@@ -4433,6 +4451,11 @@ function renderXP(){
             + " осталось "
             + (info.xpNeeded - info.xpIntoLevel)
             + " XP";
+    }
+
+    const disciplineBonus = totalDisciplineXP();
+    if(xpHint && disciplineBonus > 0){
+        xpHint.textContent += " · Дисциплина дала " + disciplineBonus + " XP";
     }
 
     const profileXpLevel = $("#profileXpLevel");
@@ -5221,9 +5244,9 @@ function renderDashboard(){
         progress.percent
     );
 
-    updateCharacter(
-        progress.percent
-    );
+    const disciplineToday = disciplineProgress(key).percent;
+    const characterPercent = Math.round((progress.percent + disciplineToday) / 2);
+    updateCharacter(characterPercent);
 }
 
 
