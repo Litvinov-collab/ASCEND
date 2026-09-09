@@ -2654,6 +2654,199 @@ body.auth-ready .app{
     max-height: 88% !important;
     object-fit: contain !important;
 }
+
+
+/* =================================
+   STRICT DISCIPLINE
+================================= */
+.discipline-hero{
+    display:grid;
+    grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);
+    gap:15px;
+    margin-bottom:15px;
+}
+
+.discipline-score-card,
+.discipline-rules-card{
+    padding:20px;
+}
+
+.discipline-score-wrap{
+    display:flex;
+    align-items:center;
+    gap:22px;
+    min-height:170px;
+}
+
+.discipline-circle{
+    width:145px;
+    height:145px;
+    flex:0 0 145px;
+    position:relative;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    background:conic-gradient(white var(--discipline-progress,0%),rgba(255,255,255,.07) 0);
+    transition:.45s ease;
+}
+
+.discipline-circle::after{
+    content:"";
+    position:absolute;
+    width:116px;
+    height:116px;
+    border-radius:50%;
+    background:#0b0d12;
+}
+
+.discipline-circle strong{
+    position:relative;
+    z-index:2;
+    font-size:31px;
+    font-weight:900;
+}
+
+.discipline-score-copy h3{
+    font-size:22px;
+    margin-bottom:8px;
+}
+
+.discipline-score-copy p{
+    color:#858c98;
+    line-height:1.55;
+    font-size:13px;
+}
+
+.discipline-stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-top:15px;
+}
+
+.discipline-stat{
+    padding:14px;
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:12px;
+    background:rgba(0,0,0,.14);
+}
+
+.discipline-stat span{
+    display:block;
+    color:#777e89;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+}
+
+.discipline-stat strong{
+    display:block;
+    margin-top:7px;
+    font-size:19px;
+}
+
+.discipline-date-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:15px;
+}
+
+.discipline-date-nav{
+    display:flex;
+    gap:7px;
+}
+
+.discipline-date-nav button{
+    height:36px;
+    min-width:36px;
+    padding:0 11px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    background:rgba(255,255,255,.03);
+    color:white;
+}
+
+.discipline-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.discipline-rule{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:13px;
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:11px;
+    background:rgba(0,0,0,.14);
+    transition:.2s ease;
+}
+
+.discipline-rule:hover{
+    border-color:rgba(255,255,255,.16);
+}
+
+.discipline-rule.done{
+    background:rgba(98,255,174,.035);
+    border-color:rgba(98,255,174,.16);
+}
+
+.discipline-check{
+    width:29px;
+    height:29px;
+    flex:0 0 29px;
+    border:1px solid #626976;
+    border-radius:8px;
+    background:transparent;
+    color:black;
+    font-weight:900;
+}
+
+.discipline-rule.done .discipline-check{
+    background:white;
+    border-color:white;
+}
+
+.discipline-rule-copy{
+    min-width:0;
+    flex:1;
+}
+
+.discipline-rule-title{
+    font-size:14px;
+    font-weight:750;
+}
+
+.discipline-rule-note{
+    margin-top:4px;
+    color:#737a86;
+    font-size:11px;
+    line-height:1.4;
+}
+
+.discipline-badge{
+    flex:0 0 auto;
+    padding:5px 8px;
+    border-radius:999px;
+    background:rgba(130,116,255,.1);
+    color:#bbb4ff;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:.06em;
+}
+
+@media(max-width:900px){
+    .discipline-hero{grid-template-columns:1fr}
+}
+
+@media(max-width:650px){
+    .discipline-score-wrap{align-items:flex-start;flex-direction:column}
+    .discipline-stats{grid-template-columns:1fr}
+    .discipline-date-row{align-items:flex-start;flex-direction:column}
+}
 </style>
 
 </head>
@@ -2739,6 +2932,11 @@ body.auth-ready .app{
         <button class="nav-button" data-page="tasks">
             <span class="nav-icon">✓</span>
             Задачи
+        </button>
+
+        <button class="nav-button" data-page="discipline">
+            <span class="nav-icon">◆</span>
+            Дисциплина
         </button>
 
         <button class="nav-button" data-page="analytics">
@@ -3203,6 +3401,52 @@ body.auth-ready .app{
 
 </section>
 
+
+
+<!-- STRICT DISCIPLINE -->
+
+<section class="page" id="page-discipline">
+
+    <div class="page-header">
+        <h1 class="page-title">Строгая дисциплина</h1>
+        <p class="page-subtitle">Не мотивация. Система правил, которые выполняются каждый день.</p>
+    </div>
+
+    <div class="discipline-hero">
+        <div class="discipline-score-card panel">
+            <div class="discipline-score-wrap">
+                <div class="discipline-circle" id="disciplineCircle">
+                    <strong id="disciplinePercent">0%</strong>
+                </div>
+                <div class="discipline-score-copy">
+                    <h3 id="disciplineVerdict">День только начинается</h3>
+                    <p id="disciplineMessage">Отмечай только то, что реально выполнено. Цель строгого дня — минимум 85%.</p>
+                </div>
+            </div>
+            <div class="discipline-stats">
+                <div class="discipline-stat"><span>Выполнено</span><strong id="disciplineDone">0 / 10</strong></div>
+                <div class="discipline-stat"><span>Серия ≥85%</span><strong id="disciplineStreak">0 дней</strong></div>
+                <div class="discipline-stat"><span>Среднее 7 дней</span><strong id="disciplineWeekAvg">0%</strong></div>
+            </div>
+        </div>
+
+        <div class="discipline-rules-card panel">
+            <div class="discipline-date-row">
+                <div>
+                    <div class="panel-title">Правила дня</div>
+                    <div id="disciplineDate" style="margin-top:5px;color:#777e89;font-size:12px;">—</div>
+                </div>
+                <div class="discipline-date-nav">
+                    <button id="disciplinePrevDay" type="button">‹</button>
+                    <button id="disciplineToday" type="button">Сегодня</button>
+                    <button id="disciplineNextDay" type="button">›</button>
+                </div>
+            </div>
+            <div class="discipline-list" id="disciplineList"></div>
+        </div>
+    </div>
+
+</section>
 
 <!-- PROFILE -->
 
@@ -3679,6 +3923,9 @@ let taskCreateDateKey = todayKey();
 let toastTimer = null;
 let editingTaskId = null;
 
+let disciplineLog = {};
+let disciplineSelectedDayKey = todayKey();
+
 
 /* =================================
    HELPERS
@@ -3781,7 +4028,10 @@ async function saveCloudData(){
         .upsert({
             user_id: window.ascendCurrentUserId,
             username: username,
-            tasks: tasks,
+            tasks: {
+                items: tasks,
+                discipline: disciplineLog
+            },
             updated_at: new Date().toISOString()
         },{
             onConflict:"user_id"
@@ -3980,6 +4230,115 @@ function progressForDate(key){
     };
 }
 
+
+
+/* =================================
+   STRICT DISCIPLINE
+================================= */
+
+const DISCIPLINE_RULES = [
+    {id:"wake", title:"Подъём по режиму", note:"Встал вовремя. Без долгого лежания и переноса будильника.", tag:"РЕЖИМ"},
+    {id:"morning", title:"Утренняя рутина без залипания", note:"Умылся, привёл себя в порядок и не потерял утро в телефоне.", tag:"ФОКУС"},
+    {id:"sport", title:"Минимум 20 минут спорта", note:"Тренировка, бег, турники, упражнения или другая физическая нагрузка.", tag:"ТЕЛО"},
+    {id:"study", title:"Практика / учёба выполнена", note:"Основные обязательства по колледжу, практике или работе закрыты.", tag:"ДЕЛО"},
+    {id:"rest", title:"Отдых после возвращения ≤ 60 минут", note:"Отдохнул, но не превратил паузу в потерянный вечер.", tag:"КОНТРОЛЬ"},
+    {id:"ascend", title:"ASCEND — минимум 60 минут", note:"Есть конкретный результат по проекту, а не просто открытый редактор.", tag:"ПРОЕКТ"},
+    {id:"market", title:"Рынок подготовлен по плану", note:"D1 → H1 → M5, ключевые зоны и важные новости до сделки.", tag:"ТРЕЙДИНГ"},
+    {id:"trade", title:"Торговая дисциплина соблюдена", note:"0–1 сделка, только сетап, RR ≥ 1:2, стоп не расширял, без усреднения.", tag:"РИСК"},
+    {id:"journal", title:"День и сделка зафиксированы", note:"Журнал, скрин сделки и короткий разбор выполнены. Если сделки не было — отмечен no trade.", tag:"АНАЛИЗ"},
+    {id:"sleep", title:"Вечерний режим соблюдён", note:"Игры/YouTube только после главных задач; подготовка ко сну 22:30, сон около 23:00.", tag:"ФИНИШ"}
+];
+
+function disciplineEntry(key){
+    if(!disciplineLog[key] || typeof disciplineLog[key] !== "object"){
+        disciplineLog[key] = {};
+    }
+    return disciplineLog[key];
+}
+
+function disciplineProgress(key){
+    const entry = disciplineLog[key] || {};
+    const completed = DISCIPLINE_RULES.filter(rule=>Boolean(entry[rule.id])).length;
+    const total = DISCIPLINE_RULES.length;
+    return {completed,total,percent: total ? Math.round(completed/total*100) : 0};
+}
+
+function disciplineStreak(){
+    let streak = 0;
+    const cursor = parseDate(todayKey());
+    for(let i=0;i<365;i++){
+        const info = disciplineProgress(dateKey(cursor));
+        if(info.percent < 85) break;
+        streak++;
+        cursor.setDate(cursor.getDate()-1);
+    }
+    return streak;
+}
+
+function disciplineWeekAverage(){
+    const cursor = parseDate(todayKey());
+    let sum = 0;
+    for(let i=0;i<7;i++){
+        sum += disciplineProgress(dateKey(cursor)).percent;
+        cursor.setDate(cursor.getDate()-1);
+    }
+    return Math.round(sum/7);
+}
+
+function disciplineVerdict(percent){
+    if(percent === 100) return ["Идеальная дисциплина","10 из 10. День закрыт полностью — ничего добавлять не нужно."];
+    if(percent >= 85) return ["Строгий день выполнен","Порог дисциплины пройден. Теперь главное — не ломать серию."];
+    if(percent >= 60) return ["День ещё можно дожать","Основа есть, но до строгого стандарта 85% пока не хватает."];
+    if(percent > 0) return ["Дисциплина проседает","Не пытайся компенсировать всё сразу. Закрой следующий конкретный пункт."];
+    return ["День только начинается","Отмечай только то, что реально выполнено. Цель строгого дня — минимум 85%."];
+}
+
+function renderDiscipline(){
+    const list = $("#disciplineList");
+    if(!list) return;
+
+    const key = disciplineSelectedDayKey;
+    const entry = disciplineLog[key] || {};
+    const info = disciplineProgress(key);
+    const date = parseDate(key);
+    const verdict = disciplineVerdict(info.percent);
+
+    $("#disciplineDate").textContent = date.toLocaleDateString("ru-RU",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    $("#disciplinePercent").textContent = info.percent + "%";
+    $("#disciplineCircle").style.setProperty("--discipline-progress",info.percent + "%");
+    $("#disciplineDone").textContent = info.completed + " / " + info.total;
+    $("#disciplineStreak").textContent = disciplineStreak() + " дней";
+    $("#disciplineWeekAvg").textContent = disciplineWeekAverage() + "%";
+    $("#disciplineVerdict").textContent = verdict[0];
+    $("#disciplineMessage").textContent = verdict[1];
+
+    list.innerHTML = DISCIPLINE_RULES.map(rule=>{
+        const done = Boolean(entry[rule.id]);
+        return `
+            <div class="discipline-rule ${done ? "done" : ""}">
+                <button class="discipline-check" type="button" data-discipline-id="${rule.id}" data-discipline-date="${key}">${done ? "✓" : ""}</button>
+                <div class="discipline-rule-copy">
+                    <div class="discipline-rule-title">${rule.title}</div>
+                    <div class="discipline-rule-note">${rule.note}</div>
+                </div>
+                <span class="discipline-badge">${rule.tag}</span>
+            </div>`;
+    }).join("");
+}
+
+function toggleDiscipline(ruleId,key){
+    const entry = disciplineEntry(key);
+    entry[ruleId] = !entry[ruleId];
+    saveCloudData();
+    renderDiscipline();
+}
+
+function moveDisciplineDay(offset){
+    const date = parseDate(disciplineSelectedDayKey);
+    date.setDate(date.getDate()+offset);
+    disciplineSelectedDayKey = dateKey(date);
+    renderDiscipline();
+}
 
 /* =================================
    XP / LEVELS
@@ -6104,6 +6463,10 @@ function openPage(page){
         renderAchievements();
     }
 
+    if(page === "discipline"){
+        renderDiscipline();
+    }
+
     window.scrollTo({
         top:0,
         behavior:"smooth"
@@ -6127,6 +6490,7 @@ async function resetApp(){
     }
 
     tasks = [];
+    disciplineLog = {};
     username = "ASCENDER";
 
     await saveCloudData();
@@ -6196,6 +6560,8 @@ function renderEverything(){
     renderAnalytics();
 
     renderAchievements();
+
+    renderDiscipline();
 
     renderProfile();
 }
@@ -6346,6 +6712,20 @@ function setupEvents(){
             }
 
 
+            const disciplineToggle =
+                event.target.closest(
+                    "[data-discipline-id]"
+                );
+
+            if(disciplineToggle){
+                toggleDiscipline(
+                    disciplineToggle.dataset.disciplineId,
+                    disciplineToggle.dataset.disciplineDate
+                );
+                return;
+            }
+
+
             const calendarDay =
                 event.target.closest(
                     "[data-calendar-date]"
@@ -6410,6 +6790,25 @@ function setupEvents(){
     $("#nextMonth2").addEventListener(
         "click",
         nextMonth
+    );
+
+
+    $("#disciplinePrevDay").addEventListener(
+        "click",
+        ()=>moveDisciplineDay(-1)
+    );
+
+    $("#disciplineNextDay").addEventListener(
+        "click",
+        ()=>moveDisciplineDay(1)
+    );
+
+    $("#disciplineToday").addEventListener(
+        "click",
+        ()=>{
+            disciplineSelectedDayKey = todayKey();
+            renderDiscipline();
+        }
     );
 
 
@@ -6555,7 +6954,21 @@ async function loadCloudData(user){
 
     if(data){
         username = data.username || "ASCENDER";
-        tasks = Array.isArray(data.tasks) ? data.tasks : [];
+
+        if(Array.isArray(data.tasks)){
+            // Старый формат ASCEND: только массив задач.
+            tasks = data.tasks;
+            disciplineLog = {};
+        }else if(data.tasks && typeof data.tasks === "object"){
+            // Новый формат: задачи + строгая дисциплина в одном JSON-поле.
+            tasks = Array.isArray(data.tasks.items) ? data.tasks.items : [];
+            disciplineLog = data.tasks.discipline && typeof data.tasks.discipline === "object"
+                ? data.tasks.discipline
+                : {};
+        }else{
+            tasks = [];
+            disciplineLog = {};
+        }
         return;
     }
 
@@ -6570,7 +6983,10 @@ async function loadCloudData(user){
         .insert({
             user_id:user.id,
             username:username,
-            tasks:tasks
+            tasks:{
+                items:tasks,
+                discipline:disciplineLog
+            }
         });
 
     if(createError){
