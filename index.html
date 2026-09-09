@@ -4243,6 +4243,7 @@ const DISCIPLINE_RULES = [
     {id:"study", title:"Практика / учёба выполнена", note:"Основные обязательства по колледжу, практике или работе закрыты.", tag:"ДЕЛО"},
     {id:"rest", title:"Отдых после возвращения ≤ 60 минут", note:"Отдохнул, но не превратил паузу в потерянный вечер.", tag:"КОНТРОЛЬ"},
     {id:"ascend", title:"ASCEND — минимум 60 минут", note:"Есть конкретный результат по проекту, а не просто открытый редактор.", tag:"ПРОЕКТ"},
+    {id:"buyers", title:"Поиск покупателей сайтов", note:"Сделан реальный шаг к продаже: поиск новых клиентов, контактов или отправка предложений.", tag:"ПРОДАЖИ"},
     {id:"market", title:"Рынок подготовлен по плану", note:"D1 → H1 → M5, ключевые зоны и важные новости до сделки.", tag:"ТРЕЙДИНГ"},
     {id:"trade", title:"Торговая дисциплина соблюдена", note:"0–1 сделка, только сетап, RR ≥ 1:2, стоп не расширял, без усреднения.", tag:"РИСК"},
     {id:"journal", title:"День и сделка зафиксированы", note:"Журнал, скрин сделки и короткий разбор выполнены. Если сделки не было — отмечен no trade.", tag:"АНАЛИЗ"},
@@ -4286,7 +4287,7 @@ function disciplineWeekAverage(){
 }
 
 function disciplineVerdict(percent){
-    if(percent === 100) return ["Идеальная дисциплина","10 из 10. День закрыт полностью — ничего добавлять не нужно."];
+    if(percent === 100) return ["Идеальная дисциплина",`${DISCIPLINE_RULES.length} из ${DISCIPLINE_RULES.length}. День закрыт полностью — ничего добавлять не нужно.`];
     if(percent >= 85) return ["Строгий день выполнен","Порог дисциплины пройден. Теперь главное — не ломать серию."];
     if(percent >= 60) return ["День ещё можно дожать","Основа есть, но до строгого стандарта 85% пока не хватает."];
     if(percent > 0) return ["Дисциплина проседает","Не пытайся компенсировать всё сразу. Закрой следующий конкретный пункт."];
@@ -6007,6 +6008,40 @@ function attributeXPByTask(task){
     return result;
 }
 
+function attributeXPByDisciplineRule(ruleId){
+
+    const base = {
+        discipline:5,
+        focus:0,
+        strength:0,
+        knowledge:0,
+        finance:0
+    };
+
+    const bonusByRule = {
+        wake:{focus:10},
+        morning:{focus:10},
+        sport:{strength:10},
+        study:{knowledge:10},
+        rest:{focus:10},
+        ascend:{focus:10},
+        buyers:{finance:10},
+        market:{knowledge:5,finance:5},
+        trade:{focus:5,finance:5},
+        journal:{knowledge:10},
+        sleep:{focus:10}
+    };
+
+    const bonus = bonusByRule[ruleId] || {};
+
+    Object.keys(base).forEach(attribute=>{
+        base[attribute] += bonus[attribute] || 0;
+    });
+
+    return base;
+}
+
+
 function calculateAttributes(){
 
     const totals = {
@@ -6044,6 +6079,26 @@ function calculateAttributes(){
                         gains[attribute] || 0;
                 }
             );
+        });
+    });
+
+    Object.entries(disciplineLog || {}).forEach(([key,entry])=>{
+
+        if(!entry || typeof entry !== "object"){
+            return;
+        }
+
+        DISCIPLINE_RULES.forEach(rule=>{
+
+            if(!entry[rule.id]){
+                return;
+            }
+
+            const gains = attributeXPByDisciplineRule(rule.id);
+
+            Object.keys(totals).forEach(attribute=>{
+                totals[attribute] += gains[attribute] || 0;
+            });
         });
     });
 
