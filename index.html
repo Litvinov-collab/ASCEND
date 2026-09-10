@@ -2847,6 +2847,141 @@ body.auth-ready .app{
     .discipline-stats{grid-template-columns:1fr}
     .discipline-date-row{align-items:flex-start;flex-direction:column}
 }
+
+
+/* =================================
+   ASCENDER — VISIBLE CHARACTER EVOLUTION
+   ================================= */
+/* Немного увеличенный персонаж, стопы остаются на центре платформы */
+.real-character{
+    width:250px;
+    height:480px;
+    bottom:30px;
+    transform-origin:center 91%;
+}
+
+.character-platform{
+    width:220px;
+    bottom:18px;
+}
+
+.character-shadow{
+    width:145px;
+    bottom:22px;
+}
+
+/* Эволюция теперь заметна и на character.png, не только в WebGL */
+.character-scene.tier-rookie .character-image{
+    filter:contrast(1.04) brightness(.88) saturate(.86)
+           drop-shadow(0 22px 30px rgba(0,0,0,.78));
+}
+
+.character-scene.tier-focused .character-image{
+    filter:contrast(1.06) brightness(.94) saturate(.96)
+           drop-shadow(0 22px 30px rgba(0,0,0,.76))
+           drop-shadow(0 0 12px rgba(130,116,255,.12));
+}
+
+.character-scene.tier-disciplined .character-image{
+    filter:contrast(1.08) brightness(1) saturate(1.04)
+           drop-shadow(0 22px 30px rgba(0,0,0,.72))
+           drop-shadow(0 0 18px rgba(130,116,255,.22));
+}
+
+.character-scene.tier-ascended .character-image{
+    filter:contrast(1.1) brightness(1.06) saturate(1.08)
+           drop-shadow(0 22px 30px rgba(0,0,0,.7))
+           drop-shadow(0 0 18px rgba(255,255,255,.14))
+           drop-shadow(0 0 34px rgba(130,116,255,.34));
+}
+
+/* Световой знак развития за спиной */
+.character-scene.tier-focused .real-character::before,
+.character-scene.tier-disciplined .real-character::before,
+.character-scene.tier-ascended .real-character::before{
+    content:"";
+    position:absolute;
+    z-index:-1;
+    left:50%;
+    top:47%;
+    width:155px;
+    height:315px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    pointer-events:none;
+}
+
+.character-scene.tier-focused .real-character::before{
+    border:1px solid rgba(130,116,255,.10);
+    box-shadow:0 0 32px rgba(130,116,255,.08);
+}
+
+.character-scene.tier-disciplined .real-character::before{
+    width:175px;
+    height:345px;
+    border:1px solid rgba(130,116,255,.20);
+    box-shadow:0 0 42px rgba(130,116,255,.16), inset 0 0 34px rgba(130,116,255,.05);
+}
+
+.character-scene.tier-ascended .real-character::before{
+    width:195px;
+    height:375px;
+    border:1px solid rgba(238,240,255,.28);
+    box-shadow:0 0 55px rgba(130,116,255,.28), inset 0 0 44px rgba(130,116,255,.09);
+    animation:characterEvolutionAura 3.6s ease-in-out infinite;
+}
+
+/* Маленький энергетический ранг над платформой */
+.character-scene.tier-focused .real-character::after,
+.character-scene.tier-disciplined .real-character::after,
+.character-scene.tier-ascended .real-character::after{
+    position:absolute;
+    left:50%;
+    bottom:2px;
+    transform:translateX(-50%);
+    z-index:5;
+    padding:4px 8px;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:999px;
+    background:rgba(5,6,9,.68);
+    backdrop-filter:blur(7px);
+    color:#c9c5ff;
+    font-size:7px;
+    font-weight:900;
+    letter-spacing:.14em;
+    white-space:nowrap;
+    pointer-events:none;
+    opacity:.82;
+}
+
+.character-scene.tier-focused .real-character::after{content:"FOCUSED";}
+.character-scene.tier-disciplined .real-character::after{content:"DISCIPLINED";}
+.character-scene.tier-ascended .real-character::after{content:"ASCENDED"; color:#fff; box-shadow:0 0 18px rgba(130,116,255,.24);}
+
+.character-scene.tier-focused .character-platform{
+    box-shadow:0 0 14px rgba(255,255,255,.22),0 0 32px rgba(112,98,255,.72),inset 0 0 20px rgba(120,105,255,.22);
+}
+.character-scene.tier-disciplined .character-platform{
+    box-shadow:0 0 16px rgba(255,255,255,.28),0 0 42px rgba(112,98,255,.82),inset 0 0 24px rgba(120,105,255,.28);
+}
+.character-scene.tier-ascended .character-platform{
+    border-color:rgba(255,255,255,.92);
+    box-shadow:0 0 18px rgba(255,255,255,.38),0 0 58px rgba(112,98,255,.95),inset 0 0 30px rgba(120,105,255,.36);
+}
+
+@keyframes characterEvolutionAura{
+    0%,100%{opacity:.58;transform:translate(-50%,-50%) scale(.97)}
+    50%{opacity:1;transform:translate(-50%,-50%) scale(1.035)}
+}
+
+@media(max-width:1200px){
+    .real-character{width:220px;height:425px;bottom:34px}
+    .character-platform{width:195px}
+}
+
+@media(prefers-reduced-motion:reduce){
+    .character-scene.tier-ascended .real-character::before{animation:none}
+}
 </style>
 
 </head>
