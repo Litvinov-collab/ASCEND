@@ -2478,9 +2478,9 @@ body.auth-ready .app{
 }
 
 .real-character{
-    width:230px;
-    height:440px;
-    bottom:34px;
+    width:248px;
+    height:474px;
+    bottom:32px;
     transform-origin:center 88%;
     will-change:transform;
     animation:
@@ -2494,11 +2494,11 @@ body.auth-ready .app{
 }
 
 .character-platform{
-    width:205px;
+    width:220px;
 }
 
 .character-shadow{
-    width:135px;
+    width:145px;
 }
 
 @keyframes characterIdle{
@@ -2514,8 +2514,8 @@ body.auth-ready .app{
 }
 
 @media (max-width:1200px){
-    .real-character{width:205px;height:395px;bottom:38px}
-    .character-platform{width:185px}
+    .real-character{width:218px;height:418px;bottom:36px}
+    .character-platform{width:195px}
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -2640,6 +2640,16 @@ body.auth-ready .app{
         flex-direction:column;
     }
 }
+
+
+/* ASCENDER LEVEL REWARDS */
+.level-reward-badge{position:absolute;left:50%;top:78px;z-index:18;transform:translateX(-50%);min-width:150px;padding:7px 12px;border:1px solid rgba(255,255,255,.10);border-radius:999px;background:rgba(7,8,12,.72);backdrop-filter:blur(12px);color:#aeb4c0;font-size:9px;font-weight:900;letter-spacing:.11em;text-align:center;text-transform:uppercase;pointer-events:none;transition:.4s ease}
+.character-scene.tier-focused .level-reward-badge{color:#d8d5ff;border-color:rgba(130,116,255,.25);box-shadow:0 0 18px rgba(130,116,255,.08)}
+.character-scene.tier-disciplined .level-reward-badge{color:#fff;border-color:rgba(130,116,255,.38);box-shadow:0 0 22px rgba(130,116,255,.16)}
+.character-scene.tier-ascended .level-reward-badge{color:white;border-color:rgba(255,255,255,.38);box-shadow:0 0 25px rgba(130,116,255,.28)}
+.character-scene.tier-focused .character-platform{box-shadow:0 0 15px rgba(255,255,255,.22),0 0 34px rgba(112,98,255,.78),inset 0 0 22px rgba(120,105,255,.22)}
+.character-scene.tier-disciplined .character-platform{box-shadow:0 0 18px rgba(255,255,255,.28),0 0 44px rgba(112,98,255,.88),inset 0 0 25px rgba(120,105,255,.28)}
+.character-scene.tier-ascended .character-platform{box-shadow:0 0 22px rgba(255,255,255,.36),0 0 58px rgba(112,98,255,.98),inset 0 0 30px rgba(120,105,255,.34)}
 
 </style>
 
@@ -3751,6 +3761,7 @@ body.auth-ready .app{
 
 
     <div class="character-scene">
+<div class="level-reward-badge" id="levelRewardBadge">ROOKIE · УРОВЕНЬ 1</div>
 
         <div class="character-backlight"></div>
 
@@ -4994,6 +5005,15 @@ function updateAscender3DLevel(level){
     const strength = level >= 20 ? 2.25 : level >= 10 ? 1.45 : level >= 5 ? .85 : .35;
     ascender3D.accentMaterial.emissiveIntensity = strength;
     ascender3D.accentLight.intensity = level >= 20 ? 2.6 : level >= 10 ? 1.6 : .9;
+
+    /* ASCENDER_REWARD_BADGE_UPDATE */
+    const rewardBadge = document.getElementById("levelRewardBadge");
+    if(rewardBadge){
+        rewardBadge.textContent = level >= 20 ? "ASCENDED · АУРА ОТКРЫТА"
+            : level >= 10 ? "DISCIPLINED · ЭНЕРГИЯ II"
+            : level >= 5 ? "FOCUSED · ЭНЕРГИЯ I"
+            : `ROOKIE · УРОВЕНЬ ${level}`;
+    }
 }
 
 function initAscender3D(){
