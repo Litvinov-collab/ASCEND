@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>ASCEND</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#050609">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ASCEND">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
 
 <style>
 *{
@@ -7388,6 +7396,17 @@ if(document.readyState === "loading"){
     document.addEventListener("DOMContentLoaded", initAuth);
 }else{
     initAuth();
+}
+</script>
+
+
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+            console.warn('ASCEND Service Worker:', err);
+        });
+    });
 }
 </script>
 
